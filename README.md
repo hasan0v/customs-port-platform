@@ -7,6 +7,8 @@ A unified customs and port operations prototype with live maps, risk workflows, 
 | Focus | Operations and data visualization |
 | Status | Active portfolio project |
 
+**Engineering notes:** [System design](docs/ENGINEERING.md) · [Security](SECURITY.md) · [Live demo](https://liman-demo.vercel.app) · [Quality workflow](.github/workflows/quality.yml)
+
 ## Overview
 
 A unified customs and port operations prototype with live maps, risk workflows, analytics, and responsive Azerbaijani UI.
