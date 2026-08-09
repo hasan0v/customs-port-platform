@@ -1,6 +1,17 @@
-# Vahid Gömrük-Liman Platforması (VGLP)
+# Customs and Port Operations Platform
 
-## Layihə haqqında
+A unified customs and port operations prototype with live maps, risk workflows, analytics, and responsive Azerbaijani UI.
+
+| Field | Value |
+| --- | --- |
+| Focus | Operations and data visualization |
+| Status | Active portfolio project |
+
+## Overview
+
+A unified customs and port operations prototype with live maps, risk workflows, analytics, and responsive Azerbaijani UI.
+
+## Project details
 
 Ələt Beynəlxalq Dəniz Ticarət Limanı ilə Azərbaycan gömrük sisteminin koordinasiyalı işini vizual şəkildə göstərən rəhbərlik təqdimatı üçün prototipdir. Layihənin əsas ideyası gəmi qeydiyyatı, avtomobilin gəmi manifestinə bağlanması və mal bəyannaməsinin əlavə edilməsi proseslərini üç ayrı səhifədən bir vahid əməliyyat ekranına çevirməkdir.
 
@@ -130,3 +141,14 @@ Nəticələr `screenshots/` qovluğunda saxlanılır.
 - Framework preset: Vite
 - Status: Lokal prototip hazırdır; MSW/VAİS ekranları, cinematic 3D gəmi vizualları, responsive modallar və mobil/tablet səhifələr 390/768/1024/1440 px Playwright auditindən sıfır body overflow və sıfır console xətası ilə keçib; istehsala yerləşdirilməyib
 - Son yenilənmə: 10 iyul 2026
+
+## Repository
+
+```bash
+git clone https://github.com/hasan0v/customs-port-platform.git
+cd customs-port-platform
+```
+
+## Status
+
+Active portfolio project.
