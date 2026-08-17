@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart,
+  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend,
   Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts'
 import {
   Anchor, ArrowDownRight, ArrowUpRight, Download, Filter, Gauge, Ship,
-  Sparkles, TrendingUp, Truck, FileCheck2, AlertTriangle, RotateCcw,
+  TrendingUp, Truck, FileCheck2, AlertTriangle, RotateCcw,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { ayliqStatistika } from '../data/mockData'
@@ -270,11 +270,6 @@ export default function Analytics() {
     { name: 'Qırmızı', value: kpis.red || 0, color: '#E76F51' },
   ].filter(x => x.value > 0), [kpis])
 
-  const directionBars = useMemo(() => [
-    { name: 'Giriş', count: kpis.giris, tonaj: filtered.filter(e => e.direction === 'Giriş').reduce((s, e) => s + e.tonaj, 0) },
-    { name: 'Çıxış', count: kpis.cixis, tonaj: filtered.filter(e => e.direction === 'Çıxış').reduce((s, e) => s + e.tonaj, 0) },
-  ], [kpis, filtered])
-
   const topShips = useMemo(() => {
     const map: Record<string, { name: string; count: number; tonaj: number }> = {}
     filtered.forEach(e => {
@@ -284,46 +279,6 @@ export default function Analytics() {
     })
     return Object.values(map).sort((a, b) => b.count - a.count).slice(0, 6)
   }, [filtered])
-
-  const riskTrend = useMemo(() => monthly.map(m => ({
-    ay: m.ay,
-    yasil: Math.max(0, Math.round(m.gemi * 0.72)),
-    qirmizi: Math.max(0, Math.round(m.gemi * 0.12)),
-    amber: Math.max(0, Math.round(m.gemi * 0.16)),
-  })), [monthly])
-
-  const insight = useMemo(() => {
-    if (direction === 'Giriş') {
-      return {
-        title: 'Giriş axını üstünlük təşkil edir',
-        text: `Filtrə görə ${kpis.giris} giriş hadisəsi var. Orta tonaj ${formatNum(kpis.giris ? Math.round(kpis.tonaj / Math.max(1, kpis.giris)) : 0)} t — Ro-Ro və konteyner gəmiləri əsas yükü daşıyır.`,
-        metric: `${kpis.autoRate}%`,
-        metricLabel: 'avtomatik yaşıl kanal',
-      }
-    }
-    if (direction === 'Çıxış') {
-      return {
-        title: 'Çıxış əməliyyatları izlənir',
-        text: `${kpis.cixis} çıxış qeydi. Yola çıxmış gəmilərin payı artıb; post qərarlarının təsdiq faizi yüksəkdir.`,
-        metric: formatNum(kpis.tonaj),
-        metricLabel: 'ton çıxış yükü',
-      }
-    }
-    if (risk === 'Qırmızı') {
-      return {
-        title: 'Riskli axın diqqət tələb edir',
-        text: `Seçilmiş filtrlərdə ${kpis.red} qırmızı risk hadisəsi var. Əlavə yoxlama kanalları (X-ray, fiziki, kinoloji) tövsiyə olunur.`,
-        metric: String(kpis.red),
-        metricLabel: 'qırmızı risk',
-      }
-    }
-    return {
-      title: 'Əməliyyat səmərəliliyi yüksəlir',
-      text: `DB + sintetik model: ${kpis.total} hadisə, ${kpis.dbShare}% real DB mənbəyi. Orta emal ${kpis.avgProcess} dəq — vahid qeydiyyat axını effekti.`,
-      metric: `+${Math.round(kpis.autos / 10)}`,
-      metricLabel: 'avtomobil vahidi',
-    }
-  }, [direction, risk, kpis])
 
   const resetFilters = () => {
     setDirection('Hamısı')
@@ -353,9 +308,7 @@ export default function Analytics() {
 
   return <>
     <PageHeader
-      eyebrow="REAL-VAXT BİZNES ZƏKASI · DB + SİNTETİK"
       title="Analitika"
-      description="Gəmi giriş-çıxış, risk, yük və qeydiyyat axınının filtrli canlı paneli"
       action={
         <div className="header-actions">
           <Button variant="ghost" onClick={resetFilters}><RotateCcw /> Sıfırla</Button>
@@ -504,20 +457,6 @@ export default function Analytics() {
         </div>
       </Card>
 
-      <Card className="chart-card" hover={false}>
-        <header><div><h2>Giriş vs çıxış</h2><p>Hadisə sayı və tonaj</p></div></header>
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={directionBars}>
-            <CartesianGrid strokeDasharray="3 3" opacity={.15} />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="count" name="Hadisə" fill="#0A4D8C" radius={[8, 8, 0, 0]} />
-            <Bar dataKey="tonaj" name="Tonaj" fill="#2A9D8F" radius={[8, 8, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </Card>
-
       <Card className="chart-card wide" hover={false}>
         <header><div><h2>Yük həcmi və avtomobil axını</h2><p>Aylıq dinamika (filtrə uyğun)</p></div></header>
         <ResponsiveContainer width="100%" height={260}>
@@ -548,22 +487,6 @@ export default function Analytics() {
         </div>
       </Card>
 
-      <Card className="chart-card wide" hover={false}>
-        <header><div><h2>Risk trendi</h2><p>Aylıq risk kanalları</p></div></header>
-        <ResponsiveContainer width="100%" height={240}>
-          <LineChart data={riskTrend}>
-            <CartesianGrid strokeDasharray="3 3" opacity={.15} />
-            <XAxis dataKey="ay" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="yasil" name="Yaşıl" stroke="#2A9D8F" strokeWidth={2.5} dot={false} />
-            <Line type="monotone" dataKey="amber" name="Amber" stroke="#F4A261" strokeWidth={2.5} dot={false} />
-            <Line type="monotone" dataKey="qirmizi" name="Qırmızı" stroke="#E76F51" strokeWidth={2.5} dot={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </Card>
-
       <Card className="chart-card top-ships-card" hover={false}>
         <header><div><h2>Top gəmilər</h2><p>Hadisə və tonaj</p></div></header>
         <div className="top-ships-list">
@@ -579,14 +502,6 @@ export default function Analytics() {
             </div>
           ))}
         </div>
-      </Card>
-
-      <Card className="insight-card analytics-insight" hover={false}>
-        <Sparkles />
-        <span>CANLI İNSAYT</span>
-        <h2>{insight.title}</h2>
-        <p>{insight.text}</p>
-        <div><strong>{insight.metric}</strong><small>{insight.metricLabel}</small></div>
       </Card>
 
     </section>

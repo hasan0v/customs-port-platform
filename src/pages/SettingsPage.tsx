@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Bell, Database, Save, Shield, User } from 'lucide-react'
+import { Bell, Database, Save, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { DEFAULT_NOTIFICATIONS, useAppStore } from '../store/useAppStore'
 import { Button, Card, PageHeader } from '../components/UI'
@@ -58,9 +58,7 @@ export default function SettingsPage() {
 
   return <>
     <PageHeader
-      eyebrow="SİSTEM İDARƏETMƏSİ"
       title="Parametrlər"
-      description="Profil, bildiriş və inteqrasiya seçimləri"
       action={
         <Button onClick={handleSave}>
           <Save /> Yadda saxla
@@ -69,7 +67,7 @@ export default function SettingsPage() {
     />
     <section className="settings-grid">
       <Card hover={false}>
-        <header><User /><div><h2>İstifadəçi profili</h2><p>Şəxsi məlumatlar və rol</p></div></header>
+        <header><User /><h2>İstifadəçi profili</h2></header>
         <label>Ad və soyad<input value={name} onChange={e => { setName(e.target.value); markDirty() }} /></label>
         <label>Vəzifə<input value={role} onChange={e => { setRole(e.target.value); markDirty() }} /></label>
         <label>E-poçt<input type="email" value={email} onChange={e => { setEmail(e.target.value); markDirty() }} /></label>
@@ -77,7 +75,7 @@ export default function SettingsPage() {
       </Card>
 
       <Card hover={false}>
-        <header><Bell /><div><h2>Bildirişlər</h2><p>Seçimləri dəyişib yuxarıdakı «Yadda saxla» ilə qeyd edin</p></div></header>
+        <header><Bell /><h2>Bildirişlər</h2></header>
         {notificationsList.map((label) => (
           <label key={label} className="toggle-row">
             <span>{label}</span>
@@ -91,17 +89,16 @@ export default function SettingsPage() {
         ))}
       </Card>
 
-      <Card hover={false}>
-        <header><Database /><div><h2>İnteqrasiyalar</h2><p>Əlaqəli məlumat mənbələri</p></div></header>
+      <Card hover={false} className="settings-system-card">
+        <header><Database /><h2>Sistem</h2></header>
+        <h3>İnteqrasiyalar</h3>
         {integrations.map(item => (
           <div key={item} className="integration-row">
             <span><i />{item}</span>
             <b>Aktiv</b>
           </div>
         ))}
-      </Card>
-      <Card hover={false}>
-        <header><Shield /><div><h2>Təhlükəsizlik</h2><p>Audit və sessiya nəzarəti</p></div></header>
+        <h3>Təhlükəsizlik</h3>
         <div className="security-info"><strong>İki mərhələli doğrulama</strong><span>Aktiv</span></div>
         <div className="security-info"><strong>Son giriş</strong><span>14.07.2026 · 09:42</span></div>
         <div className="security-info"><strong>Audit saxlama müddəti</strong><span>7 il</span></div>

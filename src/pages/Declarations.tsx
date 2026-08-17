@@ -49,18 +49,18 @@ export default function Declarations() {
   const approved = declarations.filter(x => x.status === 'Təsdiqlənib').length
 
   return <>
-    <PageHeader eyebrow="ELEKTRON GÖMRÜK SİSTEMİ" title="Bəyannamələr" description="Rəqəmsal bəyannamələrin yoxlanması, izlənməsi və arxivləşdirilməsi" action={<Button onClick={exportCsv}><Download/> Hesabatı ixrac et</Button>} />
+    <PageHeader title="Bəyannamələr" action={<Button onClick={exportCsv}><Download/> Hesabatı ixrac et</Button>} />
 
     <section className="mini-stats material-kpis">
-      <Card><FileText/><small>Cəmi bəyannamə</small><strong>{declarations.length}</strong><span>Qəbul edilmiş sənədlər</span></Card>
-      <Card><CircleCheck/><small>Təsdiqlənib</small><strong>{approved}</strong><span className="green-text">Emala hazır</span></Card>
-      <Card><PackageCheck/><small>Yoxlamada</small><strong>{declarations.filter(x => x.status === 'Yoxlamada').length}</strong><span className="amber-text">Operator nəzarəti</span></Card>
-      <Card><Filter/><small>Risk nəzarəti</small><strong>{declarations.filter(x => x.status === 'Risk nəzarəti').length}</strong><span className="red-text">Əlavə yoxlama</span></Card>
+      <Card><FileText/><small>Cəmi</small><strong>{declarations.length}</strong></Card>
+      <Card><CircleCheck/><small>Təsdiqlənib</small><strong>{approved}</strong></Card>
+      <Card><PackageCheck/><small>Yoxlamada</small><strong>{declarations.filter(x => x.status === 'Yoxlamada').length}</strong></Card>
+      <Card><Filter/><small>Risk nəzarəti</small><strong>{declarations.filter(x => x.status === 'Risk nəzarəti').length}</strong></Card>
     </section>
 
     <Card className="data-card declarations-table material-table" hover={false}>
       <header>
-        <div><h2>Elektron bəyannamələr</h2><p>Gömrük Vahid Pəncərəsindən sinxronlaşdırılan sənədlər</p></div>
+        <h2>Elektron bəyannamələr</h2>
         <div className="table-tools">
           <label><Search/><input value={q} onChange={e => setQ(e.target.value)} placeholder="Kod, broker və ya alıcı..."/></label>
           <select value={status} onChange={e => setStatus(e.target.value)} aria-label="Status üzrə filtr"><option>Hamısı</option><option>Təsdiqlənib</option><option>Yoxlamada</option><option>Risk nəzarəti</option><option>Arxivləşdirilib</option></select>

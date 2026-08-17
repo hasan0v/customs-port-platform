@@ -1,12 +1,13 @@
 import { useMemo, useState, useEffect, type FormEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { AlertTriangle, Anchor, ArrowRight, Check, CheckCircle2, ChevronDown, ClipboardCheck, Dog, Download, FileBadge, FileCheck2, FileText, Link2, PackagePlus, Plus, Receipt, RotateCcw, Scan, ScanSearch, Search, ShieldCheck, Ship, Truck, X, type LucideIcon } from 'lucide-react'
+import { AlertTriangle, Anchor, ArrowRight, Check, CheckCircle2, ChevronDown, ClipboardCheck, Dog, Download, FileBadge, FileCheck2, FileText, PackagePlus, Plus, Receipt, RotateCcw, Scan, ScanSearch, Search, ShieldCheck, Ship, Truck, X, type LucideIcon } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import { toast } from 'sonner'
 import { useSearchParams } from 'react-router-dom'
 import { useAppStore, type SavedRegistration } from '../store/useAppStore'
 import { Button, Card, Modal, PageHeader, StatusBadge } from '../components/UI'
 import { DeclarationDocumentView } from '../components/DeclarationDocumentView'
+import VehicleDeckSelector from '../components/VehicleDeckSelector'
 import { alatKurikManifestSeed, cargoDeclarationSeed } from '../data/documentSeeds'
 import { declarationSortKey } from '../data/mockData'
 
@@ -400,6 +401,32 @@ export default function Registration() {
     }
   }
 
+  const selectDeckVehicle = (selectedVehicle: typeof vehicles[number]) => {
+    const linkedDeclaration = declarations
+      .filter(item =>
+        item.avtomobil === selectedVehicle.nomre ||
+        item.billOfLading === selectedVehicle.billOfLading ||
+        (Boolean(selectedVehicle.vehicleOrder) && item.vehicleOrder === selectedVehicle.vehicleOrder),
+      )
+      .filter(item => item.status !== 'Arxivləşdirilib' && !item.status.toLocaleLowerCase('az').includes('arxiv'))
+      .sort((a, b) => declarationSortKey(b).localeCompare(declarationSortKey(a)))[0]
+
+    setShipId(selectedVehicle.gemi)
+    setPlate(selectedVehicle.nomre)
+    setVehicleFound(true)
+    setDeclaration(linkedDeclaration?.kod ?? '')
+    setDone(false)
+    setManualOpen(false)
+    setTransportDetails(initialTransportDetails)
+    setTransportOpen(true)
+    setFlowPhase('registration')
+    setTaxConfirmed(false)
+    setTransportPermit('')
+    setLastSaved(null)
+    clearRiskState()
+    toast.success(`${selectedVehicle.nomre} qeydiyyat üçün seçildi`)
+  }
+
   const exportManifest = () => {
     if (!vehicle && !manifestEntry) return
     const rows = [
@@ -660,13 +687,20 @@ export default function Registration() {
     : 0
 
   return <>
-    <PageHeader eyebrow="ƏSAS DEMO · VAHİD ƏMƏLİYYAT" title="Qeydiyyat" description="Gəmi, avtomobil və yük — üç ayrı prosesi bir ekranda tamamlayın" />
+    <PageHeader title="Qeydiyyat" />
     <nav className="registration-stepper registration-stepper-6" aria-label="Qeydiyyat addımları">{registrationSteps.map(([n,label,ok,Icon],i) => {
       return <div className={ok ? 'complete' : i === activeStepIndex ? 'active' : ''} key={n}><span>{ok ? <Check /> : <Icon />}</span><div><small>ADDIM {n}</small><strong>{label}</strong></div>{i < registrationSteps.length - 1 && <i />}</div>
     })}</nav>
+    <VehicleDeckSelector
+      ship={ship}
+      vehicles={vehicles}
+      selectedPlate={vehicleFound ? plateKey : ''}
+      registeredPlates={registrations.map(registration => registration.plate)}
+      onSelect={selectDeckVehicle}
+    />
     <section className="registration-workspace">
       <Card className="registration-form" hover={false}>
-        <section className="registration-step step-ship"><header><span className="step-number">01</span><div><h2>Gəmini seçin</h2><p>AIS tərəfindən limanda avtomatik qeydə alınmış gəmilər</p></div><CheckCircle2 className="step-check" /></header>
+        <section className="registration-step step-ship"><header><span className="step-number">01</span><div><h2>Gəmi</h2></div><CheckCircle2 className="step-check" /></header>
           <label>Limandakı gəmi
             <select value={shipId} onChange={e => {
               const next = e.target.value
@@ -688,10 +722,10 @@ export default function Registration() {
               ))}
             </select>
           </label>
-          <motion.div className="auto-data-panel" key={ship.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}><span className="source-label">AIS MƏLUMATLARI</span><div className="data-grid"><Data label="Gəmi" value={ship.ad} /><Data label="IMO kodu" value={ship.id.replace('IMO','')} /><Data label="Kanal" value={ship.kanal} /><Data label="Giriş tarixi" value={formatShipDate(ship.girisTarixi) || '—'} /><Data label="Mənşə" value={ship.menshe} /><Data label="Yük növü" value={ship.yuk} /></div></motion.div>
+          <motion.div className="auto-data-panel" key={ship.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}><div className="data-grid"><Data label="Gəmi" value={ship.ad} /><Data label="IMO kodu" value={ship.id.replace('IMO','')} /><Data label="Kanal" value={ship.kanal} /><Data label="Giriş tarixi" value={formatShipDate(ship.girisTarixi) || '—'} /><Data label="Mənşə" value={ship.menshe} /><Data label="Yük növü" value={ship.yuk} /></div></motion.div>
         </section>
-        <section className="registration-step step-vehicle"><header><span className="step-number">02</span><div><h2>Manifestdə axtarın</h2><p>Bill of Lading, vehicle order və ya avtomobil ID-si ilə</p></div>{vehicleFound && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }}><CheckCircle2 className="step-check" /></motion.span>}</header><label>Manifest identifikatoru<div className="search-field"><Search /><input value={plate} onChange={e => { setPlate(e.target.value.toUpperCase()); setVehicleFound(false) }} onKeyDown={e => e.key === 'Enter' && search()} placeholder="Məsələn: 245263, 4472 və ya 77JK093"/><Button onClick={search}>Manifestdə axtar <ArrowRight /></Button></div></label><div className="manifest-examples"><span>Manifest nümunələri:</span>{alatKurikManifestSeed.slice(0, 3).map(entry => <button key={entry.billOfLading} type="button" onClick={() => { setPlate(entry.billOfLading); setVehicleFound(true) }}>B/L {entry.billOfLading}</button>)}<button type="button" onClick={() => { setPlate('4472'); setVehicleFound(true) }}>Order 4472</button><button type="button" onClick={() => { setPlate('77JK093'); setVehicleFound(true) }}>Car ID 77JK093</button></div>
-          <AnimatePresence>{vehicleFound && (vehicle || manifestEntry) && <motion.div className="auto-data-panel green" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}><span className="source-label"><Link2 size={14}/> LİMAN MANİFESTİNDƏN</span><div className="vehicle-head"><div className="truck-icon"><Truck /></div><div><strong>{manifestItemLabel}</strong><small>Bill of: {manifestReference}</small></div>{vehicle && <StatusBadge status={vehicle.status} />}</div><div className="data-grid"><Data label={vehicle ? 'Sürücü' : 'Yük bəyannaməsi'} value={vehicle?.surucu ?? cargoDeclarationSeed.id} /><Data label={vehicle ? 'Nəqliyyat vasitəsi' : 'Vehicle order'} value={vehicle?.marka ?? manifestEntry?.vehicleOrder ?? '—'} /><Data label="Car ID-lər" value={manifestEntry?.vehicleIds.join(' · ') || vehicle?.nomre || '—'} /><Data label="Yük tipi" value={vehicle?.yuk ?? manifestEntry?.cargo ?? '—'} /><Data label="Brutto çəki" value={manifestEntry ? `${manifestEntry.grossTons.toLocaleString('az-AZ')} ton` : '—'} /><Data label="Netto çəki" value={manifestEntry ? `${manifestEntry.netTons.toLocaleString('az-AZ')} ton` : '—'} /><Data label="Marşrut" value={vehicle ? `${vehicle.menshe} → ${vehicle.teyinat}` : cargoDeclarationSeed.route} /></div><div className="manifest-export-row"><p className="linked-note"><Anchor size={16}/> Qeyd <b>{ship.ad}</b> gəmisi üçün manifest axınına bağlandı.</p><Button type="button" variant="ghost" className="manifest-export-btn" onClick={exportManifest}><Download/></Button></div></motion.div>}</AnimatePresence>
+        <section className="registration-step step-vehicle"><header><span className="step-number">02</span><div><h2>Manifest</h2></div>{vehicleFound && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }}><CheckCircle2 className="step-check" /></motion.span>}</header><label>Manifest identifikatoru<div className="search-field"><Search /><input value={plate} onChange={e => { setPlate(e.target.value.toUpperCase()); setVehicleFound(false) }} onKeyDown={e => e.key === 'Enter' && search()} placeholder="B/L, order və ya Car ID"/><Button onClick={search}>Axtar <ArrowRight /></Button></div></label><div className="manifest-examples">{alatKurikManifestSeed.slice(0, 3).map(entry => <button key={entry.billOfLading} type="button" onClick={() => { setPlate(entry.billOfLading); setVehicleFound(true) }}>B/L {entry.billOfLading}</button>)}<button type="button" onClick={() => { setPlate('4472'); setVehicleFound(true) }}>Order 4472</button><button type="button" onClick={() => { setPlate('77JK093'); setVehicleFound(true) }}>Car ID 77JK093</button></div>
+          <AnimatePresence>{vehicleFound && (vehicle || manifestEntry) && <motion.div className="auto-data-panel green" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}><div className="vehicle-head"><div className="truck-icon"><Truck /></div><div><strong>{manifestItemLabel}</strong><small>Bill of: {manifestReference}</small></div>{vehicle && <StatusBadge status={vehicle.status} />}</div><div className="data-grid"><Data label={vehicle ? 'Sürücü' : 'Yük bəyannaməsi'} value={vehicle?.surucu ?? cargoDeclarationSeed.id} /><Data label={vehicle ? 'Nəqliyyat vasitəsi' : 'Vehicle order'} value={vehicle?.marka ?? manifestEntry?.vehicleOrder ?? '—'} /><Data label="Car ID-lər" value={manifestEntry?.vehicleIds.join(' · ') || vehicle?.nomre || '—'} /><Data label="Yük tipi" value={vehicle?.yuk ?? manifestEntry?.cargo ?? '—'} /><Data label="Brutto çəki" value={manifestEntry ? `${manifestEntry.grossTons.toLocaleString('az-AZ')} ton` : '—'} /><Data label="Netto çəki" value={manifestEntry ? `${manifestEntry.netTons.toLocaleString('az-AZ')} ton` : '—'} /><Data label="Marşrut" value={vehicle ? `${vehicle.menshe} → ${vehicle.teyinat}` : cargoDeclarationSeed.route} /></div><div className="manifest-export-row"><Button type="button" variant="ghost" className="manifest-export-btn" onClick={exportManifest}><Download/></Button></div></motion.div>}</AnimatePresence>
           {vehicleFound && (vehicle || manifestEntry) && flowPhase === 'registration' && (
             <motion.div className="transport-details-panel" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
               <button type="button" className={`transport-details-toggle${transportOpen ? ' open' : ''}`} onClick={() => setTransportOpen(o => !o)}>
@@ -704,12 +738,6 @@ export default function Registration() {
               <AnimatePresence initial={false}>
                 {transportOpen && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="transport-details-body">
-                    <small className="transport-sync-note">
-                      Manifestdən sinxron:
-                      {manifestEntry ? ` B/L ${manifestEntry.billOfLading}` : ''}
-                      {manifestEntry?.vehicleOrder ? ` · order ${manifestEntry.vehicleOrder}` : ''}
-                      {matchedManifestVehicleId ? ` · ID ${matchedManifestVehicleId}` : vehicle?.nomre ? ` · ${vehicle.nomre}` : ''}
-                    </small>
                     <div className="transport-details-grid">
                       <label>Keçmə məqsədi<select value={transportDetails.kecmeMeqsedi} onChange={e => setTransportDetails(d => ({ ...d, kecmeMeqsedi: e.target.value }))}><option>Ölkəyə giriş</option><option>Ölkədən çıxış</option><option>Tranzit</option></select></label>
                       <label>Avtomobilin növü<select value={transportDetails.avtomobilNovu} onChange={e => setTransportDetails(d => ({ ...d, avtomobilNovu: e.target.value }))}><option>Yük avtomobili</option><option>Minik avtomobili</option><option>Avtobus</option></select></label>
@@ -780,7 +808,7 @@ export default function Registration() {
             <section className={`registration-step step-goods ${!vehicleFound ? 'disabled-step' : ''}`}>
               <header>
                 <span className="step-number">03</span>
-                <div><h2>Mal və bəyannamə</h2><p>Açıq bəyannamə avtomatik yüklənir — seçim tələb olunmur</p></div>
+                <div><h2>Mal və bəyannamə</h2></div>
                 <div className="step-header-actions">
                   {activeDeclarations.length === 0 && vehicleFound && (
                     <Button type="button" variant="ghost" className="add-declaration-btn" onClick={openManualModal}><Plus /> Əlavə et</Button>
@@ -790,7 +818,6 @@ export default function Registration() {
               </header>
               {vehicleFound ? (
                 <div className="declaration-picker">
-                  <span className="source-label"><FileCheck2 size={14}/> GÖMRÜK SİSTEMİNDƏN · AVTOMATİK</span>
                   {activeDeclarations.length === 0 && <div className="locked-note"><FileCheck2 /> Açıq bəyannamə tapılmadı — «Əlavə et» ilə yaradın</div>}
                   {selectedDeclaration && (
                     <motion.div className="selected-declaration-panel" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
@@ -818,13 +845,12 @@ export default function Registration() {
                   <span className="step-number">04</span>
                   <div>
                     <h2>Risk yoxlaması</h2>
-                    <p>Sistem cavabı avtomatik hesablanır</p>
                   </div>
                 </header>
                 {riskChecking && (
                   <div className="risk-result pending">
                     <ScanSearch className="spin" />
-                    <div><strong>Mallar risk mühərrikində analiz olunur…</strong><p>XİF, mənşə və status yoxlanır</p></div>
+                    <div><strong>Risk yoxlanılır…</strong></div>
                   </div>
                 )}
                 {riskVerdict === 'green' && (
@@ -1015,7 +1041,7 @@ export default function Registration() {
           <section className="registration-step flow-extra-stage">
             <header>
               <span className="step-number">07</span>
-              <div><h2>Yekun yoxlama və təsdiq</h2><p>Bütün mərhələlər tamamlandıqdan sonra təsdiq aktivdir</p></div>
+              <div><h2>Yekun yoxlama və təsdiq</h2></div>
             </header>
             <div className="review-summary-grid">
               <Data label="Gəmi" value={ship.ad} />
@@ -1082,35 +1108,6 @@ export default function Registration() {
           </div>
         </footer>
       </Card>
-      <aside className="registration-summary">
-        <Card hover={false}>
-          <header><ClipboardCheck/><div><h3>Əməliyyat xülasəsi</h3><p>Qeydiyyat mərhələləri</p></div></header>
-          <div className="summary-chain">
-            <SummaryItem ok title="Gəmi" value={`${ship.ad} · ${ship.id}`} />
-            <SummaryItem ok={vehicleFound} title="Avtomobil" value={vehicleFound ? transportDetails.dovletNisani || plateKey || '' : 'Gözlənilir'} />
-            <SummaryItem ok={!!declaration} title="Bəyannamə" value={declaration || 'Gözlənilir'} />
-            <SummaryItem ok={!!riskVerdict} title="Risk" value={riskVerdict === 'green' ? 'Yaşıl' : riskVerdict === 'red' ? 'Qırmızı' : 'Gözlənilir'} />
-            <SummaryItem ok={taxConfirmed || done} title="Yol vergisi" value={taxConfirmed ? `${roadTax.total} USD` : 'Gözlənilir'} />
-            <SummaryItem ok={!!transportPermit || done} title="Nəqliyyat sənədi" value={TRANSPORT_PERMIT_OPTIONS.find(p => p.id === transportPermit)?.label ?? 'Gözlənilir'} />
-            <SummaryItem ok={done} title="Təsdiq / DB" value={done ? `Yazıldı · ${lastSaved?.postKod || '545'}` : 'Proses bitəndən sonra'} />
-          </div>
-        </Card>
-        {registrations.length > 0 && (
-          <Card className="saved-regs-card" hover={false}>
-            <header><FileCheck2/><div><h3>DB-də saxlanılan qeydiyyatlar</h3><p>{registrations.length} qeyd</p></div></header>
-            <div className="saved-regs-list">
-              {registrations.slice(0, 5).map(r => (
-                <article key={r.id}>
-                  <strong>{r.plate}</strong>
-                  <small>{r.declarationKod} · {r.savedAt}</small>
-                  <em>{r.status} · {r.postKod}</em>
-                </article>
-              ))}
-            </div>
-          </Card>
-        )}
-        <Card className="security-card" hover={false}><ShieldCheck/><div><strong>Məlumat təkrar daxil edilmir</strong><p>Təsdiqdən sonra qeyd local DB-yə (store + localStorage) yazılır.</p></div></Card>
-      </aside>
     </section>
     <Modal open={manualOpen} onClose={() => setManualOpen(false)} title="Mal və bəyannamə əlavə et">
       <form onSubmit={submitManual} className="manual-declaration-form">
@@ -1186,4 +1183,3 @@ export default function Registration() {
   </>
 }
 function Data({ label, value }: {label:string; value:string}) { return <div><small>{label}</small><strong>{value}</strong></div> }
-function SummaryItem({ ok, title, value }: {ok:boolean; title:string; value:string}) { return <div className={ok ? 'ok' : ''}><span>{ok ? <Check/> : <i/>}</span><div><small>{title}</small><strong>{value}</strong></div></div> }

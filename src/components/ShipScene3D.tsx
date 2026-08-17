@@ -1,20 +1,13 @@
-import { motion, useReducedMotion } from 'framer-motion'
-
 export default function ShipScene3D({ compact = false, name = 'SHAHDAG RORO', course = '074°' }: { compact?: boolean; name?: string; course?: string }) {
-  const reduceMotion = useReducedMotion()
-  return <motion.figure
+  return <figure
     className={`ship-scene-3d ${compact ? 'compact' : ''}`}
-    initial={{ opacity: 0, scale: .94, rotateX: 6 }}
-    animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-    whileHover={reduceMotion ? undefined : { rotateY: -3, rotateX: 2, scale: 1.015 }}
-    transition={{ type: 'spring', stiffness: 120, damping: 18 }}
     aria-label={`${name} gəmisinin üçölçülü vizual modeli`}
   >
     <div className="scene-grid" />
     <div className="scene-glow" />
-    <motion.div className="scan-beam" animate={reduceMotion ? undefined : { rotate: 360 }} transition={{ duration: 9, repeat: Infinity, ease: 'linear' }} />
+    <div className="scan-beam" />
     <div className="radar-rings"><i/><i/><i/></div>
-    <motion.svg className="vessel-model" viewBox="0 0 720 360" animate={reduceMotion ? undefined : { y: [0, -5, 0], rotate: [-.2, .35, -.2] }} transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }} role="img">
+    <svg className="vessel-model" viewBox="0 0 720 360" role="img">
       <defs>
         <linearGradient id="hullTop" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#f7fbff"/><stop offset=".5" stopColor="#b9d0e3"/><stop offset="1" stopColor="#6f8ba5"/></linearGradient>
         <linearGradient id="hullSide" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#1e587d"/><stop offset=".58" stopColor="#0a3559"/><stop offset="1" stopColor="#041e36"/></linearGradient>
@@ -26,8 +19,8 @@ export default function ShipScene3D({ compact = false, name = 'SHAHDAG RORO', co
         <filter id="shipShadow"><feGaussianBlur stdDeviation="12"/></filter>
       </defs>
       <ellipse cx="390" cy="293" rx="245" ry="28" fill="#001426" opacity=".45" filter="url(#shipShadow)"/>
-      <motion.path d="M48 274 C170 249 285 253 415 277 C509 294 590 293 690 263" fill="none" stroke="url(#wake)" strokeWidth="9" strokeLinecap="round" animate={reduceMotion ? undefined : { pathLength: [.45, 1, .45], opacity: [.3, .85, .3] }} transition={{ duration: 2.8, repeat: Infinity }}/>
-      <motion.path d="M77 298 C212 278 310 283 430 300 C520 313 598 308 681 286" fill="none" stroke="#4cdcf4" strokeWidth="2" strokeDasharray="8 13" opacity=".42" animate={reduceMotion ? undefined : { strokeDashoffset: [0, -84] }} transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}/>
+      <path d="M48 274 C170 249 285 253 415 277 C509 294 590 293 690 263" fill="none" stroke="url(#wake)" strokeWidth="9" strokeLinecap="round" opacity=".7"/>
+      <path d="M77 298 C212 278 310 283 430 300 C520 313 598 308 681 286" fill="none" stroke="#4cdcf4" strokeWidth="2" strokeDasharray="8 13" opacity=".42"/>
       <path d="M128 205 L619 205 L682 244 L604 280 L205 280 L83 244 Z" fill="url(#hullSide)" stroke="#72d8ed" strokeOpacity=".34" strokeWidth="2"/>
       <path d="M128 205 L594 205 L654 231 L566 253 L179 253 L83 244 Z" fill="url(#hullTop)"/>
       <path d="M179 253 L566 253 L654 231 L682 244 L604 280 L205 280 L83 244 Z" fill="url(#hullSide)" opacity=".82"/>
@@ -43,16 +36,16 @@ export default function ShipScene3D({ compact = false, name = 'SHAHDAG RORO', co
         <path d="M153 140 L215 126 L238 133 L226 151 L155 164 Z" fill="url(#glass)"/>
         <path d="M154 171 L224 158 L222 171 L154 184 Z" fill="#79dff0" opacity=".55"/>
         <path d="M181 120v-43" stroke="#c9e3ee" strokeWidth="5"/><path d="M181 79h25M181 91h-20" stroke="#68d9ec" strokeWidth="3"/>
-        <motion.circle cx="181" cy="74" r="5" fill="#ffbf65" animate={reduceMotion ? undefined : { opacity: [.25, 1, .25] }} transition={{ duration: 1.2, repeat: Infinity }}/>
+        <circle cx="181" cy="74" r="5" fill="#ffbf65"/>
         <path d="M197 113 205 83l16 27" fill="none" stroke="#a4bdcb" strokeWidth="3"/>
       </g>
       <path d="M111 230 641 230" stroke="#5ee2f4" strokeWidth="2" opacity=".6"/><path d="M153 258 583 258" stroke="#03182a" strokeWidth="4" opacity=".55"/>
       {[235,285,335,385,435,485,535].map(x => <circle key={x} cx={x} cy="268" r="3.5" fill="#71d9eb" opacity=".72"/>)}
       <path d="M600 211 648 229 618 238" fill="#e8f5fb" opacity=".9"/>
       <text x="466" y="250" fill="#b8eaf2" fontSize="13" fontFamily="Inter" fontWeight="700" letterSpacing="2">{name.slice(0, 18)}</text>
-    </motion.svg>
-    <div className="ship-hud ship-hud-left"><small>GƏMİ</small><strong>{name.slice(0, 12)}</strong><span>AIS MƏLUMATI</span></div>
+    </svg>
+    <div className="ship-hud ship-hud-left"><small>GƏMİ</small><strong>{name.slice(0, 12)}</strong></div>
     <div className="ship-hud ship-hud-right"><small>KURS</small><strong>{course}</strong><span>12.4 KNOT</span></div>
     <div className="ship-depth"><span>0m</span><i/><i/><i/><span>12m</span></div>
-  </motion.figure>
+  </figure>
 }

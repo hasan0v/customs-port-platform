@@ -187,9 +187,7 @@ export default function HistoryPage() {
 
   return <>
     <PageHeader
-      eyebrow="İNSPEKTORUN FƏALİYYƏTİ · İNTEQRASİYA"
       title="İnspektorun fəaliyyəti"
-      description="Nəqliyyat → bəyannamə/yük → tarixlər → status/məsul şəxs. Gözləmədə statusuna basaraq səbəbi görün."
       action={
         <div className="header-actions">
           <Button variant="ghost" onClick={() => window.print()}><FileDown /> PDF / Çap</Button>
@@ -199,20 +197,15 @@ export default function HistoryPage() {
     />
 
     <section className="mini-stats inspector-kpis">
-      <Card><small>Cəmi qeyd</small><strong>{stats.total}</strong><span>Filtrə uyğun</span></Card>
-      <Card><small>Buraxıldı</small><strong>{stats.released}</strong><span className="green-text">Tamamlanmış</span></Card>
-      <Card><small>Gözləmədə</small><strong>{stats.waiting}</strong><span className="amber-text">Səbəbi kliklə</span></Card>
-      <Card><small>Mənim qeydlərim</small><strong>{stats.mine}</strong><span className="kpi-name-ellipsis" title={profile.name}>{profile.name}</span></Card>
+      <Card><small>Cəmi</small><strong>{stats.total}</strong></Card>
+      <Card><small>Buraxıldı</small><strong>{stats.released}</strong></Card>
+      <Card><small>Gözləmədə</small><strong>{stats.waiting}</strong></Card>
+      <Card><small>Mənim qeydlərim</small><strong>{stats.mine}</strong></Card>
     </section>
 
     <Card className="data-card history-table material-table inspector-history-table" hover={false}>
       <header>
-        <div>
-          <h2>İnspektorun fəaliyyət jurnalı</h2>
-          <p>
-            Mənbə: təsdiqlənmiş qeydiyyatlar (DB) + sistem bəyannamələri · {rows.length} sətir
-          </p>
-        </div>
+        <h2>Fəaliyyət jurnalı · {rows.length}</h2>
         <div className="table-tools">
           <label>
             <Search />

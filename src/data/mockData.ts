@@ -60,6 +60,8 @@ export const avtomobiller = [
   }),
 ]
 
+export type Avtomobil = (typeof avtomobiller)[number]
+
 export type CustomsPayment = {
   kod: string
   hesablamaEsasi: number

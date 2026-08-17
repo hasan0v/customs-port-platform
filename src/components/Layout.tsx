@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Anchor, BarChart3, Bell, ChevronLeft, ClipboardCheck, FileText, LayoutDashboard, Menu, Moon, Search, Settings, Ship, Sun, UserRound, X } from 'lucide-react'
-import { AnimatePresence, motion } from 'framer-motion'
 import { useAppStore } from '../store/useAppStore'
 
 const links = [
@@ -13,7 +12,7 @@ const links = [
 const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const [collapsed, setCollapsed] = useState(true)
+  const [collapsed, setCollapsed] = useState(false)
   const { dark, toggleDark, sidebarOpen, setSidebarOpen, commandOpen, setCommandOpen, profile } = useAppStore()
   const navigate = useNavigate()
   const location = useLocation()
@@ -59,7 +58,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <header className="brand">
           <span className="brand-mark"><Anchor /></span>
-          <div className="brand-text"><strong>VGLP</strong><small>Vahid rəqəmsal liman</small></div>
+          <div className="brand-text"><strong>VGLP</strong></div>
           <button type="button" className="mobile-close" onClick={() => setSidebarOpen(false)} aria-label="Menyunu bağla"><X /></button>
         </header>
         <nav aria-label="Əsas naviqasiya">
@@ -98,28 +97,15 @@ export default function Layout({ children }: { children: ReactNode }) {
             </div>
           </div>
         </header>
-        <AnimatePresence mode="wait">
-          <motion.main
-            key={location.pathname}
-            className="main-content"
-            initial={{ opacity: 0, x: 14 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            transition={{ duration: .24 }}
-          >
-            {children}
-          </motion.main>
-        </AnimatePresence>
-        <footer>© 2026 Vahid Gömrük-Liman Platforması <span>•</span> Rəhbərlik üçün vizual prototip</footer>
+        <main key={location.pathname} className="main-content">{children}</main>
+        <footer>© 2026 Vahid Gömrük-Liman Platforması</footer>
       </div>
-      <AnimatePresence>
-        {commandOpen && (
+      {commandOpen && (
           <CommandPalette
             onClose={() => setCommandOpen(false)}
             onSelect={(path) => { navigate(path); setCommandOpen(false) }}
           />
-        )}
-      </AnimatePresence>
+      )}
       {sidebarOpen && <div className="mobile-overlay" onClick={() => setSidebarOpen(false)} aria-hidden="true" />}
     </div>
   )
@@ -178,17 +164,12 @@ function CommandPalette({ onClose, onSelect }: { onClose: () => void; onSelect: 
   }, [onClose, onSelect, results, active])
 
   return (
-    <motion.div
+    <div
       className="command-backdrop"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
       onMouseDown={onClose}
     >
-      <motion.section
+      <section
         className="command"
-        initial={{ scale: .96, y: -20 }}
-        animate={{ scale: 1, y: 0 }}
         onMouseDown={e => e.stopPropagation()}
       >
         <header>
@@ -221,7 +202,7 @@ function CommandPalette({ onClose, onSelect }: { onClose: () => void; onSelect: 
           <span>↵ aç</span>
           <span>ESC bağla</span>
         </footer>
-      </motion.section>
-    </motion.div>
+      </section>
+    </div>
   )
 }

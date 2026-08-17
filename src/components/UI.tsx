@@ -1,10 +1,9 @@
 import { useEffect, type ButtonHTMLAttributes, type ReactNode } from 'react'
-import { motion } from 'framer-motion'
 import { LoaderCircle, X } from 'lucide-react'
 import clsx from 'clsx'
 
 export function Card({ children, className = '', hover = true }: { children: ReactNode; className?: string; hover?: boolean }) {
-  return <motion.section whileHover={hover ? { y: -1 } : undefined} className={clsx('glass-card', className)}>{children}</motion.section>
+  return <section className={clsx('glass-card', hover && 'card-hover', className)}>{children}</section>
 }
 
 export function Button({
@@ -17,8 +16,7 @@ export function Button({
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'ghost' | 'danger' | 'success' }) {
   return (
-    <motion.button
-      whileTap={disabled ? undefined : { scale: .98 }}
+    <button
       type={type}
       disabled={disabled}
       onClick={onClick}
@@ -26,17 +24,15 @@ export function Button({
       {...(props as Record<string, unknown>)}
     >
       {children}
-    </motion.button>
+    </button>
   )
 }
 
-export function PageHeader({ eyebrow, title, description, action }: { eyebrow: string; title: string; description: string; action?: ReactNode }) {
+export function PageHeader({ title, action }: { title: string; action?: ReactNode }) {
   return (
     <header className="page-header">
       <div className="page-header-copy">
-        <span className="eyebrow">{eyebrow}</span>
         <h1>{title}</h1>
-        <p>{description}</p>
       </div>
       {action && <div className="page-header-action">{action}</div>}
     </header>
@@ -84,10 +80,7 @@ export function Modal({
   if (!open) return null
   return (
     <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label={title} onMouseDown={onClose}>
-      <motion.section
-        initial={{ opacity: 0, scale: .92, y: 30 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+      <section
         className={clsx('modal', wide && 'modal-wide')}
         onMouseDown={e => e.stopPropagation()}
       >
@@ -96,7 +89,7 @@ export function Modal({
           <button type="button" onClick={onClose} aria-label="Bağla"><X size={20} /></button>
         </header>
         {children}
-      </motion.section>
+      </section>
     </div>
   )
 }

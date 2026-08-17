@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  Activity, Anchor, BadgeCheck, Boxes, ChevronRight, CircleDollarSign, CloudSun,
+  Activity, BadgeCheck, Boxes, ChevronRight, CircleDollarSign, CloudSun,
   Download, FileScan, Filter, Plus, RefreshCw, Search, ShieldAlert, Ship as ShipIcon,
   Users, Waves, Wind, X,
 } from 'lucide-react'
@@ -11,7 +11,7 @@ import { useAppStore } from '../store/useAppStore'
 import SeaMap from '../components/SeaMap'
 import ShipScene3D from '../components/ShipScene3D'
 import { Button, Card, Modal, PageHeader, StatusBadge } from '../components/UI'
-import { agencies, cargoDocuments, dataSources, portCalls, type PortCall } from '../data/operationalData'
+import { agencies, portCalls, type PortCall } from '../data/operationalData'
 import { fetchAlatWeather, fetchExchangeRates, type LiveRates, type LiveWeather } from '../services/liveData'
 
 const clearanceTone = { approved: 'approved', pending: 'pending', review: 'review' } as const
@@ -128,9 +128,7 @@ export default function Ships() {
 
   return <>
     <PageHeader
-      eyebrow="AIS + MARITIME SINGLE WINDOW · VAİS"
       title="Gəmi əməliyyat mərkəzi"
-      description="AIS radar, liman çağırışları, icazələr və gəmi idarəetməsi vahid ekranda"
       action={
         <div className="header-actions">
           <button type="button" className="source-sync" onClick={() => void loadLiveData()}>
@@ -157,7 +155,6 @@ export default function Ships() {
         <div>
           <small>USD / AZN</small>
           <strong>{rates ? rates.usdToAzn.toFixed(4) : '—'}</strong>
-          <em>İnternet məzənnəsi</em>
         </div>
       </article>
       <article>
@@ -186,19 +183,12 @@ export default function Ships() {
       </article>
     </section>
 
-    <section className="ship-kpis">
-      <Card><span><ShipIcon /></span><div><small>Qeydiyyatdakı gəmilər</small><strong>{ships.length}</strong></div></Card>
-      <Card><span className="green"><Waves /></span><div><small>Körpüdə</small><strong>{ships.filter(s => s.status === 'Körpüdə').length}</strong></div></Card>
-      <Card><span className="amber"><Waves /></span><div><small>Lövbərdə</small><strong>{ships.filter(s => s.status === 'Lövbərdə').length}</strong></div></Card>
-      <Card><span className="blue"><Activity /></span><div><small>Yolda</small><strong>{ships.filter(s => s.status === 'Yolda').length}</strong></div></Card>
-    </section>
-
     <section className="ships-layout">
       <Card className="radar-panel" hover={false}>
         <header className="card-heading">
           <div>
             <span className="title-icon"><Waves /></span>
-            <div><h2>AIS radar paneli</h2><p>Real mövqe · store gəmiləri</p></div>
+            <h2>AIS radar paneli</h2>
           </div>
         </header>
         <SeaMap />
@@ -206,7 +196,7 @@ export default function Ships() {
 
       <Card className="ship-table-card" hover={false}>
         <header>
-          <div><h2>AIS gəmilər</h2><p>{rows.length} gəmi göstərilir</p></div>
+          <h2>AIS gəmilər · {rows.length}</h2>
           <div className="table-tools">
             <label><Search /><input placeholder="Gəmi axtar..." value={q} onChange={e => setQ(e.target.value)} /></label>
             <select value={status} onChange={e => setStatus(e.target.value)}>
@@ -262,7 +252,6 @@ export default function Ships() {
         <header className="ops-card-header">
           <div>
             <h2>Liman çağırışları · VAİS</h2>
-            <p>Yeni sorğular və qurumlararası icazələr</p>
           </div>
           <label className="ops-search">
             <Search />
@@ -409,56 +398,6 @@ export default function Ships() {
           </motion.aside>
         )}
       </AnimatePresence>
-    </section>
-
-    <section className="document-intelligence">
-      <header>
-        <div>
-          <span className="title-icon"><FileScan /></span>
-          <div>
-            <h2>Sənəd intellekti</h2>
-            <p>Gömrük bəyannaməsi, manifest, invoys və CMR</p>
-          </div>
-        </div>
-        <span className="ai-chip"><i /> OCR + DATA MATCHING</span>
-      </header>
-      <div className="document-grid">
-        {cargoDocuments.map((document, index) => (
-          <motion.article
-            key={document.id}
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * .05 }}
-          >
-            <header>
-              <span>{document.type === 'CMR' ? 'CMR' : String(index + 1).padStart(2, '0')}</span>
-              <div><small>{document.type}</small><strong>{document.reference}</strong></div>
-              <em className={document.state === 'Doğrulanıb' ? 'verified' : 'processing'}>{document.state}</em>
-            </header>
-            <dl>
-              <div><dt>Marşrut</dt><dd>{document.origin} → {document.destination}</dd></div>
-              <div><dt>HS kod</dt><dd>{document.hsCode}</dd></div>
-              <div><dt>Ümumi / xalis</dt><dd>{document.grossKg.toLocaleString()} / {document.netKg.toLocaleString()} kq</dd></div>
-              <div><dt>Dəyər</dt><dd>{document.value.toLocaleString()} {document.currency}</dd></div>
-            </dl>
-            <footer><span>{document.consignor}</span><ChevronRight /></footer>
-          </motion.article>
-        ))}
-      </div>
-    </section>
-
-    <section className="source-ribbon">
-      <div>
-        <Anchor />
-        <span><strong>Məlumat mənbələri</strong><small>AIS store + VAİS port calls</small></span>
-      </div>
-      {dataSources.map(source => (
-        <article key={source.name}>
-          <span><strong>{source.name}</strong><small>{source.description}</small></span>
-          <em>{source.kind}</em>
-        </article>
-      ))}
     </section>
 
     <Modal
