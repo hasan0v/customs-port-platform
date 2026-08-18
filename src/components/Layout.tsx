@@ -58,7 +58,10 @@ export default function Layout({ children }: { children: ReactNode }) {
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <header className="brand">
           <span className="brand-mark"><Anchor /></span>
-          <div className="brand-text"><strong>VGLP</strong></div>
+          <div className="brand-text">
+            <strong>VGLP</strong>
+            <small>Vahid Gömrük-Liman Platforması</small>
+          </div>
           <button type="button" className="mobile-close" onClick={() => setSidebarOpen(false)} aria-label="Menyunu bağla"><X /></button>
         </header>
         <nav aria-label="Əsas naviqasiya">

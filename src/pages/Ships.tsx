@@ -10,6 +10,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppStore } from '../store/useAppStore'
 import SeaMap from '../components/SeaMap'
 import ShipScene3D from '../components/ShipScene3D'
+import ShipDetailModal from '../components/ShipDetailModal'
 import { Button, Card, Modal, PageHeader, StatusBadge } from '../components/UI'
 import { agencies, portCalls, type PortCall } from '../data/operationalData'
 import { fetchAlatWeather, fetchExchangeRates, type LiveRates, type LiveWeather } from '../services/liveData'
@@ -400,37 +401,14 @@ export default function Ships() {
       </AnimatePresence>
     </section>
 
-    <Modal
+    <ShipDetailModal
+      ship={selectedShip}
       open={!!selectedShip}
       onClose={() => {
         setSelectedShip(null)
         if (urlShipId) setSearchParams({})
       }}
-      title={selectedShip?.ad || ''}
-    >
-      {selectedShip && (
-        <div className="modal-detail">
-          <div className="ship-visual premium-ship-visual">
-            <ShipScene3D compact name={selectedShip.ad} course={`${Math.round(selectedShip.suret * 6)}°`} />
-          </div>
-          <StatusBadge status={selectedShip.status} />
-          <dl>
-            <div><dt>IMO</dt><dd>{selectedShip.id}</dd></div>
-            <div><dt>Mənşə</dt><dd>{selectedShip.menshe}</dd></div>
-            <div><dt>Yük</dt><dd>{selectedShip.yuk}</dd></div>
-            <div><dt>Tonaj</dt><dd>{selectedShip.tonaj.toLocaleString()} ton</dd></div>
-            <div><dt>Kanal</dt><dd>{selectedShip.kanal}</dd></div>
-            <div><dt>Sürət</dt><dd>{selectedShip.suret} düyün</dd></div>
-          </dl>
-          <Button onClick={() => {
-            navigate(`/qeydiyyat?shipId=${selectedShip.id}`)
-            setSelectedShip(null)
-          }}>
-            Əməliyyata başla
-          </Button>
-        </div>
-      )}
-    </Modal>
+    />
 
     <Modal open={newShipModalOpen} onClose={() => setNewShipModalOpen(false)} title="Yeni gəmi əlavə et">
       <form onSubmit={handleCreateShip} className="new-ship-form">

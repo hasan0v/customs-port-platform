@@ -1,0 +1,338 @@
+/* Dashboard overview has one summary row and a separate, even KPI row. */
+.dashboard-port-overview {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dashboard-port-overview > .dashboard-port-overview-lead {
+  grid-column: 1 / -1;
+  min-height: 112px;
+  display: grid;
+  grid-template-columns: minmax(220px, .8fr) auto minmax(500px, 1.7fr);
+  align-items: center;
+  justify-content: initial;
+  gap: 22px;
+  padding: 18px 24px;
+}
+
+.dashboard-port-overview .vessel-total {
+  min-width: 88px;
+  padding: 0 22px;
+  border-right: 1px solid rgba(255, 255, 255, .15);
+}
+
+.dashboard-port-overview .vessel-direction-stats {
+  width: 100%;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.dashboard-port-overview .vessel-direction-stats article {
+  min-height: 46px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .075);
+  gap: 8px;
+}
+
+.dashboard-port-overview .vessel-direction-stats strong {
+  min-width: 18px;
+  font-size: 17px;
+  text-align: left;
+}
+
+.dashboard-port-overview .vessel-direction-stats span {
+  font-size: 8px;
+}
+
+.dashboard-port-overview > .flow-stat {
+  min-width: 0;
+  min-height: 112px;
+  padding: 16px;
+  align-items: center;
+}
+
+.dashboard-port-overview > .flow-stat strong {
+  font-size: 21px;
+}
+
+@media (max-width: 1050px) {
+  .dashboard-port-overview {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dashboard-port-overview > .dashboard-port-overview-lead {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(190px, .8fr) auto minmax(330px, 1.4fr);
+    gap: 15px;
+    padding: 16px 18px;
+  }
+
+  .dashboard-port-overview .vessel-direction-stats {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard-port-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dashboard-port-overview > .dashboard-port-overview-lead {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .dashboard-port-overview .vessel-total {
+    padding: 0;
+    border-right: 0;
+    text-align: right;
+  }
+
+  .dashboard-port-overview .vessel-direction-stats {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 10px;
+  }
+
+  .dashboard-port-overview .vessel-direction-stats article {
+    min-height: 42px;
+    padding: 7px 9px;
+  }
+
+  .dashboard-port-overview > .flow-stat {
+    min-height: 88px;
+    padding: 13px;
+  }
+}
+
+@media (max-width: 430px) {
+  .dashboard-port-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-port-overview .vessel-direction-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Vessel-first relationship browser in the dashboard command card. */
+.vessel-vehicle-command {
+  min-height: 0;
+}
+
+.dashboard-ship-picker {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.dashboard-ship-picker-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--muted);
+}
+
+.dashboard-ship-picker-label span {
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.dashboard-ship-picker-label b {
+  min-width: 20px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--bg);
+  font-size: 8px;
+  text-align: center;
+}
+
+.dashboard-ship-list {
+  max-height: 176px;
+  overflow-y: auto;
+  display: grid;
+  gap: 5px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--bg);
+  scrollbar-width: thin;
+}
+
+.dashboard-ship-list > button {
+  min-width: 0;
+  min-height: 48px;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto 12px;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  transition: background .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.dashboard-ship-list > button:hover {
+  background: var(--card);
+}
+
+.dashboard-ship-list > button.selected {
+  border-color: #a9cfe3;
+  background: var(--card);
+  box-shadow: inset 3px 0 #0876aa;
+}
+
+.dashboard-ship-list > button > svg {
+  width: 12px;
+  color: var(--muted);
+}
+
+.dashboard-ship-icon {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #e6f0fa;
+  color: #075b99;
+}
+
+.dashboard-ship-icon svg {
+  width: 15px;
+}
+
+.dashboard-ship-name,
+.dashboard-ship-count {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.dashboard-ship-name strong {
+  overflow: hidden;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-ship-name small,
+.dashboard-ship-count small {
+  color: var(--muted);
+  font-size: 7px;
+  white-space: nowrap;
+}
+
+.dashboard-ship-count {
+  text-align: right;
+}
+
+.dashboard-ship-count strong {
+  color: var(--ocean);
+  font-size: 11px;
+}
+
+.selected-ship-summary {
+  min-height: 40px;
+  margin-bottom: 8px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: #edf5fb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.dark .selected-ship-summary {
+  background: rgba(19, 95, 145, .15);
+}
+
+.selected-ship-summary > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.selected-ship-summary small {
+  color: var(--muted);
+  font-size: 6px;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.selected-ship-summary strong {
+  overflow: hidden;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selected-ship-summary > span {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ocean);
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.selected-ship-summary > span svg {
+  width: 12px;
+}
+
+.vessel-vehicle-command .vehicle-queue {
+  height: 190px;
+}
+
+.vehicle-queue-empty {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 5px;
+  padding: 20px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.vehicle-queue-empty svg {
+  width: 26px;
+  height: 26px;
+  padding: 6px;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ocean);
+}
+
+.vehicle-queue-empty strong {
+  color: var(--text);
+  font-size: 10px;
+}
+
+.vehicle-queue-empty small {
+  max-width: 230px;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+@media (max-width: 1050px) {
+  .dashboard-ship-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: 166px;
+  }
+}
+
+@media (max-width: 520px) {
+  .dashboard-ship-list {
+    grid-template-columns: 1fr;
+  }
+}
