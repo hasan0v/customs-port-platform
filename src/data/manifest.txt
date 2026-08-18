@@ -1,0 +1,86 @@
+Sənəd 2 səhifədən ibarətdir. Bəzi möhürlər və ikinci səhifədəki xırda hüquqi mətnin sağ tərəfi fotoşəkildə kəsildiyi üçün tam oxunmur.
+
+## 1-ci səhifə — Manifest
+
+### Göndərən — Shipper
+
+**“Marygazçykaryş” müdirligi**
+Mary welaýaty, Sakarçäge etrap, Şatlyk şäher,
+B. Abdyllaýew köçe
+
+### Alıcı — Consignee
+
+**“KAHRYMAN TRADING L.L.C”**
+Reach Business Centre,
+10 floor, Concord Tower, Al Safouh Second,
+Dubai Media City, Dubai, UAE
+
+### Bildiriş ünvanı — Notify address
+
+**“KAHRYMAN TRADING L.L.C”**
+
+### Gəminin sahibi — Ship owner
+
+**LLC “ALPHA”**
+
+### Bayraq — Flag
+
+**RUSSIA**
+
+### Ekspeditor — Forwarder
+
+**Pace North Co Inc.**
+
+### Gəmi — Vessel
+
+**«Альфа Меркурий»**
+(Alfa Merkuriy)
+
+### Yükləmə limanı — Port of loading
+
+**Turkmenbashi International Sea Port, Turkmenistan**
+
+### Boşaltma limanı — Port of discharge
+
+**Port Alat or Zira, Azerbaijan**
+
+### Son təyinat nöqtəsi — Final Destination
+
+**UAE**
+
+### Yük məlumatları
+
+* Yükün təsviri: **GRANULAR SULPHUR IN BULK**
+* Azərbaycan dilində: **Topa şəkildə dənəvər kükürd**
+* Brutto çəki: **207,322 MTS**
+* Orijinal konosamentlərin sayı: **5**
+* Konosament nömrəsi: **637**
+* Marks and numbers: **boşdur**
+* Number of pieces: **boşdur**
+* Measurement: **boşdur**
+
+### Daşıma qeydləri
+
+* **Clean on board**
+* **Freight payable as per charter party**
+* Freight and charges: **Freight prepaid**
+* Liman: **Port of Turkmenbashi**
+* Tarix: **03.08.2026**
+* Gəmi kapitanı: **Master of the ship: «Альфа Меркурий»**
+* Liman agenti: **Agent of port** — ad göstərilməyib
+* Reference №: **boşdur**
+* Place and date of issue sahəsi ayrıca doldurulmayıb.
+
+### Gömrük möhürü
+
+Möhürdə oxunan məlumatlar:
+
+* **TÜRKMENİSTAN**
+* **Döwlet gümrük gullugy**
+* **Göýbermäge**
+* **RUGSAT BERILDI**
+* **Gözegçi**
+* Əl ilə imza və tarix yazılıb, lakin tam aydın oxunmur.
+
+Səhifədə əlavə dairəvi möhürlər mövcuddur. Möhürlərdən birində **TDSG №15**, gəmi möhüründə isə **«Альфа Меркурий»** yazısı görünür.
+

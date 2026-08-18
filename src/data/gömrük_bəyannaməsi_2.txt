@@ -1,0 +1,133 @@
+## Gömrük bəyannaməsi
+
+* Bəyannamənin tipi: **ID 80**
+* Formalar: **1 / 3**
+* Məzənnə: **1$ – 1,7000 AZN**
+* Tarix: **17.08.2026**
+* Qoşma vərəq: **0**
+* Malların sayı: **5**
+* Bağlamaların sayı: **13**
+* Sorğu nömrəsi: **01263000224864**
+
+### Göndərən / ixracatçı
+
+* **SCHNEİDER ELEKTRİK SAN.TİCA A.Ş**
+* **İstanbul / Türkiyə**
+
+### Malı qəbul edən / idxalatçı
+
+* **SCHNEİDER ELECTRİC LLP/TOO**
+* **Astana / Qazaxıstan**
+
+### Maliyyə tənzimlənməsinə məsul şəxs
+
+* **OMAROV SABİT**
+
+### Bəyannaməçi / təmsilçi
+
+* Nömrə: **1802077241**
+* **Azərbaycan Respublikası Dövlət Gömrük Komitəsinin “Azərterminalkompleks” Birliyi**
+* Ünvan: **AZ1104, Bakı şəhəri, Sabunçu rayonu, Maştağa ştq**
+
+### Ölkələr
+
+* Göndərən ölkə: **Türkiyə**
+* Ölkə kodu: **TR / 792**
+* Mənşə ölkəsi: **Türkiyə**
+* Təyinat ölkəsi: **Qazaxıstan**
+* Ölkə kodu: **KZ / 398**
+
+### Ümumi gömrük məlumatları
+
+* Ümumi gömrük dəyəri: **11712,56**
+* S.İ.Ö.: **0**
+
+### Nəqliyyat məlumatları
+
+* Göndərən ölkədən çıxan nəqliyyat vasitəsi: **234EK02/57JRA02**
+* Qeydiyyat ölkəsi kodu: **398**
+* Konteyner: **0**
+* Sərhədi keçən nəqliyyat vasitəsi: **Bax qr.18**
+* Qeydiyyat ölkəsi kodu: **398**
+* Sərhəddə nəqliyyat növü: **30**
+* Ölkə daxilində nəqliyyat növü: **30**
+
+### Valyuta və invoys
+
+* Valyuta kodu: **978**
+* Malların ümumi invoys dəyəri: **5946,67**
+* Valyuta məzənnəsi: **1,9696**
+* Məzənnə bazası: **1**
+* Sövdələşmənin xüsusiyyəti: **21**
+
+### Sərhəd gömrük orqanı
+
+* Kod: **00502**
+* **Mazımqara g/p**
+
+### Malın təsviri
+
+* **KONSOLLAR**
+* Yer sayı: **1 yer**
+* Çəki: **299,39 kq**
+
+### Mal və gömrük kodları
+
+* Malın sıra nömrəsi: **1**
+* Malın kodu: **853810 0000**
+* Mənşə ölkəsinin kodu: **TR / 792**
+* Brutto çəki: **299,39 kq**
+* Netto çəki: **299,39 kq**
+* İmtiyazlar: **000**
+* Əməliyyat/prosedur kodu: **80 00 00**
+* XİFMN-dəki ölçü: **166**
+* İnvois dəyəri: **1788,11**
+* Gömrük dəyərinin müəyyən edilməsi üsulu: **0 / 1 / 1**
+* Gömrük dəyəri: **3521,86**
+* Statistik dəyər: **2071,68**
+
+### Təqdim olunan sənədlər
+
+* **2015 – DD0043**, tarix: **30.07.2026**
+* **4041 – N/Z**, tarix: **16.08.2026**
+
+### Gömrük ödənişlərinin hesablanması
+
+| Növ | Hesablama bazası | Tarif dərəcəsi | Məbləğ | ÖÜ |
+| --- | ---------------: | -------------: | -----: | -: |
+| 01  |             0,00 |      30,00 AZN |  30,00 | 01 |
+| 03  |             2,00 |      10,00 AZN |  20,00 | 01 |
+| 01  |         11712,56 |              — | 120,00 | 05 |
+| 20  |          3521,86 |           5,0% | 176,09 | 05 |
+| 32  |          3697,95 |          18,0% | 665,63 | 05 |
+| 75  |             3,00 |      30,00 AZN |  90,00 | 05 |
+| 85  |            90,00 |          18,0% |  16,20 | 05 |
+
+### Hesablamanın detalları
+
+* **01 – 30,00 – 932**
+* **03 – 20,00 – 932**
+* Cəmi: **50,00 AZN**
+
+### Vəkalət verən şəxsin təsdiqi
+
+> GB-də və onun əlavə vərəqlərində göstərilən məlumatları təsdiq edirəm.
+
+* **“AZƏRTERMİNALKOMPLEKS” BİRLİYİ**
+* Ad və soyad: **Mehdiyev Vüsal**
+* Təqdim olunma tarixi: **17.08.2026**
+
+### Təyinat gömrük orqanı
+
+* Kod: **13005**
+* **Beynəlxalq Dəniz Ticarət Limanı g/p**
+
+### Bəyannaməçi / təmsilçi
+
+* **MEHDİYEV VÜSAL ŞAHRUDDİN OĞLU**
+* İxtisas attestatının nömrəsi: **0001/N**
+* Attestatın tarixi: **16.03.2020**
+* Əlavə tarix: **16.08.2026**
+* **Azərbaycan Respublikası Dövlət Gömrük Komitəsinin “Azərterminalkompleks” Birliyi**
+
+Sənəddə yükləmə spesifikasiyası, ticarət edilən ölkə, çatdırılma şərtləri, maliyyə və bank məlumatları, təminat üsulu və gömrük nəzarəti bölmələri doldurulmayıb.

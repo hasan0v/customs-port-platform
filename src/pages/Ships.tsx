@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  Activity, BadgeCheck, Boxes, ChevronRight, CircleDollarSign, CloudSun,
-  Download, FileScan, Filter, Plus, RefreshCw, Search, ShieldAlert, Ship as ShipIcon,
+  Activity, BadgeCheck, Boxes, ChevronRight, CloudSun,
+  Download, FileScan, Filter, MapPinned, Plus, RefreshCw, Search, ShieldAlert, Ship as ShipIcon,
   Users, Waves, Wind, X,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -13,9 +13,24 @@ import ShipScene3D from '../components/ShipScene3D'
 import ShipDetailModal from '../components/ShipDetailModal'
 import { Button, Card, Modal, PageHeader, StatusBadge } from '../components/UI'
 import { agencies, portCalls, type PortCall } from '../data/operationalData'
-import { fetchAlatWeather, fetchExchangeRates, type LiveRates, type LiveWeather } from '../services/liveData'
+import { fetchAlatWeather, type LiveWeather } from '../services/liveData'
+import './Ships.css'
 
 const clearanceTone = { approved: 'approved', pending: 'pending', review: 'review' } as const
+
+const normalizePortName = (value: string) => {
+  const normalized = value.toLocaleLowerCase('az')
+  if (normalized.includes('ələt') || normalized.includes('bakı beynəlxalq dəniz')) return 'Ələt'
+  if (normalized.includes('aktau')) return 'Aktau'
+  if (normalized.includes('kurık') || normalized.includes('kuryk')) return 'Kurık'
+  if (normalized.includes('türkmənbaşı')) return 'Türkmənbaşı'
+  return value.split(',')[0].replace(/\s+(dəniz\s+)?limanı.*$/i, '').trim()
+}
+
+const getShipPorts = (ship: { menshe: string; teyinat?: string }) => Array.from(new Set([
+  normalizePortName(ship.menshe),
+  ship.teyinat ? normalizePortName(ship.teyinat) : '',
+].filter(Boolean)))
 
 export default function Ships() {
   const navigate = useNavigate()
@@ -24,11 +39,11 @@ export default function Ships() {
 
   const [q, setQ] = useState('')
   const [status, setStatus] = useState('Hamısı')
+  const [port, setPort] = useState('Hamısı')
   const [selectedShip, setSelectedShip] = useState<(typeof ships)[number] | null>(null)
   const [selectedCall, setSelectedCall] = useState<PortCall | null>(portCalls[0])
   const [opsQuery, setOpsQuery] = useState('')
   const [weather, setWeather] = useState<LiveWeather | null>(null)
-  const [rates, setRates] = useState<LiveRates | null>(null)
   const [loading, setLoading] = useState(true)
   const [newShipModalOpen, setNewShipModalOpen] = useState(false)
   const [newShipName, setNewShipName] = useState('')
@@ -51,24 +66,41 @@ export default function Ships() {
 
   const loadLiveData = async () => {
     setLoading(true)
-    const [weatherResult, rateResult] = await Promise.allSettled([fetchAlatWeather(), fetchExchangeRates()])
-    if (weatherResult.status === 'fulfilled') setWeather(weatherResult.value)
-    if (rateResult.status === 'fulfilled') setRates(rateResult.value)
-    if (weatherResult.status === 'rejected' || rateResult.status === 'rejected') {
-      toast.warning('Mənbələrdən biri əlçatan deyil — son məlumat göstərilir')
-    }
+    const weatherResult = await fetchAlatWeather().catch(() => null)
+    if (weatherResult) setWeather(weatherResult)
+    else toast.warning('Hava məlumatı yenilənmədi — son məlumat göstərilir')
     setLoading(false)
   }
 
   useEffect(() => { void loadLiveData() }, [])
 
+  const portOptions = useMemo(() => {
+    const ports = Array.from(new Set(ships.flatMap(getShipPorts)))
+    const preferredOrder = ['Ələt', 'Aktau', 'Kurık', 'Türkmənbaşı']
+    return ports
+      .sort((a, b) => {
+        const aIndex = preferredOrder.indexOf(a)
+        const bIndex = preferredOrder.indexOf(b)
+        if (aIndex !== -1 || bIndex !== -1) return (aIndex === -1 ? 99 : aIndex) - (bIndex === -1 ? 99 : bIndex)
+        return a.localeCompare(b, 'az')
+      })
+      .map(name => ({ name, count: ships.filter(ship => getShipPorts(ship).includes(name)).length }))
+  }, [ships])
+
   const rows = useMemo(
     () => ships.filter(g =>
       (status === 'Hamısı' || g.status === status) &&
-      `${g.ad} ${g.id} ${g.yuk}`.toLocaleLowerCase('az').includes(q.toLocaleLowerCase('az')),
+      (port === 'Hamısı' || getShipPorts(g).includes(port)) &&
+      `${g.ad} ${g.id} ${g.yuk} ${g.menshe} ${g.teyinat ?? ''}`.toLocaleLowerCase('az').includes(q.toLocaleLowerCase('az')),
     ),
-    [q, status, ships],
+    [port, q, status, ships],
   )
+
+  const resetShipFilters = () => {
+    setQ('')
+    setStatus('Hamısı')
+    setPort('Hamısı')
+  }
 
   const opsRows = useMemo(
     () => portCalls.filter(call =>
@@ -146,16 +178,9 @@ export default function Ships() {
       <article>
         <span className="ops-live-icon"><CloudSun /></span>
         <div>
-          <small>Ələt havası</small>
+          <small>Hava şəraiti: Ələt</small>
           <strong>{weather ? `${weather.temperature}°C` : '—'}</strong>
           <em><Wind /> {weather ? `${weather.windSpeed} km/saat` : '—'}</em>
-        </div>
-      </article>
-      <article>
-        <span className="ops-live-icon mint"><CircleDollarSign /></span>
-        <div>
-          <small>USD / AZN</small>
-          <strong>{rates ? rates.usdToAzn.toFixed(4) : '—'}</strong>
         </div>
       </article>
       <article>
@@ -192,21 +217,25 @@ export default function Ships() {
             <h2>AIS radar paneli</h2>
           </div>
         </header>
-        <SeaMap />
+        <SeaMap visibleShips={rows} />
       </Card>
 
       <Card className="ship-table-card" hover={false}>
         <header>
           <h2>AIS gəmilər · {rows.length}</h2>
-          <div className="table-tools">
+          <div className="table-tools ships-table-tools">
             <label><Search /><input placeholder="Gəmi axtar..." value={q} onChange={e => setQ(e.target.value)} /></label>
-            <select value={status} onChange={e => setStatus(e.target.value)}>
-              <option>Hamısı</option>
+            <select value={status} onChange={e => setStatus(e.target.value)} aria-label="Status üzrə filtr">
+              <option value="Hamısı">Bütün statuslar</option>
               <option>Lövbərdə</option>
               <option>Yolda</option>
               <option>Körpüdə</option>
             </select>
-            <button type="button" onClick={() => { setQ(''); setStatus('Hamısı') }} aria-label="Filtr sıfırla"><Filter /></button>
+            <label className="ships-port-filter"><MapPinned /><select value={port} onChange={e => setPort(e.target.value)} aria-label="Dəniz limanı üzrə filtr">
+              <option value="Hamısı">Bütün limanlar ({ships.length})</option>
+              {portOptions.map(item => <option value={item.name} key={item.name}>{item.name} ({item.count})</option>)}
+            </select></label>
+            <button type="button" onClick={resetShipFilters} aria-label="Bütün filtrləri sıfırla" disabled={!q && status === 'Hamısı' && port === 'Hamısı'}><Filter /></button>
           </div>
         </header>
         <div className="table-scroll">
@@ -217,6 +246,7 @@ export default function Ships() {
                 <th>Yük</th>
                 <th>Status</th>
                 <th>Kanal</th>
+                <th>Marşrut</th>
                 <th>Sürət</th>
               </tr>
             </thead>
@@ -232,12 +262,13 @@ export default function Ships() {
                   <td><strong>{g.yuk}</strong><small>{g.tonaj.toLocaleString('az-AZ')} ton</small></td>
                   <td><StatusBadge status={g.status} /></td>
                   <td>{g.kanal}</td>
+                  <td><span className="ship-route-cell"><strong>{normalizePortName(g.menshe)}</strong><ChevronRight /><strong>{normalizePortName(g.teyinat ?? '—')}</strong></span></td>
                   <td>{g.suret} düyün</td>
                 </tr>
               ))}
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="empty-table-cell">
+                  <td colSpan={6} className="empty-table-cell">
                     Filtrə uyğun gəmi yoxdur
                   </td>
                 </tr>

@@ -42,18 +42,29 @@
 }
 
 .dashboard-port-overview .vessel-direction-stats span {
-  font-size: 8px;
+  font-size: 10px;
 }
 
 .dashboard-port-overview > .flow-stat {
   min-width: 0;
-  min-height: 112px;
-  padding: 16px;
+  min-height: 92px;
+  padding: 12px 14px;
   align-items: center;
 }
 
+.dashboard-port-overview > .flow-stat .flow-icon {
+  width: 32px;
+  height: 32px;
+  flex-basis: 32px;
+}
+
 .dashboard-port-overview > .flow-stat strong {
-  font-size: 21px;
+  font-size: 22px;
+}
+
+.dashboard-port-overview > .flow-stat small {
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 @media (max-width: 1050px) {
@@ -104,8 +115,8 @@
   }
 
   .dashboard-port-overview > .flow-stat {
-    min-height: 88px;
-    padding: 13px;
+    min-height: 74px;
+    padding: 10px 12px;
   }
 }
 
@@ -121,7 +132,45 @@
 
 /* Vessel-first relationship browser in the dashboard command card. */
 .vessel-vehicle-command {
+  height: auto;
   min-height: 0;
+  align-self: start;
+}
+
+.ship-direction-tabs strong {
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.ship-direction-tabs small {
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.dashboard-port-overview .overview-title small {
+  font-size: 10px;
+}
+
+.dashboard-port-overview .overview-title h2 {
+  font-size: 17px;
+}
+
+.dashboard-port-overview .vessel-total span {
+  font-size: 10px;
+}
+
+.command-grid .command-card-head h2 {
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.command-grid .command-card-head small {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.command-grid .command-card-head button {
+  font-size: 11px;
 }
 
 .dashboard-ship-picker {
@@ -130,32 +179,13 @@
   margin-bottom: 10px;
 }
 
-.dashboard-ship-picker-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--muted);
-}
-
-.dashboard-ship-picker-label span {
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: .12em;
-}
-
-.dashboard-ship-picker-label b {
-  min-width: 20px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: var(--bg);
-  font-size: 8px;
-  text-align: center;
-}
-
 .dashboard-ship-list {
-  max-height: 176px;
+  height: auto;
+  max-height: 470px;
   overflow-y: auto;
   display: grid;
+  grid-auto-rows: 62px;
+  align-content: start;
   gap: 5px;
   padding: 4px;
   border: 1px solid var(--line);
@@ -166,8 +196,9 @@
 
 .dashboard-ship-list > button {
   min-width: 0;
-  min-height: 48px;
-  padding: 7px 8px;
+  height: 62px;
+  min-height: 62px;
+  padding: 9px 10px;
   border: 1px solid transparent;
   border-radius: 9px;
   background: transparent;
@@ -182,12 +213,6 @@
 
 .dashboard-ship-list > button:hover {
   background: var(--card);
-}
-
-.dashboard-ship-list > button.selected {
-  border-color: #a9cfe3;
-  background: var(--card);
-  box-shadow: inset 3px 0 #0876aa;
 }
 
 .dashboard-ship-list > button > svg {
@@ -218,7 +243,8 @@
 
 .dashboard-ship-name strong {
   overflow: hidden;
-  font-size: 9px;
+  font-size: 12px;
+  line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -226,7 +252,8 @@
 .dashboard-ship-name small,
 .dashboard-ship-count small {
   color: var(--muted);
-  font-size: 7px;
+  font-size: 10px;
+  line-height: 1.3;
   white-space: nowrap;
 }
 
@@ -236,61 +263,172 @@
 
 .dashboard-ship-count strong {
   color: var(--ocean);
-  font-size: 11px;
+  font-size: 14px;
 }
 
-.selected-ship-summary {
-  min-height: 40px;
-  margin-bottom: 8px;
-  padding: 7px 9px;
-  border-radius: 9px;
-  background: #edf5fb;
+.stage-count {
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--bg);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  color: var(--ocean);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.vehicle-stage-header {
+  min-height: 62px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
   gap: 10px;
 }
 
-.dark .selected-ship-summary {
-  background: rgba(19, 95, 145, .15);
+.vehicle-stage-back {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--ocean);
+  display: grid;
+  place-items: center;
 }
 
-.selected-ship-summary > div {
+.vehicle-stage-back:hover {
+  background: var(--bg);
+}
+
+.vehicle-stage-back svg {
+  width: 15px;
+}
+
+.vehicle-stage-header > div {
   min-width: 0;
   display: grid;
   gap: 2px;
 }
 
-.selected-ship-summary small {
+.vehicle-stage-header small {
   color: var(--muted);
-  font-size: 6px;
+  font-size: 10px;
   font-weight: 800;
   letter-spacing: .1em;
 }
 
-.selected-ship-summary strong {
+.vehicle-stage-header h2 {
+  margin: 0;
   overflow: hidden;
-  font-size: 10px;
+  font-size: 16px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.selected-ship-summary > span {
+.vehicle-stage-header span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.vehicle-stage-header > strong {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 5px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: #edf5fb;
   color: var(--ocean);
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 800;
 }
 
-.selected-ship-summary > span svg {
+.dark .vehicle-stage-header > strong {
+  background: rgba(19, 95, 145, .15);
+}
+
+.vehicle-stage-header > strong svg {
   width: 12px;
 }
 
-.vessel-vehicle-command .vehicle-queue {
-  height: 190px;
+.vehicle-stage-notice {
+  min-height: 34px;
+  margin-bottom: 8px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: #fff6ed;
+  color: #a65317;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dark .vehicle-stage-notice {
+  background: rgba(180, 91, 25, .12);
+}
+
+.vehicle-stage-notice svg {
+  width: 13px;
+}
+
+.vessel-vehicle-command .staged-vehicle-queue {
+  height: auto;
+  max-height: 420px;
+}
+
+.vessel-vehicle-command .staged-vehicle-queue > button {
+  height: 62px;
+  min-height: 62px;
+}
+
+.vessel-vehicle-command .queue-tabs button {
+  min-height: 36px;
+  font-size: 10px;
+}
+
+.vessel-vehicle-command .queue-tabs button b {
+  font-size: 9px;
+}
+
+.vessel-vehicle-command .vehicle-id strong,
+.vessel-vehicle-command .vehicle-status b {
+  font-size: 12px;
+}
+
+.vessel-vehicle-command .vehicle-id small,
+.vessel-vehicle-command .vehicle-status small {
+  font-size: 10px;
+}
+
+.vehicle-detail-modal {
+  padding-top: 0;
+  gap: 12px;
+}
+
+.vehicle-detail-modal .manifest-ribbon {
+  min-height: 72px;
+  padding: 12px;
+}
+
+.vehicle-detail-modal .declaration-selector select {
+  height: 40px;
+}
+
+.vehicle-detail-modal .declaration-preview > div {
+  min-height: 58px;
+  padding: 10px;
+}
+
+.vehicle-detail-modal .open-workflow {
+  height: 40px;
 }
 
 .vehicle-queue-empty {
@@ -315,24 +453,33 @@
 
 .vehicle-queue-empty strong {
   color: var(--text);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .vehicle-queue-empty small {
   max-width: 230px;
-  font-size: 8px;
+  font-size: 11px;
   line-height: 1.4;
 }
 
 @media (max-width: 1050px) {
   .dashboard-ship-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    max-height: 166px;
+    max-height: 398px;
+  }
+
+  .vessel-vehicle-command .staged-vehicle-queue {
+    max-height: 398px;
   }
 }
 
 @media (max-width: 520px) {
   .dashboard-ship-list {
     grid-template-columns: 1fr;
+    max-height: 398px;
+  }
+
+  .vessel-vehicle-command .staged-vehicle-queue {
+    max-height: 382px;
   }
 }

@@ -1,0 +1,84 @@
+## 2-ci səhifə — Bill of Lading
+
+### Sənəd məlumatları
+
+* Sənədin adı: **BILL OF LADING 637**
+* Status: **ORIGINAL**
+* Reference №: **boşdur**
+
+### Göndərən — Shipper
+
+**“Marygazçykaryş” müdirligi**
+Mary welaýaty, Sakarçäge etrap, Şatlyk şäher,
+B. Abdyllaýew köçe
+
+### Alıcı — Consignee
+
+**“KAHRYMAN TRADING L.L.C”**
+Reach Business Centre,
+10 floor, Concord Tower, Al Safouh Second,
+Dubai Media City, Dubai, UAE
+
+### Bildiriş ünvanı — Notify address
+
+**“KAHRYMAN TRADING L.L.C”**
+
+### Gəminin sahibi — Ship owner
+
+**LLC “ALPHA”**
+
+### Bayraq — Flag
+
+**RUSSIA**
+
+### Ekspeditor — Forwarder
+
+**Pace North Co Inc.**
+
+### Gəmi — Vessel
+
+**«Альфа Меркурий»**
+
+### Yükləmə limanı
+
+**Turkmenbashi International Sea Port, Turkmenistan**
+
+### Boşaltma limanı
+
+**Port Alat or Zira, Azerbaijan**
+
+### Son təyinat nöqtəsi
+
+**UAE**
+
+### Yük məlumatları
+
+* Yükün təsviri: **GRANULAR SULPHUR IN BULK**
+* Çəki: **207,322 MTS**
+* Marks and numbers: **boşdur**
+* Number of pieces: **boşdur**
+* Measurement: **boşdur**
+
+### Daşıma və ödəniş qeydləri
+
+* **Clean on board**
+* **Said to weight**
+* Freight and charges: **Freight prepaid**
+* Liman: **Port Turkmenbashi**
+* Tarix: **03.08.2026**
+
+### Hüquqi şərtlərin oxunan hissəsi
+
+Mətndə yükün zahirən yaxşı vəziyyətdə gəmiyə qəbul edilməsi, boşaltma limanına daşınması, yükün çəkisi, ölçüsü, miqdarı, tərkibi və dəyəri barədə məlumatların daşıyıcıya məlum olmaması qeyd edilir.
+
+Həmçinin göstərilir ki:
+
+* Konosamenti qəbul edən tərəf sənəddəki şərt və istisnaları qəbul edir.
+* Yükün təhvil alınması üçün düzgün indossament edilmiş konosament təqdim olunmalıdır.
+* Topa daşınan yükün çəkisi və ölçüsü daşıyıcı tərəfindən yoxlanılmır.
+* Göstərilən sayda orijinal konosament imzalanıb.
+* Orijinallardan biri istifadə edildikdən sonra digərləri etibarsız sayılır.
+
+Bu hüquqi mətnin sağ tərəfi çəkilişdə kəsildiyi üçün orijinal cümlələrin hamısını sözbəsöz çıxarmaq mümkün deyil.
+
+Səhifənin aşağı hissəsində **«Альфа Меркурий»** yazılı möhür və imza mövcuddur.

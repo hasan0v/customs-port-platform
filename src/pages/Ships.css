@@ -1,0 +1,129 @@
+/* Scoped filters for the AIS vessel table. */
+.ship-table-card .ships-table-tools {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) minmax(130px, .55fr) minmax(180px, .75fr) 40px;
+  gap: 8px;
+  align-items: center;
+}
+
+.ship-table-card .ships-table-tools > label {
+  width: auto;
+  min-width: 0;
+  margin: 0;
+}
+
+.ship-table-card .ships-table-tools > select,
+.ship-table-card .ships-port-filter {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--card);
+}
+
+.ship-table-card .ships-table-tools > select {
+  padding: 0 10px;
+  color: var(--text);
+  font-size: 11px;
+}
+
+.ship-table-card .ships-port-filter {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+}
+
+.ship-table-card .ships-port-filter > svg {
+  width: 15px;
+  flex: 0 0 15px;
+  color: var(--ocean);
+}
+
+.ship-table-card .ships-port-filter > select {
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0 4px 0 7px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 11px;
+}
+
+.ship-table-card .ships-table-tools > button {
+  width: 40px;
+  height: 40px;
+}
+
+.ship-table-card .ships-table-tools > button:disabled {
+  opacity: .4;
+  cursor: default;
+}
+
+.ship-route-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 190px;
+  white-space: nowrap;
+}
+
+.ship-route-cell strong {
+  overflow: hidden;
+  max-width: 78px;
+  text-overflow: ellipsis;
+}
+
+.ship-route-cell svg {
+  width: 12px;
+  flex: 0 0 12px;
+  color: var(--muted);
+}
+
+@media (max-width: 1200px) {
+  .ship-table-card .ships-table-tools {
+    grid-template-columns: minmax(180px, 1fr) 1fr 1fr 40px;
+  }
+}
+
+@media (max-width: 700px) {
+  .ship-table-card .ships-table-tools {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 40px;
+  }
+
+  .ship-table-card .ships-table-tools > label:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .ship-table-card .ships-port-filter {
+    grid-column: 1 / 2;
+  }
+
+  .ship-table-card .ships-table-tools > select {
+    grid-column: 2 / 3;
+  }
+
+  .ship-table-card .ships-table-tools > button {
+    grid-column: 3 / 4;
+  }
+}
+
+@media (max-width: 430px) {
+  .ship-table-card .ships-table-tools {
+    grid-template-columns: minmax(0, 1fr) 40px;
+  }
+
+  .ship-table-card .ships-port-filter,
+  .ship-table-card .ships-table-tools > select {
+    grid-column: 1 / 2;
+  }
+
+  .ship-table-card .ships-table-tools > button {
+    grid-column: 2 / 3;
+    grid-row: 2 / 4;
+    align-self: stretch;
+    height: auto;
+  }
+}

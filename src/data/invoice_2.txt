@@ -1,0 +1,25 @@
+Sənəd — Türkmənistandan Gürcüstana karamel göndərişi üçün kəsilmiş invoysdur. Aşağıda sənəddəki bütün məlumatlar verilir.
+
+**Sənədin növü və nömrəsi:** INVOICE / ИНВОЙС № 2026/07E, tarix 10.07.2026. Müqavilə (Contract) № 2026/07, tarix 10.07.2026.
+
+**Satıcı (Göndərən):** Sahibkar Başımov Erkin İtalmazoviç. Hüquqi ünvan: Türkmənistan, Mərv vilayəti, Mərv rayonu, Gaygısız Atabayev adına gengeşlik, Dövletli kəndi, Garaşsızlık küçəsi, ev 64. VÖEN (ИНН): 607122510591.
+
+Bank rekvizitləri: Beneficiary name — ENTERPRENEUR BASHIMOV ERKIN; Beneficiary Acc — 23206 000 1715692 03700000; sahə 72 — JSC bank "Rysgal"; Beneficiary bank — STATE BANK FOR FOREIGN ECONOMIC AFFAIRS OF TURKMENISTAN, Garashsyzlyk ave. 32, Ashkhabad, Turkmenistan; SWIFT — SBFETM22XXX; USD/ACC — 21102000120198000009000. Korrespondent bank: CITIBANK N.A., SWIFT CITIUS33XXX, USD/ACC 36209252.
+
+**Alıcı:** "Best Company 2004 Ltd" şirkəti. Hüquqi ünvan: Gürcüstan Respublikası, Kutaisi şəhəri, G. Leonidze küçəsi, 4B/21. Müəssisə kodu: 412779042. E-poçt: chachua_keti@mail.ru. Telefon: +995577487487. Bank: JSC Basisbank, Gürcüstan, Tbilisi; hesab nömrəsi GE87 BS00 0000 0010 436961; SWIFT GBASGE22.
+
+**Nəqliyyat vasitəsi:** DG8068AG / AG4728TR. Sənəddə həmçinin Türkmənistan Dövlət Gömrük Xidmətinin möhürü və qeyd nömrəsi göstərilib: 07514/060826/0005637.
+
+**Mal siyahısı** (hər mövqe üçün ölçü vahidi kq, HS kodu 17049075):
+
+| № | Malın adı | Yer sayı (qutu) | Brutto, kq | Netto, kq | Vahid qiyməti, USD | Cəmi, USD |
+|---|---|---|---|---|---|---|
+| 1 | "Parlak" süd aromalı içlikli karamel, 4 kq | 150 | 639,00 | 600 | 1,10 | 660,00 |
+| 2 | "Balı-bol" limon aromalı içlikli karamel, 4 kq | 150 | 639,00 | 600 | 1,10 | 660,00 |
+| 3 | "Akca" alma aromalı içlikli karamel, 4 kq | 150 | 639,00 | 600 | 1,10 | 660,00 |
+| 4 | "Akca" moruq aromalı içlikli karamel, 4 kq | 150 | 639,00 | 600 | 1,10 | 660,00 |
+| 5 | "Akca" çiyələk aromalı içlikli karamel, 4 kq | 150 | 639,00 | 600 | 1,10 | 660,00 |
+| 6 | "Akca" gilas aromalı içlikli karamel, 4 kq | 150 | 639,00 | 600 | 1,10 | 660,00 |
+
+Sətirlər üzrə yekun (hesablamaya görə): 900 qutu, 3 834 kq brutto, 3 600 kq netto, ümumi dəyər 3 960,00 ABŞ dolları.
+
