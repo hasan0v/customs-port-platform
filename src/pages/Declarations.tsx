@@ -50,6 +50,31 @@ export default function Declarations() {
     return { Hamısı: summary.total, Gedən: summary.Gedən, Gələn: summary.Gələn }
   }, [ships])
 
+  const shipDirectionById = useMemo(
+    () => new Map(ships.map(ship => [ship.id, getShipDirection(ship)] as const)),
+    [ships],
+  )
+
+  const directionDeclarationCounts = useMemo(() => {
+    let incoming = 0
+    let outgoing = 0
+    declarations.forEach(declaration => {
+      const direction = declaration.gemiId ? shipDirectionById.get(declaration.gemiId) : undefined
+      if (direction === 'Gələn') incoming += 1
+      if (direction === 'Gedən') outgoing += 1
+    })
+    return { Hamısı: declarations.length, Gedən: outgoing, Gələn: incoming }
+  }, [declarations, shipDirectionById])
+
+  const directionDeclarations = useMemo(() => {
+    if (shipDirection === 'Hamısı') return declarations
+    return declarations.filter(declaration => (
+      declaration.gemiId
+        ? shipDirectionById.get(declaration.gemiId) === shipDirection
+        : false
+    ))
+  }, [declarations, shipDirection, shipDirectionById])
+
   // Extract unique border posts and corridors from declarations
   const borderPostOptions = useMemo(() => {
     const set = new Set<string>()
@@ -71,11 +96,7 @@ export default function Declarations() {
 
   // Filtering
   const filteredRows = useMemo(() => {
-    return declarations.filter(b => {
-      const linkedShip = ships.find(s => s.id === b.gemiId) || ships[0]
-      const shipDir = linkedShip ? getShipDirection(linkedShip) : 'Gələn'
-      const isShipDirMatch = shipDirection === 'Hamısı' || shipDir === shipDirection
-
+    return directionDeclarations.filter(b => {
       const isRejimMatch =
         rejim === 'Hamısı'
           ? true
@@ -100,9 +121,9 @@ export default function Declarations() {
           .toLocaleLowerCase('az')
           .includes(searchLower)
 
-      return isShipDirMatch && isRejimMatch && isStatusMatch && isBorderMatch && isCorridorMatch && isSearchMatch
+      return isRejimMatch && isStatusMatch && isBorderMatch && isCorridorMatch && isSearchMatch
     })
-  }, [declarations, ships, shipDirection, q, status, rejim, borderPost, corridor])
+  }, [directionDeclarations, q, status, rejim, borderPost, corridor])
 
   // Sorting
   const sortedRows = useMemo(() => {
@@ -127,14 +148,18 @@ export default function Declarations() {
     [sortedRows, currentPage],
   )
 
-  useEffect(() => { setPage(1) }, [q, status, rejim, borderPost, corridor, sortBy])
+  useEffect(() => { setPage(1) }, [shipDirection, q, status, rejim, borderPost, corridor, sortBy])
 
   // KPI Calculations
-  const totalValue = useMemo(() => declarations.reduce((sum, d) => sum + d.umumiDeyer, 0), [declarations])
-  const transitCount = useMemo(() => declarations.filter(d => d.gomrukRejimi === '80 00 00' || d.senedNovu?.includes('80')).length, [declarations])
-  const transitValue = useMemo(() => declarations.filter(d => d.gomrukRejimi === '80 00 00' || d.senedNovu?.includes('80')).reduce((sum, d) => sum + d.umumiDeyer, 0), [declarations])
-  const approvedCount = useMemo(() => declarations.filter(d => d.status === 'Təsdiqlənib').length, [declarations])
-  const inspectionCount = useMemo(() => declarations.filter(d => d.status !== 'Təsdiqlənib' && d.status !== 'Arxivləşdirilib').length, [declarations])
+  const totalValue = useMemo(() => directionDeclarations.reduce((sum, d) => sum + d.umumiDeyer, 0), [directionDeclarations])
+  const transitDeclarations = useMemo(
+    () => directionDeclarations.filter(d => d.gomrukRejimi === '80 00 00' || d.senedNovu?.includes('80')),
+    [directionDeclarations],
+  )
+  const transitCount = transitDeclarations.length
+  const transitValue = useMemo(() => transitDeclarations.reduce((sum, d) => sum + d.umumiDeyer, 0), [transitDeclarations])
+  const approvedCount = useMemo(() => directionDeclarations.filter(d => d.status === 'Təsdiqlənib').length, [directionDeclarations])
+  const inspectionCount = useMemo(() => directionDeclarations.filter(d => d.status !== 'Təsdiqlənib' && d.status !== 'Arxivləşdirilib').length, [directionDeclarations])
 
   const exportCsv = () => {
     const header = 'Bəyannamə №,Rejim,Tarix,Sərhəd G/P,Nəqliyyat,Göndərən,Alıcı,Broker,Mal,HS Kod,Brutto (kq),Gömrük Dəyəri (AZN),Status\n'
@@ -164,6 +189,7 @@ export default function Declarations() {
   }
 
   const resetAllFilters = () => {
+    setShipDirection('Hamısı')
     setQ('')
     setStatus('Hamısı')
     setRejim('Hamısı')
@@ -178,14 +204,14 @@ export default function Declarations() {
     if (urlKod) setSearchParams({})
   }
 
-  const hasActiveFilters = Boolean(q || status !== 'Hamısı' || rejim !== 'Hamısı' || borderPost !== 'Hamısı' || corridor !== 'Hamısı' || sortBy !== 'tarix_desc')
+  const hasActiveFilters = Boolean(shipDirection !== 'Hamısı' || q || status !== 'Hamısı' || rejim !== 'Hamısı' || borderPost !== 'Hamısı' || corridor !== 'Hamısı' || sortBy !== 'tarix_desc')
 
   return (
-    <>
+    <div className="declarations-page">
       <PageHeader
         title="Gömrük Bəyannamələri Reyestri"
         action={
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="declarations-export">
             <Button variant="ghost" onClick={exportCsv}>
               <Download size={14} /> CSV İxrac et
             </Button>
@@ -194,7 +220,7 @@ export default function Declarations() {
       />
 
       {/* Gəmilərin İstiqaməti üzrə Tablar (Hamısı 13 gəmi / Gedən gəmilər 3 gəmi / Gələn gəmilər 10 gəmi) */}
-      <div className="ship-direction-tabs" role="tablist" aria-label="Bəyannamələri gəmi istiqamətinə görə göstər" style={{ marginBottom: 16 }}>
+      <div className="ship-direction-tabs" role="tablist" aria-label="Bəyannamələri gəmi istiqamətinə görə göstər">
         {(['Hamısı', 'Gedən', 'Gələn'] as const).map(direction => (
           <button
             type="button"
@@ -209,19 +235,23 @@ export default function Declarations() {
             </span>
             <span>
               <strong>{direction === 'Hamısı' ? 'Hamısı' : `${direction} gəmilər`}</strong>
-              <small>{directionCounts[direction]} gəmi</small>
+              <small>
+                {directionCounts[direction]} gəmi
+                <span aria-hidden="true">·</span>
+                {directionDeclarationCounts[direction]} sənəd
+              </small>
             </span>
           </button>
         ))}
       </div>
 
       {/* 4 Professional Gömrük Göstəriciləri (KPI Strip) */}
-      <section className="mini-stats material-kpis" style={{ marginBottom: 16 }}>
+      <section className="declaration-kpis" aria-label="Bəyannamə göstəriciləri">
         <Card hover={false}>
           <FileText />
           <small>Cəmi Bəyannamə</small>
-          <strong>{declarations.length} ədəd</strong>
-          <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginTop: 2 }}>
+          <strong>{directionDeclarations.length} ədəd</strong>
+          <span>
             Dəyər: {num(totalValue)} AZN
           </span>
         </Card>
@@ -229,8 +259,8 @@ export default function Declarations() {
         <Card hover={false}>
           <Globe />
           <small>İD 80 (Tranzit Rejimi)</small>
-          <strong style={{ color: 'var(--primary, #0A4D8C)' }}>{transitCount} ədəd</strong>
-          <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginTop: 2 }}>
+          <strong className="kpi-transit">{transitCount} ədəd</strong>
+          <span>
             Tranzit: {num(transitValue)} AZN
           </span>
         </Card>
@@ -238,8 +268,8 @@ export default function Declarations() {
         <Card hover={false}>
           <CircleCheck />
           <small>Yaşıl Kanal (Təsdiq)</small>
-          <strong style={{ color: '#16a34a' }}>{approvedCount} ədəd</strong>
-          <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginTop: 2 }}>
+          <strong className="kpi-approved">{approvedCount} ədəd</strong>
+          <span>
             Rəsmiləşdirilmiş sənədlər
           </span>
         </Card>
@@ -247,47 +277,45 @@ export default function Declarations() {
         <Card hover={false}>
           <PackageCheck />
           <small>Nəzarət / Yoxlamada</small>
-          <strong style={{ color: inspectionCount > 0 ? '#d97706' : 'var(--text)' }}>{inspectionCount} ədəd</strong>
-          <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginTop: 2 }}>
+          <strong className={inspectionCount > 0 ? 'kpi-inspection' : ''}>{inspectionCount} ədəd</strong>
+          <span>
             Fiziki & X-Ray yoxlaması
           </span>
         </Card>
       </section>
 
       {/* Zəngin və Praktik Gömrük Süzgəcləri Paneli */}
-      <Card className="data-card material-table" hover={false} style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border, rgba(0,0,0,0.08))' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: 12 }}>
+      <Card className="declarations-table" hover={false}>
+        <header className="declarations-table-header">
+          <div className="declarations-table-heading">
             <div>
-              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>
-                Gömrük Bəyannamələri Siyahısı · <span style={{ color: 'var(--primary, #0A4D8C)' }}>{sortedRows.length} sənəd</span>
+              <h2>
+                Gömrük Bəyannamələri Siyahısı <span>{sortedRows.length} sənəd</span>
               </h2>
-              <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+              <p>
                 Rəsmi İD 80 və İD 40 bəyannamələrinin sərhəd keçid və rəsmiləşmə parametrləri
-              </div>
+              </p>
             </div>
-
           </div>
 
           {/* Süzgəclər Sətri */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+          <div className="declaration-filters">
             {/* Axtarış xanası */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', height: 36, background: 'var(--bg-accent, rgba(0,0,0,0.03))', border: '1px solid var(--border, #e2e8f0)', borderRadius: 6, flex: '1 1 240px', minWidth: 200 }}>
-              <Search size={14} style={{ color: 'var(--muted)', flexShrink: 0 }} />
+            <label className="declaration-search">
+              <Search size={14} />
               <input
                 value={q}
                 onChange={e => setQ(e.target.value)}
                 placeholder="Sorğu №, nəqliyyat, mal, broker..."
-                style={{ background: 'none', border: 'none', outline: 'none', width: '100%', fontSize: 12, color: 'inherit' }}
+                aria-label="Bəyannamələrdə axtarış"
               />
-            </div>
+            </label>
 
             {/* Rejim Filter */}
             <select
               value={rejim}
               onChange={e => setRejim(e.target.value as RejimFilter)}
               aria-label="Rejim üzrə filtr"
-              style={{ height: 36, padding: '0 10px', borderRadius: 6, border: '1px solid var(--border, #e2e8f0)', background: 'var(--card-bg, #fff)', fontSize: 12, flex: '0 1 auto' }}
             >
               <option value="Hamısı">Bütün Rejimlər</option>
               <option value="İD 80">İD 80 (Tranzit)</option>
@@ -299,7 +327,6 @@ export default function Declarations() {
               value={borderPost}
               onChange={e => setBorderPost(e.target.value)}
               aria-label="Sərhəd gömrük postu üzrə filtr"
-              style={{ height: 36, padding: '0 10px', borderRadius: 6, border: '1px solid var(--border, #e2e8f0)', background: 'var(--card-bg, #fff)', fontSize: 12, flex: '0 1 auto' }}
             >
               <option value="Hamısı">Bütün Sərhəd Postları</option>
               {borderPostOptions.filter(x => x !== 'Hamısı').map(post => (
@@ -312,7 +339,6 @@ export default function Declarations() {
               value={corridor}
               onChange={e => setCorridor(e.target.value)}
               aria-label="Ölkə dəhlizi üzrə filtr"
-              style={{ height: 36, padding: '0 10px', borderRadius: 6, border: '1px solid var(--border, #e2e8f0)', background: 'var(--card-bg, #fff)', fontSize: 12, flex: '0 1 auto' }}
             >
               <option value="Hamısı">Bütün Dəhlizlər (Ölkələr)</option>
               {corridorOptions.filter(x => x !== 'Hamısı').map(c => (
@@ -325,7 +351,6 @@ export default function Declarations() {
               value={status}
               onChange={e => setStatus(e.target.value)}
               aria-label="Status üzrə filtr"
-              style={{ height: 36, padding: '0 10px', borderRadius: 6, border: '1px solid var(--border, #e2e8f0)', background: 'var(--card-bg, #fff)', fontSize: 12, flex: '0 1 auto' }}
             >
               <option value="Hamısı">Bütün Statuslar</option>
               <option value="Təsdiqlənib">Təsdiqlənib (Yaşıl)</option>
@@ -339,7 +364,6 @@ export default function Declarations() {
               value={sortBy}
               onChange={e => setSortBy(e.target.value as SortField)}
               aria-label="Sıralama"
-              style={{ height: 36, padding: '0 10px', borderRadius: 6, border: '1px solid var(--border, #e2e8f0)', background: 'var(--card-bg, #fff)', fontSize: 12, flex: '0 1 auto' }}
             >
               <option value="tarix_desc">Tarix (Ən yeni)</option>
               <option value="deyer_desc">Gömrük Dəyəri (Azalan)</option>
@@ -358,10 +382,10 @@ export default function Declarations() {
               <Filter size={18} aria-hidden="true" />
             </button>
           </div>
-        </div>
+        </header>
 
         {/* Cədvəl */}
-        <div className="table-scroll" style={{ overflowX: 'auto' }}>
+        <div className="table-scroll">
           <table>
             <thead>
               <tr>
@@ -578,7 +602,7 @@ export default function Declarations() {
           }}
         />
       )}
-    </>
+    </div>
   )
 }
 

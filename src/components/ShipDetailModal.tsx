@@ -11,7 +11,6 @@ import { avtomobiller, beyannameler, type gemiler, type GemiIstiqameti, type Gem
 import { getShipDirection, getShipOperationLabel, SHIP_DIRECTIONS, SHIP_STATUSES } from '../domain/ships'
 import { agencies } from '../data/operationalData'
 import { useAppStore } from '../store/useAppStore'
-import ShipScene3D from './ShipScene3D'
 import { Button, Modal, StatusBadge } from './UI'
 
 type ShipItem = (typeof gemiler)[number]
@@ -79,49 +78,38 @@ export default function ShipDetailModal({ ship, open, onClose }: Props) {
                   IMO: <strong>{ship.id}</strong> <Copy size={11} />
                 </button>
                 <span>·</span>
-                <span>Sahibi: <strong>{ship.sahib || 'LLC "ALPHA"'}</strong></span>
+                <span>Sahibi: <strong>{ship.sahib || 'ASCO (Azərbaycan Xəzər Dəniz Gəmiçiliyi QSC)'}</strong></span>
                 <span>·</span>
-                <span>Kapitan: <strong>{ship.kapitan || 'Master of the ship'}</strong></span>
+                <span>Kapitan: <strong>{ship.kapitan || 'R. Əliyev'}</strong></span>
               </p>
             </div>
           </div>
 
-          <div className="ship-hero-status-cluster">
-            <StatusBadge status={ship.status} />
-            <strong className="ship-operation-label">{getShipOperationLabel(ship)}</strong>
-            <span className={`ship-risk-badge ${ship.riskDerecesi === 'Yüksək' ? 'high' : ship.riskDerecesi === 'Orta' ? 'medium' : 'low'}`}>
-              <ShieldCheck size={13} /> {ship.riskDerecesi || 'Aşağı'} risk dərəcəsi
-            </span>
+          <div className="ship-hero-controls-cluster">
+            <div className="ship-quick-selects">
+              <label>
+                <small>Mövqe statusu</small>
+                <select value={ship.status} onChange={event => updateShip(ship.id, { status: event.target.value as GemiStatus })}>
+                  {SHIP_STATUSES.map(status => <option value={status} key={status}>{status}</option>)}
+                </select>
+              </label>
+              <label>
+                <small>İstiqamət</small>
+                <select value={getShipDirection(ship)} onChange={event => updateShip(ship.id, { istiqamet: event.target.value as GemiIstiqameti })}>
+                  {SHIP_DIRECTIONS.map(direction => <option value={direction} key={direction}>{direction}</option>)}
+                </select>
+              </label>
+            </div>
+
+            <div className="ship-hero-status-row">
+              <StatusBadge status={ship.status} />
+              <strong className="ship-operation-label">{getShipOperationLabel(ship)}</strong>
+              <span className={`ship-risk-badge ${ship.riskDerecesi === 'Yüksək' ? 'high' : ship.riskDerecesi === 'Orta' ? 'medium' : 'low'}`}>
+                <ShieldCheck size={13} /> {ship.riskDerecesi || 'Aşağı'} risk
+              </span>
+            </div>
           </div>
         </header>
-
-        <section className="ship-movement-controls" aria-label="Gəminin status və istiqamət idarəetməsi">
-          <div>
-            <small>ƏMƏLİYYAT STATUSU</small>
-            <strong>{ship.status} · {getShipDirection(ship)}</strong>
-          </div>
-          <label>
-            <span>Mövqe statusu</span>
-            <select value={ship.status} onChange={event => updateShip(ship.id, { status: event.target.value as GemiStatus })}>
-              {SHIP_STATUSES.map(status => <option value={status} key={status}>{status}</option>)}
-            </select>
-          </label>
-          <label>
-            <span>İstiqamət</span>
-            <select value={getShipDirection(ship)} onChange={event => updateShip(ship.id, { istiqamet: event.target.value as GemiIstiqameti })}>
-              {SHIP_DIRECTIONS.map(direction => <option value={direction} key={direction}>{direction}</option>)}
-            </select>
-          </label>
-        </section>
-
-        {/* 3D Visual Stage */}
-        <div className="ship-visual-stage">
-          <ShipScene3D
-            compact
-            name={ship.ad}
-            course={ship.kurs || '000°'}
-          />
-        </div>
 
         {/* Tab Navigation */}
         <nav className="ship-detail-tabs" role="tablist" aria-label="Gəmi məlumat bölmələri">
@@ -306,18 +294,6 @@ export default function ShipDetailModal({ ship, open, onClose }: Props) {
                     <strong>{displayedDeclarations.filter(d => d.status !== 'Təsdiqlənib').length || 1}</strong>
                   </div>
                 </div>
-
-                <div className="cargo-action-box">
-                  <p>Bu gəminin manifestindəki bəyannamələri və TIR-ları birbaşa Vahid Qeydiyyat pəncərəsində idarə edin.</p>
-                  <Button
-                    onClick={() => {
-                      onClose()
-                      navigate(`/qeydiyyat?shipId=${ship.id}`)
-                    }}
-                  >
-                    <Truck size={14} /> Qeydiyyat və Ro-Ro manifesti <ArrowRight size={14} />
-                  </Button>
-                </div>
               </section>
             </div>
           )}
@@ -325,20 +301,9 @@ export default function ShipDetailModal({ ship, open, onClose }: Props) {
           {/* TAB 3: GÖYƏRTƏDƏKİ TIR-LAR VƏ CMR QAİMƏLƏRİ */}
           {activeTab === 'vehicles' && (
             <section className="ship-card-section">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <div>
-                  <h3 style={{ margin: 0 }}><Truck size={15} /> Sənədlər Üzrə Rəsmi Nəqliyyat Vasitələri və CMR Qaimələri</h3>
-                  <small style={{ color: 'var(--muted)' }}>Bu gəmi və reys üzrə rəsmiləşdirilən nəqliyyat vahidləri:</small>
-                </div>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    onClose()
-                    navigate(`/qeydiyyat?shipId=${ship.id}`)
-                  }}
-                >
-                  <Truck size={13} /> Vahid Qeydiyyatda Göstər <ArrowRight size={13} />
-                </Button>
+              <div style={{ marginBottom: 12 }}>
+                <h3 style={{ margin: 0 }}><Truck size={15} /> Sənədlər Üzrə Rəsmi Nəqliyyat Vasitələri və CMR Qaimələri</h3>
+                <small style={{ color: 'var(--muted)' }}>Bu gəmi və reys üzrə rəsmiləşdirilən nəqliyyat vahidləri:</small>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>

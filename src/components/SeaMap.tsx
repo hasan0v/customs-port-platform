@@ -14,9 +14,19 @@ export default function SeaMap({
   compact?: boolean
   visibleShips?: typeof gemiler
 }) {
-  const { ships } = useAppStore()
+  const { ships, dark } = useAppStore()
   const [selected, setSelected] = useState<(typeof gemiler)[number] | null>(null)
   const displayedShips = visibleShips ?? ships
+
+  const tileUrl = dark
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+
+  const tileAttribution = dark
+    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+
+  const subdomains = dark ? 'abcd' : 'abc'
 
   return (
     <div className={`sea-map ${compact ? 'compact-map' : ''}`}>
@@ -29,8 +39,11 @@ export default function SeaMap({
         className="leaflet-map"
       >
         <TileLayer
-          attribution='&copy; OpenStreetMap'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          key={dark ? 'dark-layer' : 'osm-default-layer'}
+          attribution={tileAttribution}
+          url={tileUrl}
+          subdomains={subdomains}
+          maxZoom={19}
         />
 
         {limanlar.slice(1).map(l => (

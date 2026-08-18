@@ -8,7 +8,7 @@ const Ships = lazy(() => import('./pages/Ships'))
 const Registration = lazy(() => import('./pages/Registration'))
 const Declarations = lazy(() => import('./pages/Declarations'))
 const HistoryPage = lazy(() => import('./pages/HistoryPage'))
-const Analytics = lazy(() => import('./pages/Analytics'))
+const Analytics = lazy(() => import('./pages/AnalyticsPro'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 
 // React Joyride is intentionally disabled for the current UI stabilization phase.
