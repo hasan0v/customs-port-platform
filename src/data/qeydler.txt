@@ -1,0 +1,115 @@
+ROLE BASE Controller 
+
+
+
+
+Ələt limanı
+Türkmənistan - Türkmənbaşı 
+Qazaxıstan - Kurik
+Qazaxıstan - Aktau
+
+
+Done ----
+
+
+
+
+https://ships.asco.az/#  - dan datalar götürmək olar 
+
+
+
+
+Cəminin üzərinə klik edəndə 
+Tranzit - 80 dir 
+Qısa İdxal 
+İxrac bəyannaməsi 
+Digər
+    Digər bütün bəyannamələr
+
+Bəyannamələrin kodu olur. 
+
+Bəyannamələr statusu 
+Təsdiqlənir
+Ekspertiza 
+
+
+
+
+Qeydiyyat bölməsində aşağıda 
+
+Deklarasiya məlumatları varsa EGB-dən məlumatlatları gətirib burada göstərir 
+
+`````````````````````````````````````
+
+
+
+
+
+Silinəcəklər 
+
+Canlı Sürət (SOG - knot) 
+Canlı Sürət (SOG - knot) 2. Kompas Kursu (COG - dərəcə)
+
+
+
+
+
+Gəmiləırin statusu dəyişir 3 halda ola bilir
+körpü - gedən/gələn
+lövbər - gedən/gələn
+yolda - gedən/gələn
+
+
+
+Ümumi: körpü + lövbər + yolda
+
+Körpüdə dayanıb getmək üçün hazırlanan gəmiyə `Yüklənən gəmi` kimi qeydə alıb dashboard da göstərək. 
+Körpüdə dayanıb gəlib yükü boşaltmaq üçüm prosesə başlayan gəmiyə  `Boşaldılan gəmi` kimi qeydə alıb dashboard da göstərək.
+
+
+
+20 feettliq konteyner - 1 TEU dashboardda göstərilsin
+
+-------------------- 
+Gəmilərin içindəki tırlar statusu
+Buraxılış təsdiq olunan -  Gözləmə (səbəbi ilə)
+
+Containerların cari vəziyyəti,daxilindəki yüklərin TEU dəyəri və.s kimi məlumatları işləsin platforma. 
+
+
+Bəyannamələr --- 
+
+Gömrük bəyannamələrində giriş çıxışa görə 2 yə bölünəcək.  Aşağıdakı kimi
+```
+
+Hamısı
+13 gəmi
+
+Gedən gəmilər
+3 gəmi
+
+Gələn gəmilər
+10 gəmi
+
+```
+
+
+
+
+Qeydiyyat bölməsində yalnız körpüdə olan və  gedən/gələn gəmilərin prosesi gedir.
+
+
+Qeydiyyat bölməsində klik edəndə 02 dəki məlumatlar elə sağda görünsün. aşağıdan 02 dən silək.
+
+Buglar var Qeydiyyat bölməsində gəmilərə görə filterləmək falan olmur  
+
+
+
+Yaşıl - Davam edir və gedir
+Qırmızı və ya Narıncıdırsa 3  yerə yönləndiririk
+
+XRay
+
+Fiziki yoxlama 
+
+Fiziki Baxış 
