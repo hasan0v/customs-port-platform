@@ -1,0 +1,24 @@
+**CMR – Beynəlxalq yük qaiməsi № DA 1604513** (2-ci nüsxə – yük alan üçün)
+
+| Xana | Məlumat |
+|---|---|
+| 1. Yük göndərən | THE STATE CONCERN "TURKMENCHEMISTRY", TÜRKMƏNİSTAN – "GARABOGAZKARBAMID" UREA PLANT |
+| 2. Yük alan | "DÖNMEZOĞLU İÇ VE DIŞ TİCARET YATIRIM A.Ş." — Çinik mah., 4101 sok., No: 50, Tekkeköy, Samsun / TÜRKİYƏ ("Nomagri Tarım A.Ş." (Türkiyə) sifarişi ilə) |
+| 3. Təhvil yeri | Samsun / Türkiyə |
+| 4. Yüklənmə yeri | Garabogaz / Türkmənistan |
+| 5. Əlavə sənədlər | Invoice № 0413, 25.07.2026 |
+| 6–9. Yük | Kisələrdə (bags) UREA / karbamid, HS CODE 310210100 |
+| 11. Çəki | Brutto 22 350 kq / Netto 22 315 kq |
+| 13. Gömrük göstərişləri | ÝGD 07331/250726/0000422; TDGG-IPL-B 073969; ÜR-07331/250726/0000; 2353 |
+| 15. Ödəniş | Freight paid / Freight to be paid (işarələnmə aydın deyil) |
+| 19. Ödəyici | Yük göndərən (Sender) – 96590; 13; 990 |
+| 25. Nəqliyyat | Çəkici: VOLVO + yarımqoşqu; qeydiyyat nişanları: 1234 BNF, 2528 TBN |
+| 26. Sürücü | BALKANOW GURBANGELDI |
+
+**Ekspeditor / daşıyıcı:** Türkmənistanın Avtomobil Nəqliyyatı Nazirliyi — "Dowamly Kerwen Ýoly", Aşqabatdakı Sərnişin Avtonəqliyyat Müəssisəsi, Aşqabat ş., 1915 (G. Amanow) küçəsi.
+
+**Möhür və qeydlər:** "GURU GÜMRÜK ÝÜKI", Dövlət Gömrük Xidməti, "ÝÜK GOWŞUDY" – nəzarətçi Mollaýew, 03 AUG 2026, 011; Sərhəd Qoruyuş Nazirliyi; BN 070; 0017.
+
+**Standart mətn:** Daşıma CMR Konvensiyasının şərtlərinə uyğun həyata keçirilir; qalın çərçivəli xanaları daşıyıcı, 1–15 və 21–22-ci xanaları göndərən doldurur; təhlükəli yük halında sinif, nömrə və hərf işarəsi göstərilməlidir.
+
+**Boş və ya oxunmayan xanalar:** 4 (tarix), 7, 8, 10, 12, 14, 16, 17, 18, 20, 21, 22, 23, 24.

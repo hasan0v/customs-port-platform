@@ -52,6 +52,15 @@ Canlı Sürət (SOG - knot) 2. Kompas Kursu (COG - dərəcə)
 
 
 
+<<<<<<< HEAD
+=======
+ƏLƏT LİMANI 
+
+Beynəlxalq dəniz ticarət limanı olaraq dəyişdir
+
+
+
+>>>>>>> feature
 
 
 Gəmiləırin statusu dəyişir 3 halda ola bilir

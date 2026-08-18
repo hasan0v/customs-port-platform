@@ -9,19 +9,20 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { ayliqStatistika } from '../data/mockData'
+import { getShipDirection } from '../domain/ships'
 import { useAppStore } from '../store/useAppStore'
 import { Button, Card, PageHeader } from '../components/UI'
 
 const COLORS = ['#0A4D8C', '#00B4D8', '#2A9D8F', '#F4A261', '#E76F51', '#7B68EE', '#3DDC97']
 const MONTHS = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyn', 'İyl', 'Avq', 'Sen', 'Okt', 'Noy', 'Dek']
 
-type DirectionFilter = 'Hamısı' | 'Giriş' | 'Çıxış'
+type DirectionFilter = 'Hamısı' | 'Gələn' | 'Gedən'
 type StatusFilter = 'Hamısı' | 'Lövbərdə' | 'Yolda' | 'Körpüdə'
 type RiskFilter = 'Hamısı' | 'Yaşıl' | 'Qırmızı' | 'Amber'
 
 type TrafficEvent = {
   id: string
-  direction: 'Giriş' | 'Çıxış'
+  direction: 'Gələn' | 'Gedən'
   shipId: string
   shipName: string
   shipStatus: string
@@ -70,7 +71,7 @@ function buildTrafficEvents(
 
   // 1) Gəmilərdən real DB
   ships.forEach(g => {
-    const direction: 'Giriş' | 'Çıxış' = g.status === 'Yolda' ? 'Çıxış' : 'Giriş' // Yolda=hərəkətdə, Körpüdə/Lövbərdə=liman
+    const direction = getShipDirection(g)
     const linkedVehicles = vehicles.filter(v => v.gemi === g.id).length
     const linkedDecls = Math.max(1, Math.round(linkedVehicles * 0.9) || declarations.filter(d => d.gemiId === g.id).length)
     events.push({
@@ -95,7 +96,7 @@ function buildTrafficEvents(
     const ship = ships.find(g => g.ad === p.gemi) || ships[i % ships.length]
     events.push({
       id: `post-${p.kod}-${i}`,
-      direction: p.novu === 'Çıxış' ? 'Çıxış' : 'Giriş',
+      direction: p.novu === 'Çıxış' ? 'Gedən' : 'Gələn',
       shipId: ship.id,
       shipName: p.gemi,
       shipStatus: p.status.includes('Təsdiq') ? 'Lövbərdə' : ship.status,
@@ -115,7 +116,7 @@ function buildTrafficEvents(
     const ship = ships.find(g => g.id === r.shipId) || ships[i % ships.length]
     events.push({
       id: `reg-${r.id}`,
-      direction: 'Giriş',
+      direction: getShipDirection(ship),
       shipId: ship.id,
       shipName: r.shipName,
       shipStatus: 'Lövbərdə',
@@ -135,7 +136,7 @@ function buildTrafficEvents(
     const need = 48 - events.length
     for (let i = 0; i < need; i++) {
       const ship = ships[i % ships.length]
-      const direction: 'Giriş' | 'Çıxış' = i % 3 === 0 ? 'Çıxış' : 'Giriş'
+      const direction: 'Gələn' | 'Gedən' = i % 3 === 0 ? 'Gedən' : 'Gələn'
       const day = 1 + (i % 28)
       const monthIdx = i % 7
       events.push({
@@ -190,8 +191,8 @@ export default function Analytics() {
   }), [allEvents, direction, status, port, risk, shipId, source])
 
   const kpis = useMemo(() => {
-    const giris = filtered.filter(e => e.direction === 'Giriş')
-    const cixis = filtered.filter(e => e.direction === 'Çıxış')
+    const giris = filtered.filter(e => e.direction === 'Gələn')
+    const cixis = filtered.filter(e => e.direction === 'Gedən')
     const tonaj = filtered.reduce((s, e) => s + e.tonaj, 0)
     const autos = filtered.reduce((s, e) => s + e.vehicles, 0)
     const decls = filtered.reduce((s, e) => s + e.declarations, 0)
@@ -224,7 +225,7 @@ export default function Analytics() {
       row.gemi += 1
       row.yuk += Math.round(e.tonaj / 100) // chart scale
       row.avtomobil += e.vehicles
-      if (e.direction === 'Giriş') row.giris += 1
+      if (e.direction === 'Gələn') row.giris += 1
       else row.cixis += 1
     })
     // blend with seed if sparse
@@ -232,7 +233,7 @@ export default function Analytics() {
       const row = map[ay] || { ay, gemi: 0, yuk: 0, avtomobil: 0, giris: 0, cixis: 0 }
       const seed = ayliqStatistika[i]
       if (row.gemi === 0 && seed) {
-        const factor = direction === 'Giriş' ? 0.62 : direction === 'Çıxış' ? 0.38 : 1
+        const factor = direction === 'Gələn' ? 0.62 : direction === 'Gedən' ? 0.38 : 1
         return {
           ay,
           gemi: Math.round(seed.gemi * factor * (status === 'Hamısı' ? 1 : 0.55)),
@@ -327,8 +328,8 @@ export default function Analytics() {
         <label>İstiqamət
           <select value={direction} onChange={e => setDirection(e.target.value as DirectionFilter)}>
             <option>Hamısı</option>
-            <option>Giriş</option>
-            <option>Çıxış</option>
+            <option>Gələn</option>
+            <option>Gedən</option>
           </select>
         </label>
         <label>Gəmi statusu
@@ -382,15 +383,15 @@ export default function Analytics() {
     <section className="analytics-kpis analytics-kpis-rich">
       <Card className="kpi-rich">
         <div className="kpi-top"><Ship size={18} /><span className={girisDelta >= 0 ? 'up' : 'down'}>{girisDelta >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}{Math.abs(girisDelta)}%</span></div>
-        <small>Giriş edən gəmi / hadisə</small>
+        <small>Gələn gəmi / hadisə</small>
         <strong>{formatNum(kpis.giris)}</strong>
-        <span>Filtr: {direction === 'Çıxış' ? 'çıxış rejimində gizlidir' : 'aktiv giriş axını'}</span>
+        <span>Filtr: {direction === 'Gedən' ? 'gedən rejimində gizlidir' : 'aktiv gələn axını'}</span>
       </Card>
       <Card className="kpi-rich">
         <div className="kpi-top"><Anchor size={18} /><span className={cixisDelta >= 0 ? 'up' : 'down'}>{cixisDelta >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}{Math.abs(cixisDelta)}%</span></div>
-        <small>Çıxış edən gəmi / hadisə</small>
+        <small>Gedən gəmi / hadisə</small>
         <strong>{formatNum(kpis.cixis)}</strong>
-        <span>Yola çıxış və post qərarları</span>
+        <span>Gedən gəmi və post qərarları</span>
       </Card>
       <Card className="kpi-rich">
         <div className="kpi-top"><Gauge size={18} /><span className="up"><TrendingUp size={14} />{kpis.autoRate}%</span></div>
@@ -421,8 +422,8 @@ export default function Analytics() {
     <section className="analytics-grid analytics-grid-rich">
       <Card className="chart-card wide" hover={false}>
         <header>
-          <div><h2>Giriş / çıxış dinamikası</h2><p>Aylıq gəmi hadisələri — filtrə uyğun</p></div>
-          <span className="chart-legend"><i style={{ background: '#0A4D8C' }} /> Giriş <i style={{ background: '#00B4D8', marginLeft: 10 }} /> Çıxış</span>
+          <div><h2>Gələn / gedən dinamikası</h2><p>Aylıq gəmi hadisələri — filtrə uyğun</p></div>
+          <span className="chart-legend"><i style={{ background: '#0A4D8C' }} /> Gələn <i style={{ background: '#00B4D8', marginLeft: 10 }} /> Gedən</span>
         </header>
         <ResponsiveContainer width="100%" height={280}>
           <AreaChart data={monthly}>
@@ -434,8 +435,8 @@ export default function Analytics() {
             <XAxis dataKey="ay" />
             <YAxis />
             <Tooltip />
-            <Area type="monotone" dataKey="giris" name="Giriş" stroke="#0A4D8C" fill="url(#gIn)" strokeWidth={2.5} />
-            <Area type="monotone" dataKey="cixis" name="Çıxış" stroke="#00B4D8" fill="url(#gOut)" strokeWidth={2.5} />
+            <Area type="monotone" dataKey="giris" name="Gələn" stroke="#0A4D8C" fill="url(#gIn)" strokeWidth={2.5} />
+            <Area type="monotone" dataKey="cixis" name="Gedən" stroke="#00B4D8" fill="url(#gOut)" strokeWidth={2.5} />
           </AreaChart>
         </ResponsiveContainer>
       </Card>

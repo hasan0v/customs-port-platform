@@ -1,0 +1,132 @@
+Sənəddə olan məlumatlar:
+
+### Gömrük bəyannaməsi
+
+* Bəyannamənin tipi: **ID 80**
+* Məzənnə: **1$ – 1,7000 AZN**
+* Tarix: **18.08.2026**
+* Qoşma vərəq: **0**
+* Malların sayı: **1**
+* Bağlamaların sayı: **1950**
+* Sorğu nömrəsi: **01263000224935**
+
+### Göndərən / ixracatçı
+
+* **LAYHER WILHELM**
+* Ölkə: **Almaniya**
+
+### Malı qəbul edən / idxalatçı
+
+* **TOO LAYHER**
+* Ölkə: **Qazaxıstan**
+
+### Maliyyə tənzimlənməsinə məsul şəxs
+
+* **BAX QR 2**
+
+### Bəyannaməçi / təmsilçi
+
+* Nömrə: **1802077241**
+* **Azərbaycan Respublikası Dövlət Gömrük Komitəsinin “Azərterminalkompleks” Birliyi**
+* Ünvan: **AZ1104, Bakı şəhəri, Sabunçu rayonu, Maştağa ştq**
+
+### Ölkələr
+
+* Göndərən ölkə: **Almaniya**
+* Ölkə kodu: **DE / 276**
+* Mənşə ölkəsi: **Almaniya**
+* Təyinat ölkəsi: **Qazaxıstan**
+* Ölkə kodu: **KZ / 398**
+
+### Nəqliyyat məlumatları
+
+* Göndərən ölkədən çıxan nəqliyyat vasitəsi: **52AEJ596/52ACY559**
+* Qeydiyyat ölkəsi kodu: **792**
+* Konteyner: **0**
+* Sərhədi keçən nəqliyyat vasitəsi: **Bax qr.18**
+* Qeydiyyat ölkəsi kodu: **792**
+* Sərhəddə nəqliyyat növü: **30**
+* Ölkə daxilində nəqliyyat növü: **30**
+
+### Məbləğ və valyuta
+
+* Ümumi gömrük dəyəri: **134480,32**
+* S.İ.Ö.: **0**
+* Valyuta kodu: **398**
+* Malların ümumi invoys dəyəri: **36643140,00**
+* Valyuta məzənnəsi: **0,3670**
+* Məzənnə bazası: **100**
+
+### Sərhəd gömrük orqanı
+
+* Kod: **00204**
+* **Qırmızı körpü g/p**
+
+### Malın təsviri
+
+> qara metallardan metal konstruksiyalar (9406 mal mövqeyində təsnif edilən yığma tikinti konstruksiyalarından başqa) və onların hissələri (məsələn, körpülər və onların seksiyaları, şlüzlərin qapıları, qüllələr, şəbəkəli dirəklər, d qoşmaya bax.
+
+* Yer sayı: **1950 yer**
+* Çəki: **19222,5 kq**
+
+### Mal və gömrük kodları
+
+* Malın sıra nömrəsi: **1**
+* Malın kodu: **730840 0009**
+* Mənşə ölkəsinin kodu: **DE / 276**
+* Brutto çəki: **19222,5 kq**
+* Netto çəki: **19222,5 kq**
+* İmtiyazlar: **000**
+* Əməliyyat/prosedur kodu: **80 00 00**
+* XİFMN-dəki ölçü: **166**
+* Gömrük dəyərinin müəyyən edilməsi üsulu: **0 / 1 / 1**
+* İnvois dəyəri: **36643140,00**
+* Gömrük dəyəri: **134480,32**
+* Statistik dəyər: **79106,07**
+
+### Təqdim olunan sənədlər
+
+* **2015 – 2601073TR-1**
+* **4041 – 0**, tarix: **10.10.2025**
+* **8001 – 0**, tarix: **10.10.2025**
+
+### Gömrük ödənişləri
+
+| Növ | Hesablama bazası | Tarif dərəcəsi |   Məbləğ | ÖÜ |
+| --- | ---------------: | -------------: | -------: | -: |
+| 01  |             0,00 |      30,00 AZN |    30,00 | 01 |
+| 01  |        134480,32 |              — |   300,00 | 05 |
+| 20  |        134480,32 |          15,0% | 20172,05 | 05 |
+| 32  |        154652,37 |          18,0% | 27837,43 | 05 |
+| 75  |             1,00 |      30,00 AZN |    30,00 | 05 |
+| 85  |            30,00 |          18,0% |     5,40 | 05 |
+
+### Hesablamanın detalları
+
+* **01 – 30,00 – 932**
+* Cəmi: **30,00 AZN**
+
+### Vəkalət verən şəxsin təsdiqi
+
+> GB-də göstərilən məlumatları təsdiq edirəm.
+
+* Ad və soyad: **ALBAR OZKAN**
+* Təqdim olunma tarixi: **18.08.2026**
+
+### Göndərən gömrük orqanı
+
+* Kod: **00204**
+* **Qırmızı körpü g/p**
+
+### Təyinat gömrük orqanı
+
+* Kod: **13005**
+* **Beynəlxalq Dəniz Ticarət Limanı g/p**
+
+### Bəyannaməçi / təmsilçi
+
+* **MİRZƏYEV CAVAD MALİK OĞLU**
+* İxtisas attestatının nömrəsi: **0866**
+* Tarix: **18.10.2024**
+
+Sənəddə “Göndərən gömrük orqanı”, “Təminat üsulu” və “Gömrük nəzarəti” bölmələrinin bəzi xanaları doldurulmayıb.

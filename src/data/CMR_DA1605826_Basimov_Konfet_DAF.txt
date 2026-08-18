@@ -1,0 +1,35 @@
+Sənəd beynəlxalq yük daşıma qaiməsidir (CMR – Halkara daşalýan ýüküň ýanhaty), nüsxə "Yükü qəbul edən üçün" (Copy for Consignee). Aşağıda bütün oxuna bilən məlumatları xanalar üzrə verirəm:
+
+**CMR nömrəsi:** DA 1605826
+
+**1. Göndərən (Sender):** Sahibkar Başımov Erkin — Türkmənistan, Mary vilayəti, Mary rayonu, G. Atabayev geňeşliyi, Dövletli kəndi, Garaşsyzlyk küç. 64
+
+**2. Yükü qəbul edən (Consignee):** "Best Company 2004 Ltd" — Gürcüstan, Kutaisi şəhəri, G. Leonidze küçəsi, 4B/21
+
+**3. Yükün təhvil veriləcəyi yer:** Gürcüstan (konkret şəhər sətri aydın oxunmur)
+
+**4. Yükün yüklənildiyi yer və tarix:** Mary, Türkmənistan — 05.08.2026
+
+**5. Əlavə olunan sənədlər:** İnvoys № 2026/07E, tarix 10.07.2026
+
+**6–12. Yük haqqında:** 1967 qutu (boxes); yükün adı — müxtəlif dadlı konfetlər (different flavored candy); xalis çəki 10 002,0 kq; brutto çəki 10 716,15 kq
+
+**13. Göndərənin göstərişləri (gömrük və s.):** "GÜMRÜK YÜKI", Türkmənistan Dövlət Gömrük Xidmətinin qeydi — "Qaytarmağa RUGSAT BERİLDİ" (icazə verildi), tarix damğası 09.06.2026 (rəqəmlər tam dəqiq oxunmur)
+
+**15. Ödəniş şərtləri:** Daşımanın haqqı ödənilib / ödənilməli sətirləri (hansının işarələndiyi aydın seçilmir)
+
+**16. Daşıyıcı:** Türkmənistanın Avtomobil Ulaqları Nazirliyi, Aşqabatdakı müəssisəsi — Hususy (B. Annanow) küçəsi 2, Aşqabat
+
+**21. Rəsmiləşdirildiyi yer və tarix:** Türkmənistan, Telekeçi (sahibkar) Başımow Erkin İtalmazowiç — Şəhadətnamə № 0105119, Fərdi vergi nömrəsi 607122510591
+
+**23. Sürücü:** Takow Serdar, pasport A2335105
+
+**25–26. Nəqliyyat vasitəsi:** Yük avtomobili DAF, yarımqoşqu ilə; qeydiyyat nişanları DG8068AG / AG4728TR, Türkmənistan
+
+**24. Yükün qəbul edildiyi yer və tarix:** Mary, 05.08.2026
+
+**Digər qeydlər/nömrələr:** B 07514/060826/000 563; 075194/2008185; DGC B 045850; 049; 024; Dövlət Gömrük Xidməti "YÜK GOWUŞDY" (yük çatdırıldı) damğası
+
+Sənədin çap olunmuş standart mətnində həmçinin qeyd olunur ki, daşıma əksinə olan hər hansı şərtdən asılı olmayaraq Beynəlxalq Avtomobil Yükdaşımaları Müqaviləsi haqqında Konvensiyaya (CMR) tabedir; 1–15, 21 və 22-ci xanalar göndərənin məsuliyyəti altında, qalın xətlə çərçivəyə alınmış xanalar isə daşıyıcı tərəfindən doldurulur; təhlükəli yük daşınarkən (19-cu xana, ADR) sinif, nömrə və hərf işarəsi göstərilməlidir.
+
+Qeyd: sənəd skan/OCR keyfiyyətinə görə bəzi yerlərdə (18, 19, 20, 22-ci xanalar, ödəniş cədvəlinin məbləğləri, möhür tarixləri) mətn tam oxunmur — bu sahələr ya boşdur, ya da rəqəmləri dəqiqləşdirmək üçün orijinala baxmaq lazımdır.

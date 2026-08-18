@@ -1,0 +1,133 @@
+## Gömrük bəyannaməsi
+
+* Bəyannamənin tipi: **ID 80**
+* Məzənnə: **1$ – 1,7000 AZN**
+* Tarix: **14.08.2026**
+* Qoşma vərəq: **0**
+* Malların sayı: **1**
+* Bağlamaların sayı: **66**
+* Sorğu nömrəsi: **01263000221427**
+
+### Göndərən / ixracatçı
+
+* **NESTLE PURİNA PETCARE EMENA**
+* Ölkə: **İsveçrə**
+
+### Malı qəbul edən / idxalatçı
+
+* **NESTLE FOOD KAZAKHATAN LLP**
+* Ölkə: **Qazaxıstan**
+
+### Maliyyə tənzimlənməsinə məsul şəxs
+
+* **VAKHTANG MGELADZE**
+
+### Bəyannaməçi / təmsilçi
+
+* Nömrə: **3104866041**
+* **“TRANS GATE” Məhdud Məsuliyyətli Cəmiyyəti**
+* Ünvan: **AZ0118, Abşeron rayonu, Mehdiabad qəsəbəsi, 28 May, ev 3, mənzil 60 02**
+
+### Ölkələr
+
+* Göndərən ölkə: **İsveçrə**
+* Ölkə kodu: **CH / 756**
+* Mənşə ölkəsi: **İsveçrə**
+* Təyinat ölkəsi: **Qazaxıstan**
+* Ölkə kodu: **KZ / 398**
+
+### Ümumi gömrük məlumatları
+
+* Ümumi gömrük dəyəri: **105092,07**
+* S.İ.Ö.: **0**
+
+### Nəqliyyat məlumatları
+
+* Göndərən ölkədən çıxan nəqliyyat vasitəsi: **BRST6622/KAEX1426**
+* Qeydiyyat ölkəsi kodu: **276**
+* Konteyner: **0**
+* Sərhədi keçən nəqliyyat vasitəsi: **Bax qr.18**
+* Qeydiyyat ölkəsi kodu: **276**
+* Sərhəddə nəqliyyat növü: **30**
+* Ölkə daxilində nəqliyyat növü: **30**
+
+### Valyuta və invoys
+
+* Valyuta kodu: **978**
+* Malların ümumi invoys dəyəri: **53577,40**
+* Valyuta məzənnəsi: **1,9615**
+* Məzənnə bazası: **1**
+
+### Sərhəd gömrük orqanı
+
+* Kod: **00204**
+* **Qırmızı körpü g/p**
+
+### Malın təsviri
+
+* **HEYVAN YEMİ ÜÇÜN İSTİFADƏ EDİLƏN MƏHSULLAR**
+* Yer sayı: **66**
+* Göstərilən çəki: **15866,32 kq**
+
+### Mal və gömrük kodları
+
+* Malın sıra nömrəsi: **1**
+* Malın kodu: **230990 9600**
+* Mənşə ölkəsinin kodu: **CH / 756**
+* Brutto çəki: **19497,92 kq**
+* Netto çəki: **15866,32 kq**
+* İmtiyazlar: **000**
+* Əməliyyat/prosedur kodu: **80 00 00**
+* XİFMN-dəki ölçü: **166**
+* İnvois dəyəri: **53577,40**
+* Gömrük dəyərinin müəyyən edilməsi üsulu: **0 / 1 / 1**
+* Gömrük dəyəri: **105092,07**
+* Statistik dəyər: **61818,86**
+
+### Təqdim olunan sənədlər
+
+* **2015 – N-SİZ**, tarix: **03.08.2026**
+* **4041 – N/SİZ**
+* **8001 – 4045267895**, tarix: **03.08.2026**
+
+### Gömrük ödənişlərinin hesablanması
+
+| Növ | Hesablama bazası | Tarif dərəcəsi |   Məbləğ | ÖÜ |
+| --- | ---------------: | -------------: | -------: | -: |
+| 01  |             0,00 |      30,00 AZN |    30,00 | 01 |
+| 01  |        105092,07 |              — |   300,00 | 05 |
+| 20  |        105092,07 |           0,0% |     0,00 | 05 |
+| 32  |        105092,07 |          18,0% | 18916,57 | 05 |
+| 75  |             1,00 |      30,00 AZN |    30,00 | 05 |
+| 85  |            30,00 |          18,0% |     5,40 | 05 |
+
+### Hesablamanın detalları
+
+* **01 – 30,00 – 932**
+* Cəmi: **30,00 AZN**
+
+### Vəkalət verən şəxsin təsdiqi
+
+> GB-də göstərilən məlumatları təsdiq edirəm.
+
+* **TRANS GATE MMC**
+* Təqdim olunma tarixi: **14.08.2026**
+
+### Göndərən gömrük orqanı
+
+* Kod: **00204**
+* **Qırmızı körpü g/p**
+
+### Təyinat gömrük orqanı
+
+* Kod: **13005**
+* **Beynəlxalq Dəniz Ticarət Limanı g/p**
+
+### Bəyannaməçi / təmsilçi
+
+* **İSMAYILOV HAFİZ HİKMƏT OĞLU**
+* İxtisas attestatının nömrəsi: **0621**
+* Attestatın tarixi: **13.09.2024**
+* Əlavə tarix: **14.08.2026**
+
+Formalar, yükləmə spesifikasiyası, ticarət edilən ölkə, çatdırılma şərtləri, sövdələşmənin xüsusiyyəti, maliyyə və bank məlumatları, təminat üsulu və gömrük nəzarəti bölmələri doldurulmayıb.

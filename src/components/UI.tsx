@@ -43,7 +43,7 @@ export function StatusBadge({ status }: { status: string }) {
   const tone =
     status.includes('Təsdiq') || status === 'Buraxıldı' || status === 'Körpüdə' || status === 'Qeydiyyatda' || status.includes('Doğrulan') ? 'success'
     : status === 'Lövbərdə' || status === 'Yolda' || status.includes('Gözlə') || status === 'Yoxlamada' || status.includes('Yönləndir') || status.includes('Emal') ? 'warning'
-    : status.includes('Risk') || status.includes('İmtina') ? 'danger'
+    : status.includes('Risk') || status.includes('İmtina') || status.includes('qadağa') || status.includes('icazə yoxdur') ? 'danger'
     : 'info'
   return <span className={`status status-${tone}`}><i />{status}</span>
 }
