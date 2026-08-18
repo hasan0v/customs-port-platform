@@ -48,6 +48,7 @@ type AppState = {
   setSidebarOpen: (open: boolean) => void
   setCommandOpen: (open: boolean) => void
   addShip: (ship: (typeof gemiler)[number]) => void
+  updateShip: (id: string, patch: Partial<(typeof gemiler)[number]>) => void
   addDeclaration: (declaration: (typeof beyannameler)[number]) => void
   addPostDecision: (decision: (typeof postQerarlar)[number]) => void
   addRegistration: (record: SavedRegistration) => void
@@ -136,6 +137,9 @@ export const useAppStore = create<AppState>((set) => ({
   setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),
   setCommandOpen: (commandOpen) => set({ commandOpen }),
   addShip: (ship) => set((state) => ({ ships: [ship, ...state.ships] })),
+  updateShip: (id, patch) => set((state) => ({
+    ships: state.ships.map(ship => ship.id === id ? { ...ship, ...patch } : ship) as typeof gemiler,
+  })),
   addDeclaration: (declaration) => set((state) => ({ declarations: [declaration, ...state.declarations] })),
   addPostDecision: (decision) => set((state) => ({ postDecisions: [decision, ...state.postDecisions] })),
   addRegistration: (record) => set((state) => {
@@ -168,3 +172,6 @@ export const useAppStore = create<AppState>((set) => ({
     return next
   }),
 }))
+
+export default useAppStore
+

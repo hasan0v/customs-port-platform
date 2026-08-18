@@ -1,81 +1,74 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
-  AlertTriangle, Anchor, ArrowDownToLine, ArrowLeft, ArrowUpFromLine, CarFront,
-  ChevronRight, CircleDot, Clock3, Container, ExternalLink, FileText, MapPinned,
-  PackageCheck, RefreshCw, Route, Ship, ShieldCheck,
+  Anchor, ArrowDownToLine, ArrowLeft, ArrowUpFromLine, AlertTriangle,
+  CarFront, ChevronRight, CircleDot, Clock3, Container, ExternalLink,
+  FileText, MapPinned, PackageCheck, Route, ShieldCheck, Ship,
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Card, Modal, PageHeader, StatusBadge } from '../components/UI'
 import DateRangePicker, { type DateRange, getDefaultRange } from '../components/DateRangePicker'
 import RefreshRatePicker from '../components/RefreshRatePicker'
 import { portCalls } from '../data/operationalData'
+import type { GemiIstiqameti } from '../data/mockData'
+import { getShipDirection, getShipMovementSummary } from '../domain/ships'
 import { useAppStore } from '../store/useAppStore'
 import './Dashboard.css'
 
 const SeaMap = lazy(() => import('../components/SeaMap'))
-type QueueFilter = 'Hamısı' | 'Gözləyən' | 'Problemli' | 'Buraxılıb'
-type ShipDirection = 'Gələn' | 'Gedən'
+type ShipDirection = GemiIstiqameti
 type ShipDirectionFilter = 'Hamısı' | ShipDirection
+type QueueFilter = 'Hamısı' | 'Gözləyən' | 'Problemli' | 'Buraxılıb'
 
 const queueFilterLabels: Record<QueueFilter, string> = {
   Hamısı: 'Hamısı',
   Gözləyən: 'Gözləyən',
-  Problemli: 'Giriş qadağası',
+  Problemli: 'Girişə icazə verilməyən',
   Buraxılıb: 'Buraxılıb',
-}
-
-const getShipDirection = (ship: { menshe: string; teyinat?: string }): ShipDirection => {
-  const origin = ship.menshe.toLocaleLowerCase('az')
-  const destination = ship.teyinat?.toLocaleLowerCase('az') ?? ''
-
-  if (destination.includes('ələt')) return 'Gələn'
-  return origin.includes('ələt') ? 'Gedən' : 'Gələn'
 }
 
 export default function Dashboard() {
   const navigate = useNavigate()
   const { ships, vehicles, declarations } = useAppStore()
-  const [mapOpen, setMapOpen] = useState(false)
   const [dateRange, setDateRange] = useState<DateRange>(() => getDefaultRange('today'))
   const [refreshRate, setRefreshRate] = useState('5 dəq')
   const [shipDirection, setShipDirection] = useState<ShipDirectionFilter>('Hamısı')
   const [selectedShipId, setSelectedShipId] = useState('')
-  const [queueFilter, setQueueFilter] = useState<QueueFilter>('Hamısı')
   const [selectedPlate, setSelectedPlate] = useState('')
   const [selectedDeclaration, setSelectedDeclaration] = useState('')
+  const [queueFilter, setQueueFilter] = useState<QueueFilter>('Hamısı')
+  const [mapOpen, setMapOpen] = useState(false)
+
+  const chooseDirection = (direction: ShipDirectionFilter) => {
+    setShipDirection(direction)
+    setSelectedShipId('')
+    setSelectedPlate('')
+  }
+
+  const movementSummary = useMemo(() => getShipMovementSummary(ships), [ships])
 
   const directionCounts = useMemo(() => ({
-    Hamısı: ships.length,
-    Gələn: ships.filter(ship => getShipDirection(ship) === 'Gələn').length,
-    Gedən: ships.filter(ship => getShipDirection(ship) === 'Gedən').length,
-  }), [ships])
+    Hamısı: movementSummary.total,
+    Gələn: movementSummary.Gələn,
+    Gedən: movementSummary.Gedən,
+  }), [movementSummary])
 
-  const filteredShips = useMemo(
-    () => ships.filter(ship => shipDirection === 'Hamısı' || getShipDirection(ship) === shipDirection),
-    [shipDirection, ships],
-  )
+  const filteredShips = useMemo(() => {
+    if (shipDirection === 'Hamısı') return ships
+    return ships.filter(ship => getShipDirection(ship) === shipDirection)
+  }, [ships, shipDirection])
 
-  const shipStats = useMemo(() => {
-    const count = (status: 'Lövbərdə' | 'Yolda', direction?: ShipDirection) => ships.filter(ship =>
-      ship.status === status && (!direction || getShipDirection(ship) === direction),
-    ).length
-
-    return {
-      total: filteredShips.length,
-      details: shipDirection === 'Hamısı'
-        ? [
-            { label: 'Lövbərdə gələn gəmi', value: count('Lövbərdə', 'Gələn'), tone: 'amber' },
-            { label: 'Lövbərdə gedən gəmi', value: count('Lövbərdə', 'Gedən'), tone: 'amber' },
-            { label: 'Yolda gələn gəmi', value: count('Yolda', 'Gələn'), tone: 'blue' },
-            { label: 'Yolda gedən gəmi', value: count('Yolda', 'Gedən'), tone: 'blue' },
-          ]
-        : [
-            { label: 'Lövbərdə', value: count('Lövbərdə', shipDirection), tone: 'amber' },
-            { label: 'Yolda', value: count('Yolda', shipDirection), tone: 'blue' },
-          ],
-    }
-  }, [filteredShips.length, shipDirection, ships])
+  const shipStats = useMemo(() => ({
+    total: movementSummary.total,
+    details: [
+      { label: 'Körpüdə gələn gəmi', value: movementSummary.byStatus.Körpüdə.Gələn, tone: 'green', status: 'Körpüdə', direction: 'Gələn' },
+      { label: 'Körpüdə gedən gəmi', value: movementSummary.byStatus.Körpüdə.Gedən, tone: 'green', status: 'Körpüdə', direction: 'Gedən' },
+      { label: 'Lövbərdə gələn gəmi', value: movementSummary.byStatus.Lövbərdə.Gələn, tone: 'amber', status: 'Lövbərdə', direction: 'Gələn' },
+      { label: 'Lövbərdə gedən gəmi', value: movementSummary.byStatus.Lövbərdə.Gedən, tone: 'amber', status: 'Lövbərdə', direction: 'Gedən' },
+      { label: 'Yolda gələn gəmi', value: movementSummary.byStatus.Yolda.Gələn, tone: 'blue', status: 'Yolda', direction: 'Gələn' },
+      { label: 'Yolda gedən gəmi', value: movementSummary.byStatus.Yolda.Gedən, tone: 'blue', status: 'Yolda', direction: 'Gedən' },
+    ] as const,
+  }), [movementSummary])
 
   const vehicleCountByShip = useMemo(() => vehicles.reduce<Record<string, number>>((counts, vehicle) => {
     counts[vehicle.gemi] = (counts[vehicle.gemi] ?? 0) + 1
@@ -84,13 +77,19 @@ export default function Dashboard() {
 
   const activeShip = filteredShips.find(ship => ship.id === selectedShipId)
 
-  const queue = useMemo(() => vehicles.filter(vehicle => vehicle.gemi === activeShip?.id).map((vehicle, index) => {
-    const linked = declarations.filter(item => item.avtomobil === vehicle.nomre)
-    const hasIssue = linked.some(item => item.status === 'Risk nəzarəti' || item.waitReasons?.some(reason => /risk|uyğunsuz|çatış|çəki/i.test(reason)))
-    const released = !hasIssue && index % 6 === 0
-    const state: Exclude<QueueFilter, 'Hamısı'> = hasIssue ? 'Problemli' : released ? 'Buraxılıb' : 'Gözləyən'
-    return { vehicle, linked, state, priority: hasIssue ? 0 : released ? 2 : 1, index }
-  }).sort((a, b) => a.priority - b.priority || a.index - b.index), [vehicles, declarations, activeShip?.id])
+  const queue = useMemo(() => {
+    if (!activeShip) return []
+    return vehicles
+      .filter(v => v.gemi === activeShip.id || v.gemi === activeShip.ad)
+      .map((vehicle, index) => {
+        const linked = declarations.filter(item => item.avtomobil === vehicle.nomre)
+        const hasIssue = linked.some(item => item.status === 'Risk nəzarəti' || item.status === 'Yoxlamada')
+        const released = !hasIssue && index % 4 === 0
+        const state: Exclude<QueueFilter, 'Hamısı'> = hasIssue ? 'Problemli' : released ? 'Buraxılıb' : 'Gözləyən'
+        return { vehicle, linked, state, priority: hasIssue ? 0 : released ? 2 : 1, index }
+      })
+      .sort((a, b) => a.priority - b.priority || a.index - b.index)
+  }, [vehicles, declarations, activeShip])
 
   const filteredQueue = queue.filter(item => queueFilter === 'Hamısı' || item.state === queueFilter)
   const selectedItem = queue.find(item => item.vehicle.nomre === selectedPlate)
@@ -98,8 +97,8 @@ export default function Dashboard() {
   const totalCargo = portCalls.reduce((sum, item) => sum + item.cargoTons, 0)
   const totalVehicles = portCalls.reduce((sum, item) => sum + item.vehicles, 0)
   const issueCount = queue.filter(item => item.state === 'Problemli').length
-  const unloadingShips = filteredShips.filter(ship => ship.status === 'Körpüdə' && getShipDirection(ship) === 'Gələn').length
-  const loadingShips = filteredShips.filter(ship => ship.status === 'Körpüdə' && getShipDirection(ship) === 'Gedən').length
+  const unloadingShips = movementSummary.unloading
+  const loadingShips = movementSummary.loading
 
   const chooseVehicle = (plate: string, firstDeclaration = '') => {
     setSelectedPlate(plate)
@@ -116,17 +115,10 @@ export default function Dashboard() {
   const showShipList = () => {
     setSelectedShipId('')
     setSelectedPlate('')
-    setSelectedDeclaration('')
-    setQueueFilter('Hamısı')
-  }
-
-  const chooseDirection = (direction: ShipDirectionFilter) => {
-    setShipDirection(direction)
-    showShipList()
   }
 
   return <>
-    <PageHeader title="Əməliyyat mərkəzi" action={<div className="command-toolbar" aria-label="Dashboard filtrləri">
+    <PageHeader title="İdarəetmə Paneli" action={<div className="command-toolbar" aria-label="Dashboard filtrləri">
       <DateRangePicker value={dateRange} onChange={setDateRange} align="right" />
       <RefreshRatePicker value={refreshRate} onChange={setRefreshRate} align="right" />
       <span className="command-live"><i /> Canlı · {refreshRate}</span>
@@ -146,19 +138,24 @@ export default function Dashboard() {
       </button>)}
     </div>
 
-    <section className="port-overview dashboard-port-overview" aria-label="Ələt limanı göstəriciləri">
+    <section className="port-overview dashboard-port-overview" aria-label="Beynəlxalq Dəniz Ticarət Limanı göstəriciləri">
       <Card className="port-overview-lead dashboard-port-overview-lead" hover={false}>
-        <div className="overview-title"><span><Anchor /></span><div><small>ƏLƏT LİMANI · {dateRange.label.toLocaleUpperCase('az')}</small><h2>{shipDirection === 'Hamısı' ? 'Gəmi axını' : `${shipDirection} gəmilər`}</h2></div></div>
-        <div className="vessel-total"><strong>{shipStats.total}</strong><span>Ümumi</span></div>
+        <div className="overview-title"><span><Anchor /></span><div><small>BEYNƏLXALQ DƏNİZ TİCARƏT LİMANI · {dateRange.label.toLocaleUpperCase('az')}</small><h2>{shipDirection === 'Hamısı' ? 'Gəmi axını' : `${shipDirection} gəmilər`}</h2></div></div>
+        <div className="vessel-total"><strong>{shipStats.total}</strong><span>Körpü + lövbər + yolda</span></div>
         <div className="vessel-direction-stats">
-          {shipStats.details.map(stat => <article key={stat.label}><strong>{stat.value}</strong><span><i className={`status-dot ${stat.tone}`} /> {stat.label}</span></article>)}
+          {shipStats.details.map(stat => <Link
+            className="vessel-stat-link"
+            to={`/gemiler?status=${encodeURIComponent(stat.status)}&direction=${encodeURIComponent(stat.direction)}`}
+            aria-label={`${stat.label}: ${stat.value}. Əlaqəli gəmilərə bax`}
+            key={stat.label}
+          ><strong>{stat.value}</strong><span><i className={`status-dot ${stat.tone}`} /> {stat.label}</span></Link>)}
         </div>
       </Card>
-      <Card className="flow-stat" hover={false}><span className="flow-icon orange"><ArrowDownToLine /></span><div><small>Boşaldılan gəmi</small><strong>{unloadingShips}</strong></div></Card>
-      <Card className="flow-stat" hover={false}><span className="flow-icon green"><ArrowUpFromLine /></span><div><small>Yüklənən gəmi</small><strong>{loadingShips}</strong></div></Card>
-      <Card className="flow-stat" hover={false}><span className="flow-icon blue"><PackageCheck /></span><div><small>Yük</small><strong>{Math.round(totalCargo).toLocaleString('az-AZ')} t</strong></div></Card>
-      <Card className="flow-stat" hover={false}><span className="flow-icon cyan"><CarFront /></span><div><small>Nəqliyyat vasitəsi</small><strong>{totalVehicles}</strong></div></Card>
-      <Card className="flow-stat" hover={false}><span className="flow-icon yellow"><Container /></span><div><small>Konteyner</small><strong>184</strong></div></Card>
+      <Link className="glass-card flow-stat dashboard-stat-link" to="/gemiler?status=K%C3%B6rp%C3%BCd%C9%99&direction=G%C9%99l%C9%99n" aria-label={`Boşaldılan gəmilər: ${unloadingShips}. Siyahıya bax`}><span className="flow-icon orange"><ArrowDownToLine /></span><div><small>Boşaldılan gəmi</small><strong>{unloadingShips}</strong></div></Link>
+      <Link className="glass-card flow-stat dashboard-stat-link" to="/gemiler?status=K%C3%B6rp%C3%BCd%C9%99&direction=Ged%C9%99n" aria-label={`Yüklənən gəmilər: ${loadingShips}. Siyahıya bax`}><span className="flow-icon green"><ArrowUpFromLine /></span><div><small>Yüklənən gəmi</small><strong>{loadingShips}</strong></div></Link>
+      <Link className="glass-card flow-stat dashboard-stat-link" to="/beyannameler" aria-label="Yük bəyannamələrinə bax"><span className="flow-icon blue"><PackageCheck /></span><div><small>Yük</small><strong>{Math.round(totalCargo).toLocaleString('az-AZ')} t</strong></div></Link>
+      <Link className="glass-card flow-stat dashboard-stat-link" to="/qeydiyyat" aria-label="Nəqliyyat vasitələrinə bax"><span className="flow-icon cyan"><CarFront /></span><div><small>Nəqliyyat vasitəsi</small><strong>{totalVehicles}</strong></div></Link>
+      <Link className="glass-card flow-stat dashboard-stat-link" to="/beyannameler" aria-label="Konteyner məlumatlarına bax"><span className="flow-icon yellow"><Container /></span><div><small>Konteyner</small><strong>184</strong></div></Link>
     </section>
 
     <section className="command-grid">

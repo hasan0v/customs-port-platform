@@ -13,10 +13,14 @@ import ShipScene3D from '../components/ShipScene3D'
 import ShipDetailModal from '../components/ShipDetailModal'
 import { Button, Card, Modal, PageHeader, StatusBadge } from '../components/UI'
 import { agencies, portCalls, type PortCall } from '../data/operationalData'
+import type { GemiIstiqameti } from '../data/mockData'
+import { getShipDirection, getShipMovementSummary, getShipOperationLabel } from '../domain/ships'
 import { fetchAlatWeather, type LiveWeather } from '../services/liveData'
 import './Ships.css'
 
 const clearanceTone = { approved: 'approved', pending: 'pending', review: 'review' } as const
+const shipStatuses = ['Lövbərdə', 'Yolda', 'Körpüdə'] as const
+const shipDirections: GemiIstiqameti[] = ['Gələn', 'Gedən']
 
 const normalizePortName = (value: string) => {
   const normalized = value.toLocaleLowerCase('az')
@@ -38,7 +42,14 @@ export default function Ships() {
   const { ships, addShip } = useAppStore()
 
   const [q, setQ] = useState('')
-  const [status, setStatus] = useState('Hamısı')
+  const [status, setStatus] = useState(() => {
+    const urlStatus = searchParams.get('status')
+    return shipStatuses.some(item => item === urlStatus) ? urlStatus! : 'Hamısı'
+  })
+  const [direction, setDirection] = useState<'Hamısı' | GemiIstiqameti>(() => {
+    const urlDirection = searchParams.get('direction') as GemiIstiqameti | null
+    return urlDirection && shipDirections.includes(urlDirection) ? urlDirection : 'Hamısı'
+  })
   const [port, setPort] = useState('Hamısı')
   const [selectedShip, setSelectedShip] = useState<(typeof ships)[number] | null>(null)
   const [selectedCall, setSelectedCall] = useState<PortCall | null>(portCalls[0])
@@ -53,6 +64,7 @@ export default function Ships() {
   const [newShipCargo, setNewShipCargo] = useState('Avtomobillər')
   const [newShipTonnage, setNewShipTonnage] = useState('9500')
   const [newShipStatus, setNewShipStatus] = useState<'Lövbərdə' | 'Yolda' | 'Körpüdə'>('Lövbərdə')
+  const [newShipDirection, setNewShipDirection] = useState<GemiIstiqameti>('Gələn')
   const [newShipChannel, setNewShipChannel] = useState('Kanal 1')
   const [newShipSpeed, setNewShipSpeed] = useState('11.5')
 
@@ -90,15 +102,17 @@ export default function Ships() {
   const rows = useMemo(
     () => ships.filter(g =>
       (status === 'Hamısı' || g.status === status) &&
+      (direction === 'Hamısı' || getShipDirection(g) === direction) &&
       (port === 'Hamısı' || getShipPorts(g).includes(port)) &&
       `${g.ad} ${g.id} ${g.yuk} ${g.menshe} ${g.teyinat ?? ''}`.toLocaleLowerCase('az').includes(q.toLocaleLowerCase('az')),
     ),
-    [port, q, status, ships],
+    [direction, port, q, status, ships],
   )
 
   const resetShipFilters = () => {
     setQ('')
     setStatus('Hamısı')
+    setDirection('Hamısı')
     setPort('Hamısı')
   }
 
@@ -129,10 +143,12 @@ export default function Ships() {
       yuk: newShipCargo,
       tonaj: Number(newShipTonnage) || 0,
       status: newShipStatus,
+      istiqamet: newShipDirection,
       kanal: newShipChannel,
       girisTarixi: new Date().toISOString().slice(0, 16).replace('T', ' '),
       cixisTarixi: '',
-      menshe: 'Kurık, Qazaxıstan',
+      menshe: newShipDirection === 'Gələn' ? 'Kurık, Qazaxıstan' : 'Ələt, Azərbaycan',
+      teyinat: newShipDirection === 'Gələn' ? 'Ələt Limanı, Bakı' : 'Kurık Limanı, Qazaxıstan',
       lat: 40.0 + (Math.random() - 0.5) * 1.5,
       lng: 50.0 + (Math.random() - 0.5) * 1.5,
       suret: Number(newShipSpeed) || 0,
@@ -144,12 +160,12 @@ export default function Ships() {
   }
 
   const exportCsv = () => {
-    const header = 'Tip,ID,Gəmi,Status,Detal,Tonaj/Risk\n'
+    const header = 'Tip,ID,Gəmi,Status,İstiqamət,Əməliyyat,Detal,Tonaj/Risk\n'
     const shipLines = ships.map(g =>
-      ['AIS', g.id, g.ad, g.status, g.kanal, g.tonaj].map(v => `"${v}"`).join(','),
+      ['AIS', g.id, g.ad, g.status, getShipDirection(g), getShipOperationLabel(g), g.kanal, g.tonaj].map(v => `"${v}"`).join(','),
     )
     const callLines = portCalls.map(c =>
-      ['PortCall', c.id, c.vessel, c.status, c.imo, c.riskScore].map(v => `"${v}"`).join(','),
+      ['PortCall', c.id, c.vessel, c.status, '', '', c.imo, c.riskScore].map(v => `"${v}"`).join(','),
     )
     const blob = new Blob([header + [...shipLines, ...callLines].join('\n')], { type: 'text/csv;charset=utf-8' })
     const link = document.createElement('a')
@@ -158,6 +174,8 @@ export default function Ships() {
     link.click()
     toast.success('Birləşdirilmiş hesabat yükləndi')
   }
+
+  const movementSummary = useMemo(() => getShipMovementSummary(ships), [ships])
 
   return <>
     <PageHeader
@@ -187,8 +205,8 @@ export default function Ships() {
         <span className="ops-live-icon amber"><ShipIcon /></span>
         <div>
           <small>AIS gəmilər</small>
-          <strong>{ships.length}</strong>
-          <em>{ships.filter(s => s.status === 'Körpüdə').length} körpüdə</em>
+          <strong>{movementSummary.total}</strong>
+          <em>{movementSummary.byStatus.Körpüdə.total} körpüdə · {movementSummary.byStatus.Lövbərdə.total} lövbərdə · {movementSummary.byStatus.Yolda.total} yolda</em>
         </div>
       </article>
       <article>
@@ -210,32 +228,52 @@ export default function Ships() {
     </section>
 
     <section className="ships-layout">
-      <Card className="radar-panel" hover={false}>
-        <header className="card-heading">
-          <div>
-            <span className="title-icon"><Waves /></span>
-            <h2>AIS radar paneli</h2>
-          </div>
-        </header>
-        <SeaMap visibleShips={rows} />
-      </Card>
-
       <Card className="ship-table-card" hover={false}>
-        <header>
-          <h2>AIS gəmilər · {rows.length}</h2>
+        <header className="ship-card-header">
+          <div className="ship-card-title-row">
+            <div className="ship-card-title-main">
+              <span className="title-icon"><ShipIcon /></span>
+              <div>
+                <h2>AIS gəmilər</h2>
+                <p>Xəzər dənizi akvatoriyasında aktiv və gözləmədə olan gəmilər</p>
+              </div>
+            </div>
+            <span className="ship-card-count-badge"><strong>{rows.length}</strong> gəmi</span>
+          </div>
+
           <div className="table-tools ships-table-tools">
-            <label><Search /><input placeholder="Gəmi axtar..." value={q} onChange={e => setQ(e.target.value)} /></label>
+            <label className="ships-search-input">
+              <Search />
+              <input placeholder="Gəmi adı, IMO və ya yük axtar..." value={q} onChange={e => setQ(e.target.value)} />
+            </label>
             <select value={status} onChange={e => setStatus(e.target.value)} aria-label="Status üzrə filtr">
               <option value="Hamısı">Bütün statuslar</option>
               <option>Lövbərdə</option>
               <option>Yolda</option>
               <option>Körpüdə</option>
             </select>
-            <label className="ships-port-filter"><MapPinned /><select value={port} onChange={e => setPort(e.target.value)} aria-label="Dəniz limanı üzrə filtr">
-              <option value="Hamısı">Bütün limanlar ({ships.length})</option>
-              {portOptions.map(item => <option value={item.name} key={item.name}>{item.name} ({item.count})</option>)}
-            </select></label>
-            <button type="button" onClick={resetShipFilters} aria-label="Bütün filtrləri sıfırla" disabled={!q && status === 'Hamısı' && port === 'Hamısı'}><Filter /></button>
+            <select value={direction} onChange={e => setDirection(e.target.value as typeof direction)} aria-label="İstiqamət üzrə filtr">
+              <option value="Hamısı">Bütün istiqamətlər</option>
+              <option value="Gələn">Gələn</option>
+              <option value="Gedən">Gedən</option>
+            </select>
+            <label className="ships-port-filter">
+              <MapPinned />
+              <select value={port} onChange={e => setPort(e.target.value)} aria-label="Dəniz limanı üzrə filtr">
+                <option value="Hamısı">Bütün limanlar ({ships.length})</option>
+                {portOptions.map(item => <option value={item.name} key={item.name}>{item.name} ({item.count})</option>)}
+              </select>
+            </label>
+            <button
+              type="button"
+              className="ships-reset-btn"
+              onClick={resetShipFilters}
+              aria-label="Bütün filtrləri sıfırla"
+              title="Filtrləri sıfırla"
+              disabled={!q && status === 'Hamısı' && direction === 'Hamısı' && port === 'Hamısı'}
+            >
+              <Filter />
+            </button>
           </div>
         </header>
         <div className="table-scroll">
@@ -244,7 +282,7 @@ export default function Ships() {
               <tr>
                 <th>Gəmi / IMO</th>
                 <th>Yük</th>
-                <th>Status</th>
+                <th>Status / istiqamət</th>
                 <th>Kanal</th>
                 <th>Marşrut</th>
                 <th>Sürət</th>
@@ -260,7 +298,7 @@ export default function Ships() {
                     </div>
                   </td>
                   <td><strong>{g.yuk}</strong><small>{g.tonaj.toLocaleString('az-AZ')} ton</small></td>
-                  <td><StatusBadge status={g.status} /></td>
+                  <td><StatusBadge status={g.status} /><small>{getShipOperationLabel(g)}</small></td>
                   <td>{g.kanal}</td>
                   <td><span className="ship-route-cell"><strong>{normalizePortName(g.menshe)}</strong><ChevronRight /><strong>{normalizePortName(g.teyinat ?? '—')}</strong></span></td>
                   <td>{g.suret} düyün</td>
@@ -276,6 +314,16 @@ export default function Ships() {
             </tbody>
           </table>
         </div>
+      </Card>
+
+      <Card className="radar-panel" hover={false}>
+        <header className="card-heading">
+          <div>
+            <span className="title-icon"><Waves /></span>
+            <h2>AIS radar paneli</h2>
+          </div>
+        </header>
+        <SeaMap visibleShips={rows} />
       </Card>
     </section>
 
@@ -433,7 +481,7 @@ export default function Ships() {
     </section>
 
     <ShipDetailModal
-      ship={selectedShip}
+      ship={selectedShip ? ships.find(ship => ship.id === selectedShip.id) ?? selectedShip : null}
       open={!!selectedShip}
       onClose={() => {
         setSelectedShip(null)
@@ -454,6 +502,12 @@ export default function Ships() {
             <option value="Lövbərdə">Lövbərdə</option>
             <option value="Yolda">Yolda</option>
             <option value="Körpüdə">Körpüdə</option>
+          </select>
+        </label>
+        <label>İstiqamət
+          <select value={newShipDirection} onChange={e => setNewShipDirection(e.target.value as GemiIstiqameti)}>
+            <option value="Gələn">Gələn</option>
+            <option value="Gedən">Gedən</option>
           </select>
         </label>
         <label>Kanal<input required value={newShipChannel} onChange={e => setNewShipChannel(e.target.value)} /></label>

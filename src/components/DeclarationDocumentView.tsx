@@ -1,8 +1,4 @@
-import { useEffect, useState } from 'react'
 import type { Declaration } from '../data/mockData'
-import { fetchExchangeRates, type LiveRates } from '../services/liveData'
-
-const RATE_CODES = ['USD', 'EUR', 'GBP', 'TRY', 'RUB', 'CNY'] as const
 
 const num = (value: number, digits = 2) =>
   new Intl.NumberFormat('az-AZ', { maximumFractionDigits: digits }).format(value)
@@ -36,23 +32,12 @@ function InfoTable({ rows }: { rows: Row[] }) {
 export function DeclarationDocumentView({
   declaration: d,
   compact = false,
-  /** Qeydiyyatdakı maşın nömrəsi — bəyannamə ilə eyni olmalıdır */
   vehiclePlate,
 }: {
   declaration: Declaration
   compact?: boolean
   vehiclePlate?: string
 }) {
-  const [rates, setRates] = useState<LiveRates | null>(null)
-
-  useEffect(() => {
-    let alive = true
-    void fetchExchangeRates().then(data => {
-      if (alive) setRates(data)
-    })
-    return () => { alive = false }
-  }, [])
-
   const item = d.mallar[0]
   const gonderen = d.gonderen ?? d.satici
   const gonderenOlke = d.gonderenOlke ?? d.saticiOlke
@@ -66,70 +51,64 @@ export function DeclarationDocumentView({
   ].filter(Boolean).join(' ')
 
   const adminRows: Row[] = [
-    { label: 'Sənədin növü', value: d.senedNovu ?? 'Gömrük bəyannaməsi' },
-    { label: 'Bəyannamə №', value: d.kod },
-    { label: 'Tarix', value: formatDate(d) },
-    { label: 'Göndərən', value: gonderen ? `"${gonderen}"${gonderenOlke ? `, ${gonderenOlke.toUpperCase()}` : ''}` : '—' },
-    { label: 'Alıcı', value: d.alici ? `"${d.alici}"${d.aliciOlke ? `, ${d.aliciOlke}` : ''}` : '—' },
-    { label: 'Bəyannaməçi / Təmsilçi', value: [brokerLine, d.brokerUnvan].filter(Boolean).join('\n') },
-    { label: 'Ticarət edən ölkə', value: d.ticaretolke ? `${d.ticaretolke}${d.ticaretolkeKodu ? ` (${d.ticaretolkeKodu})` : ''}` : '—' },
-    { label: 'Mənşə ölkəsi', value: d.menseOlke ?? item.menşe ?? '—' },
+    { label: 'Bəyannamənin tipi (Qr. 1)', value: d.senedNovu ?? (d.gomrukRejimi === '80 00 00' ? 'İD 80 (Tranzit)' : 'İD 40 (İdxal)') },
+    { label: 'Sorğu / Bəyannamə №', value: d.kod },
+    { label: 'Tarix və vaxt', value: formatDate(d) },
+    { label: 'Göndərən / İxracatçı (Qr. 2)', value: gonderen ? `"${gonderen}"${gonderenOlke ? `, ${gonderenOlke}` : ''}` : '—' },
+    { label: 'Malı qəbul edən / İdxalatçı (Qr. 8)', value: d.alici ? `"${d.alici}"${d.aliciOlke ? `, ${d.aliciOlke}` : ''}` : '—' },
+    { label: 'Bəyannaməçi / Təmsilçi (Qr. 14)', value: [brokerLine, d.brokerUnvan].filter(Boolean).join('\n') },
+    { label: 'Göndərən ölkə (Qr. 15)', value: d.gonderenOlke ?? d.ticaretolke ?? '—' },
+    { label: 'Təyinat ölkəsi (Qr. 17)', value: d.aliciOlke ?? 'Qazaxıstan' },
     {
-      label: 'Sərhəddəki nəqliyyat vasitəsi',
-      // Yalnız maşın nömrəsi — liman mətni göstərilmir
-      value: (vehiclePlate || d.avtomobil || '').trim() || '—',
+      label: 'Sərhəddəki nəqliyyat vasitəsi (Qr. 18/21)',
+      value: (vehiclePlate || d.serhedNeqliyyat || d.avtomobil || '').trim() || '—',
     },
-    { label: 'Sərhədi keçmə məntəqəsi', value: d.serhedKecmeMentegesi ?? '—' },
-    { label: 'Gömrük rəsmiləşdirilməsini aparan şəxs', value: operatorLine || '—' },
-    { label: 'Bill of Lading', value: d.billOfLading ?? '—' },
-    { label: 'Təyinat gömrük orqanı', value: d.teyinatGomrukOrqani ?? '—' },
+    { label: 'Sərhəd gömrük orqanı (Qr. 29)', value: d.serhedKecmeMentegesi ?? '00204 Qırmızı körpü g/p' },
+    { label: 'Təyinat gömrük orqanı (Qr. 30)', value: d.teyinatGomrukOrqani ?? '13005 Beynəlxalq Dəniz Ticarət Limanı g/p' },
+    { label: 'Gömrük rəsmiləşdirilməsini aparan şəxs (Qr. 54)', value: operatorLine || '—' },
+    { label: 'Əlaqəli B/L və ya CMR qaiməsi', value: d.billOfLading ? `B/L: ${d.billOfLading}${d.vehicleOrder ? ` · Order: ${d.vehicleOrder}` : ''}` : '—' },
   ]
 
   const goodsRows: Row[] = [
-    { label: 'Malın adı və təsviri', value: item.ad },
-    { label: 'Yer sayı', value: `${item.miqdar} ${item.olcuVahidi}` },
-    { label: 'XİF MN kodu', value: (item.xifMnKodu ?? item.hsKod).replace(/(\d{6})(\d+)/, '$1 $2') },
-    { label: 'Brutto çəki (kq)', value: item.bruttoCeki != null ? num(item.bruttoCeki) : '—' },
-    { label: 'Netto çəki (kq)', value: item.netCeki != null ? num(item.netCeki) : '—' },
-    { label: 'Malın mənşə ölkəsi', value: item.menşe ?? d.menseOlke ?? '—' },
+    { label: 'Malın sıra nömrəsi və adı (Qr. 31)', value: `1. ${item.ad}` },
+    { label: 'Yer və bağlama sayı', value: `${item.miqdar} ${item.olcuVahidi}` },
+    { label: 'Malın kodu - XİF MN (Qr. 33)', value: (item.xifMnKodu ?? item.hsKod).replace(/(\d{6})(\d+)/, '$1 $2') },
+    { label: 'Brutto çəki (Qr. 35)', value: item.bruttoCeki != null ? `${num(item.bruttoCeki)} kq` : '—' },
+    { label: 'Netto çəki (Qr. 38)', value: item.netCeki != null ? `${num(item.netCeki)} kq` : '—' },
+    { label: 'Mənşə ölkəsi (Qr. 34)', value: item.menşe ?? d.menseOlke ?? '—' },
+    { label: 'İnvoys dəyəri və valyuta (Qr. 22)', value: d.invoysDeyer ? `${num(d.invoysDeyer)} ${d.valyuta === 'AZN' && d.valyutaMezennesi && d.valyutaMezennesi !== 1 ? (d.valyutaMezennesi > 1 ? 'EUR' : 'KZT') : d.valyuta}` : '—' },
+    { label: 'Rəsmi valyuta məzənnəsi (Qr. 23)', value: d.valyutaMezennesi ? `${d.valyutaMezennesi.toFixed(4)} AZN` : '1.7000 AZN' },
+    { label: 'Ümumi gömrük dəyəri (Qr. 45/46)', value: `${num(d.umumiDeyer)} AZN` },
+    { label: 'Statistik dəyər (Qr. 46)', value: d.statistikDeyer ? `${num(d.statistikDeyer)} USD` : '—' },
+    { label: 'Əməliyyat / Prosedur kodu (Qr. 37)', value: d.gomrukRejimi ?? '80 00 00' },
   ]
 
   return (
     <div className={`decl-doc-view${compact ? ' compact' : ''}`}>
-      <div className="fx-rate-line" aria-label="Anlıq valyuta məzənnələri">
-        <span className="fx-rate-label">Anlıq məzənnə · AZN</span>
-        <div className="fx-rate-items">
-          {RATE_CODES.map(code => (
-            <span key={code} className="fx-rate-item">
-              <b>{code}</b>
-              <em>{rates?.toAzn[code] != null ? num(rates.toAzn[code], 4) : '…'}</em>
-            </span>
-          ))}
-        </div>
-      </div>
-
       <header className="decl-doc-head">
         <div>
-          <small>GÖMRÜK BƏYANNAMƏSİ · TEMPLATE</small>
-          <strong>{d.kod}</strong>
-          <span>{d.source ?? 'Elektron gömrük sənədi'}</span>
+          <small>AZƏRBAYCAN RESPUBLİKASI DÖVLƏT GÖMRÜK KOMİTƏSİ</small>
+          <strong>{d.senedNovu ?? 'GÖMRÜK BƏYANNAMƏSİ'} · {d.kod}</strong>
+          <span>Sorğu qeydiyyatı: {formatDate(d)} · {d.source ?? 'Elektron Vahid Pəncərə'}</span>
         </div>
-        <em className="decl-status-pill">{d.status}</em>
+        <em className={`decl-status-pill ${d.status === 'Təsdiqlənib' ? 'approved' : d.status === 'Risk nəzarəti' ? 'risk' : 'review'}`}>
+          {d.status}
+        </em>
       </header>
 
       <section className="decl-doc-section">
-        <h3><span>01</span> Ümumi və inzibati məlumatlar</h3>
+        <h3><span>01</span> Ümumi və İnzibati Məlumatlar (Qrafalar 1–30)</h3>
         <InfoTable rows={adminRows} />
       </section>
 
       <section className="decl-doc-section">
-        <h3><span>02</span> Mal və yük haqqında məlumat</h3>
+        <h3><span>02</span> Mal və Dəyər Spesifikasiyası (Qrafalar 31–46)</h3>
         {d.mallar.length > 1 && (
           <div className="decl-goods-list">
             {d.mallar.map((mal, idx) => (
               <article key={`${mal.hsKod}-${idx}`}>
                 <b>{idx + 1}. {mal.ad}</b>
-                <small>XİF {mal.xifMnKodu ?? mal.hsKod} · {mal.miqdar} {mal.olcuVahidi}</small>
+                <small>XİF {mal.xifMnKodu ?? mal.hsKod} · {mal.miqdar} {mal.olcuVahidi} · {num(mal.deyer)} AZN</small>
               </article>
             ))}
           </div>
@@ -137,9 +116,66 @@ export function DeclarationDocumentView({
         <InfoTable rows={goodsRows} />
       </section>
 
+      {/* Qr 47 Gömrük ödənişləri */}
+      {d.odemeler && d.odemeler.length > 0 && (
+        <section className="decl-doc-section">
+          <h3><span>03</span> Hesablanmış Gömrük Ödənişləri (Qrafa 47)</h3>
+          <table className="decl-payments-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, marginTop: 8 }}>
+            <thead>
+              <tr style={{ background: 'var(--bg-accent, rgba(0,0,0,0.04))', textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
+                <th style={{ padding: '6px 10px' }}>Növ (Kod)</th>
+                <th style={{ padding: '6px 10px', textAlign: 'right' }}>Hesablama bazası</th>
+                <th style={{ padding: '6px 10px', textAlign: 'right' }}>Tarif dərəcəsi</th>
+                <th style={{ padding: '6px 10px', textAlign: 'right' }}>Məbləğ (AZN)</th>
+                <th style={{ padding: '6px 10px', textAlign: 'center' }}>ÖÜ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {d.odemeler.map((p, idx) => (
+                <tr key={`${p.kod}-${idx}`} style={{ borderBottom: '1px solid var(--border, #e5e7eb)' }}>
+                  <td style={{ padding: '6px 10px', fontFamily: 'monospace', fontWeight: 600 }}>
+                    {p.kod === '01' ? '01 - Gömrük yığımı' : p.kod === '03' ? '03 - Əlavə vərəq yığımı' : p.kod === '20' ? '20 - İdxal gömrük rüsumu' : p.kod === '32' ? '32 - Əlavə Dəyər Vergisi (18%)' : p.kod === '75' ? '75 - Gömrük xidməti haqqı' : p.kod === '85' ? '85 - Elektron xidmət haqqı' : `${p.kod} - Digər ödəniş`}
+                  </td>
+                  <td style={{ padding: '6px 10px', textAlign: 'right' }}>{p.hesablamaEsasi ? num(p.hesablamaEsasi) : '—'}</td>
+                  <td style={{ padding: '6px 10px', textAlign: 'right' }}>{p.faizVeyaTarif}</td>
+                  <td style={{ padding: '6px 10px', textAlign: 'right', fontWeight: 700 }}>{num(p.mebleg)} AZN</td>
+                  <td style={{ padding: '6px 10px', textAlign: 'center', fontFamily: 'monospace' }}>{p.od}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr style={{ fontWeight: 700, borderTop: '2px solid var(--border)' }}>
+                <td colSpan={3} style={{ padding: '8px 10px' }}>YEKUN GÖMRÜK ÖDƏNİŞLƏRİ CƏMİ:</td>
+                <td style={{ padding: '8px 10px', textAlign: 'right', color: 'var(--primary, #0A4D8C)' }}>
+                  {num(d.odemeler.reduce((s, p) => s + p.mebleg, 0))} AZN
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </section>
+      )}
+
+      {/* Təqdim olunan sənədlər */}
+      <section className="decl-doc-section">
+        <h3><span>04</span> Təqdim Olunan Sənədlər (Qrafa 44)</h3>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 12 }}>
+          <span style={{ padding: '4px 8px', background: 'var(--bg-accent, rgba(0,0,0,0.05))', borderRadius: 4, border: '1px solid var(--border)' }}>
+            <strong>2015</strong> — Beynəlxalq CMR / Nəqliyyat qaiməsi
+          </span>
+          <span style={{ padding: '4px 8px', background: 'var(--bg-accent, rgba(0,0,0,0.05))', borderRadius: 4, border: '1px solid var(--border)' }}>
+            <strong>4041</strong> — Kommersiya İnvoysu / Hesab-faktura
+          </span>
+          <span style={{ padding: '4px 8px', background: 'var(--bg-accent, rgba(0,0,0,0.05))', borderRadius: 4, border: '1px solid var(--border)' }}>
+            <strong>8001</strong> — Mənşə Sertifikatı / Tranzit icazəsi
+          </span>
+        </div>
+      </section>
+
       <footer className="decl-doc-note">
-        Qeyd: Bəyannamə sistem tərəfindən {formatDate(d)} tarixində buraxılmışdır.
+        Təsdiq: GB-də göstərilən məlumatlar rəsmi elektron reyestr ilə tam uyğundur. Bəyannaməçi: <strong>{d.broker}</strong>
       </footer>
     </div>
   )
 }
+

@@ -1,0 +1,78 @@
+Vahid Liman Portalı 
+
+
+İdarə etmə paneli ilə Gəmi əməliyyatları paneli eynidir
+
+1.  Logo altında
+VGLP 
+ALtında açılışını qeyd edək
+
+------------------------------
+Lövbərdə parçalayarıq 2 yerə gələn və gedən 
+
+Yolda olanı da parçalayırıq gələn və gedənlər 
+
+Nəqliyyat vasitələri bölməsini daha ümumi bir hala salırıq. 
+İlk öncə gəmilərin siyahısı göstərilir. 
+
+GƏmi seçildikdən sorna var olan pəncərələr açılır
+
+
+
+Gəminin üzərinə girəndə daha çox detal görsənsin 
+
+
+2 əməliyyat aktiv -  məlumatl silinməlidr 
+Bu gün emal -  məlumatl silinməlidr 
+2 əməliyyat aktiv -  məlumatl silinməlidr 
+2 əməliyyat aktiv -  məlumatl silinməlidr 
+
+
+
+Ələt Havası - Hava şəraiti 
+Məzənnə gərək deyil 
+
+
+
+------------------------
+
+bunları silək 
+```
+ADDIM 1
+Gəmi
+ADDIM 2
+Manifest
+ADDIM 3
+Bəyannamə + risk
+ADDIM 4
+Yol vergiləri
+ADDIM 5
+Nəqliyyat sənədi
+ADDIM 6
+Təsdiq
+RO-RO MANİFESTİ & GÖYƏRTƏ NƏZARƏTİ
+Gəmi göyərtəsi və TIR yerləşmə planı
+Şah İsmayıl (IMO9251845) göyərtəsindəki bütün nəqliyyat vasitələrinin zolaqlar üzrə manifest məlumatları. Birbaşa TIR-ı seçərək qeydiyyata başlaya bilərsiniz.
+
+30
+Göyərtədə TIR
+0
+Qeydiyyatdan keçib
+30
+Gözləyir
+8
+Fiziki yoxlama
+ 
+ 
+```
+
+
+--------------------------------
+
+
+
+
+ƏLƏT LİMANI 
+
+Beynəlxalq dəniz ticarət limanı olaraq dəyişdir
+

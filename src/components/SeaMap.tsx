@@ -3,6 +3,7 @@ import { CircleMarker, MapContainer, Polyline, Popup, TileLayer, Tooltip } from 
 import { gemiler, limanlar } from '../data/mockData'
 import { useAppStore } from '../store/useAppStore'
 import ShipDetailModal from './ShipDetailModal'
+import { getShipDirection, getShipOperationLabel } from '../domain/ships'
 
 const routeColor = '#00B4D8'
 
@@ -77,7 +78,7 @@ export default function SeaMap({
               <Tooltip direction="top" offset={[0, -8]}>
                 <div className="map-ship-tooltip-text">
                   <strong>{g.ad}</strong>
-                  <small>{g.novu} · {g.status}</small>
+                  <small>{g.novu} · {getShipOperationLabel(g)}</small>
                   <span>{g.suret} düyün · {g.yuk}</span>
                 </div>
               </Tooltip>
@@ -89,7 +90,8 @@ export default function SeaMap({
                     <small>{g.id} · {g.bayraq}</small>
                   </div>
                   <div className="map-popup-meta">
-                    <div><span>Status:</span> <b>{g.status}</b></div>
+                    <div><span>Status:</span> <b>{g.status} · {getShipDirection(g)}</b></div>
+                    <div><span>Əməliyyat:</span> <b>{getShipOperationLabel(g)}</b></div>
                     <div><span>Sürət:</span> <b>{g.suret} kn</b> ({Math.round(g.suret * 1.852)} km/s)</div>
                     <div><span>Yük:</span> <b>{g.yuk}</b></div>
                     <div><span>Mənşə:</span> <b>{g.menshe}</b></div>
@@ -115,7 +117,7 @@ export default function SeaMap({
       </div>
 
       <ShipDetailModal
-        ship={selected}
+        ship={selected ? ships.find(ship => ship.id === selected.id) ?? selected : null}
         open={!!selected}
         onClose={() => setSelected(null)}
       />
