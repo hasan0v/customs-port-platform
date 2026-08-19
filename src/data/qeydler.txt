@@ -75,9 +75,6 @@ Containerların cari vəziyyəti,daxilindəki yüklərin TEU dəyəri və.s kimi
 Qeydiyyat bölməsində yalnız körpüdə olan və  gedən/gələn gəmilərin prosesi gedir.
 
 
-Qeydiyyat bölməsində klik edəndə 02 dəki məlumatlar elə sağda görünsün. aşağıdan 02 dən silək.
-
-Buglar var Qeydiyyat bölməsində gəmilərə görə filterləmək falan olmur  
 
 
 
