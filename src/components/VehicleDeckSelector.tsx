@@ -486,11 +486,11 @@ export default function VehicleDeckSelector({
                       <CheckCircle2 size={12} /> TƏSDİQLƏNİB
                     </span>
                   ) : selectedVehicle.workflowStatus === 'inspected' ? (
-                    <span className="plate-badge-pending" style={{ fontSize: 10, background: '#ffedd5', color: '#9a3412', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>
+                    <span className="plate-badge-pending warning">
                       YOXLAMADA
                     </span>
                   ) : (
-                    <span className="plate-badge-pending" style={{ fontSize: 10, background: '#fef3c7', color: '#92400e', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>
+                    <span className="plate-badge-pending">
                       GÖZLƏMƏDƏ
                     </span>
                   )}
@@ -550,32 +550,23 @@ export default function VehicleDeckSelector({
                 {/* Linked Customs Declaration */}
                 <div
                   className="panel-decl-box"
-                  style={{
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: 8,
-                    padding: '10px 12px',
-                    marginTop: 10,
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
                   onClick={() => setDeclModalOpen(true)}
                   title="Tam gömrük bəyannaməsini aç"
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                    <small style={{ fontSize: 10, textTransform: 'uppercase', color: '#64748b', fontWeight: 700, letterSpacing: '0.05em' }}>GÖMRÜK BƏYANNAMƏSİ (EGB)</small>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 10, background: '#dcfce7', color: '#166534', padding: '1px 6px', borderRadius: 4, fontWeight: 700 }}>
+                  <div className="panel-decl-head">
+                    <small>GÖMRÜK BƏYANNAMƏSİ (EGB)</small>
+                    <div className="panel-decl-status">
+                      <span className="status-chip success">
                         {linkedDecl?.status || 'Təsdiqlənib'}
                       </span>
-                      <ExternalLink size={12} style={{ color: '#64748b' }} />
+                      <ExternalLink size={12} className="decl-ext-icon" />
                     </div>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <strong style={{ fontSize: 13, color: '#0f172a', fontFamily: 'monospace' }}>
+                  <div className="panel-decl-body">
+                    <strong className="decl-code">
                       {linkedDecl?.kod || '01263000224935'}
                     </strong>
-                    <span style={{ fontSize: 11, color: '#0284c7', fontWeight: 600 }}>
+                    <span className="decl-type">
                       {linkedDecl?.senedNovu || 'İD 80 · Tranzit'}
                     </span>
                   </div>

@@ -1512,7 +1512,7 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   height: 100%;
   width: 100%;
   padding: 0;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--text);
 }
 .clear-search {
@@ -1520,7 +1520,7 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1;
 }
 
@@ -1536,9 +1536,9 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .filter-pill {
   border: 0;
   background: transparent;
-  padding: 4px 9px;
+  padding: 6px 12px;
   border-radius: 7px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--muted);
   cursor: pointer;
@@ -1564,14 +1564,14 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .view-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  height: 32px;
-  padding: 0 10px;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--card);
   color: var(--muted);
-  font-size: 9.5px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.14s ease;
@@ -1594,7 +1594,7 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 /* Layout Grid */
 .deck-selector-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.75fr);
+  grid-template-columns: minmax(0, 1.65fr) minmax(340px, 0.75fr);
   align-items: stretch;
 }
 
@@ -1629,7 +1629,7 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   border-radius: 20px 20px 8px 8px;
   background: linear-gradient(180deg, #073f70 0%, #0a4d8c 100%);
   color: #d8f1f7;
-  font-size: 8.5px;
+  font-size: 10px;
   font-weight: 850;
   letter-spacing: 0.08em;
   box-shadow: 0 4px 12px rgba(7, 63, 112, 0.2);
@@ -1650,12 +1650,12 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 9px;
+  padding: 5px 10px;
   border-radius: 7px;
   border: 1px solid var(--line);
   background: var(--card);
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: 11px;
   font-weight: 750;
   cursor: pointer;
   transition: all 0.14s ease;
@@ -1691,7 +1691,7 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   gap: 10px;
   padding: 8px 16px;
   overflow-y: auto;
-  max-height: 480px;
+  max-height: 520px;
 }
 .deck-lane-column {
   display: flex;
@@ -1702,7 +1702,7 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   overflow: hidden;
 }
 .lane-header {
-  padding: 6px 10px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1710,14 +1710,14 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   border-bottom: 1px solid var(--line);
 }
 .lane-tag {
-  font-size: 7.5px;
-  font-weight: 850;
-  letter-spacing: 0.06em;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   color: var(--muted);
   text-transform: uppercase;
 }
 .lane-header small {
-  font-size: 8px;
+  font-size: 11.5px;
   font-weight: 800;
   color: var(--ocean);
 }
@@ -1725,14 +1725,14 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   flex: 1;
   overflow-y: auto;
 }
 .empty-lane {
   padding: 24px 10px;
   text-align: center;
-  font-size: 9px;
+  font-size: 12px;
   color: var(--muted);
 }
 
@@ -1741,8 +1741,8 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px 9px;
+  gap: 6px;
+  padding: 10px 11px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--card);
@@ -1781,9 +1781,9 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   gap: 6px;
 }
 .slot-bay-label {
-  font-size: 7.5px;
+  font-size: 10.5px;
   font-weight: 850;
-  padding: 1px 4px;
+  padding: 2px 5px;
   border-radius: 4px;
   background: var(--bg);
   border: 1px solid var(--line);
@@ -1793,22 +1793,22 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 5px;
+  padding: 2px 6px;
   border-radius: 5px;
   border: 1px solid #142033;
   background: #fff;
   color: #142033;
 }
 .slot-country-tag {
-  font-size: 6.5px;
+  font-size: 8.5px;
   font-weight: 900;
   color: #fff;
-  padding: 1px 3px;
+  padding: 1px 4px;
   border-radius: 2px;
   line-height: 1;
 }
 .slot-plate-num {
-  font-size: 9.5px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.4px;
   white-space: nowrap;
@@ -1820,19 +1820,19 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .card-mid-row {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 .card-model-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 .model-truck-icon {
   color: var(--ocean);
   flex-shrink: 0;
 }
 .model-name {
-  font-size: 8.5px;
+  font-size: 12px;
   font-weight: 750;
   color: var(--text);
   white-space: nowrap;
@@ -1841,18 +1841,18 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   flex: 1;
 }
 .weight-tag {
-  font-size: 7.5px;
+  font-size: 11px;
   font-weight: 750;
   color: var(--muted);
 }
 .card-cargo-preview {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 4px;
-  border-radius: 4px;
+  gap: 5px;
+  padding: 4px 6px;
+  border-radius: 5px;
   background: var(--bg);
-  font-size: 7.5px;
+  font-size: 11px;
   color: var(--muted);
 }
 .cargo-box-icon {
@@ -1869,11 +1869,11 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
-  font-size: 7px;
+  gap: 6px;
+  font-size: 11px;
   color: var(--muted);
   border-top: 1px dashed var(--line);
-  padding-top: 3px;
+  padding-top: 5px;
 }
 .driver-name {
   white-space: nowrap;
@@ -1924,19 +1924,19 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   top: 0;
   background: var(--bg);
   z-index: 2;
-  font-size: 7.5px;
-  font-weight: 850;
-  letter-spacing: 0.05em;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted);
-  padding: 9px 11px;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
 }
 .deck-manifest-table td {
-  padding: 8px 11px;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--line);
-  font-size: 9.5px;
+  font-size: 12.5px;
   vertical-align: middle;
 }
 .manifest-row {
@@ -1953,9 +1953,9 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   background: rgba(244, 162, 97, 0.1) !important;
 }
 .bay-badge {
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 850;
-  padding: 2px 5px;
+  padding: 2px 6px;
   border-radius: 4px;
   background: var(--bg);
   border: 1px solid var(--line);
@@ -1964,48 +1964,55 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .table-plate-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 6px;
+  gap: 5px;
+  padding: 3px 8px;
   border-radius: 5px;
   border: 1px solid #142033;
   background: #fff;
   color: #142033;
 }
 .table-plate-badge .flag-code {
-  font-size: 7px;
+  font-size: 9px;
   font-weight: 900;
   color: #fff;
-  padding: 1px 3px;
+  padding: 1px 4px;
   border-radius: 2px;
+}
+.table-plate-badge strong {
+  font-size: 12.5px;
 }
 .table-model-col {
   display: flex;
   flex-direction: column;
 }
 .table-model-col strong {
-  font-size: 9.5px;
+  font-size: 12.5px;
 }
 .table-model-col small {
-  font-size: 7.5px;
+  font-size: 11px;
   color: var(--muted);
 }
 .table-cargo-text {
-  max-width: 140px;
+  max-width: 160px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+  font-size: 12px;
 }
 .table-driver-col {
   display: flex;
   flex-direction: column;
 }
+.table-driver-col span {
+  font-size: 12px;
+}
 .table-driver-col small {
-  font-size: 7.5px;
+  font-size: 11px;
   color: var(--muted);
 }
 .table-bl-code {
-  font-size: 8px;
+  font-size: 11.5px;
   font-weight: 750;
   color: var(--ocean);
 }
@@ -2013,9 +2020,9 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 6px;
+  padding: 4px 8px;
   border-radius: 6px;
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -2039,13 +2046,13 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .select-row-btn {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 3px 8px;
+  gap: 4px;
+  padding: 4px 10px;
   border-radius: 6px;
   border: 1px solid var(--line);
   background: var(--card);
   color: var(--ocean);
-  font-size: 8.5px;
+  font-size: 11px;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.14s ease;
@@ -2059,7 +2066,7 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   padding: 30px;
   text-align: center;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 /* Right Selection Detail Panel */
@@ -2073,8 +2080,8 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .deck-panel-vessel {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 9px 12px;
+  gap: 10px;
+  padding: 10px 14px;
   border-radius: 11px;
   border: 1px solid var(--line);
   background: var(--bg);
@@ -2089,26 +2096,26 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   min-width: 0;
 }
 .deck-panel-vessel span {
-  font-size: 7px;
+  font-size: 10px;
   font-weight: 850;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--muted);
 }
 .deck-panel-vessel strong {
-  font-size: 12px;
+  font-size: 15px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .deck-panel-vessel small {
-  font-size: 8px;
+  font-size: 11.5px;
   color: var(--muted);
 }
 
 .deck-selected-car {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 .panel-section-head {
   display: flex;
@@ -2118,19 +2125,19 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .panel-kicker {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 7.5px;
+  gap: 6px;
+  font-size: 11px;
   font-weight: 850;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   color: var(--ocean);
 }
 .dark .panel-kicker {
   color: #64d8ec;
 }
 .bay-pill {
-  font-size: 8.5px;
+  font-size: 11.5px;
   font-weight: 850;
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: 5px;
   background: rgba(10, 77, 140, 0.1);
   color: var(--ocean);
@@ -2145,9 +2152,9 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 2px solid #142033;
-  border-radius: 9px;
+  border-radius: 10px;
   background: #fff;
   color: #142033;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
@@ -2157,15 +2164,15 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   align-items: center;
 }
 .plate-country-code {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 900;
-  padding: 2px 5px;
+  padding: 3px 6px;
   border-radius: 3px;
   background: #0087a8;
   color: #fff;
 }
 .plate-main-text strong {
-  font-size: 19px;
+  font-size: 22px;
   font-weight: 900;
   letter-spacing: 1px;
   color: #142033;
@@ -2173,12 +2180,12 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .plate-badge-done {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 3px 6px;
-  border-radius: 4px;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 5px;
   background: #2a9d8f;
   color: #fff;
-  font-size: 7.5px;
+  font-size: 11px;
   font-weight: 850;
 }
 
@@ -2186,23 +2193,23 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .panel-details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
 }
 .panel-details-grid div {
-  padding: 7px 9px;
+  padding: 8px 10px;
   border-radius: 8px;
   background: var(--bg);
   border: 1px solid var(--line);
 }
 .panel-details-grid dt {
-  font-size: 7px;
+  font-size: 11px;
   font-weight: 750;
   color: var(--muted);
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 .panel-details-grid dd {
-  font-size: 9.5px;
+  font-size: 13px;
   font-weight: 750;
   color: var(--text);
   margin: 0;
@@ -2215,8 +2222,8 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .panel-cargo-box {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 9px 11px;
+  gap: 9px;
+  padding: 10px 12px;
   border-radius: 9px;
   border-left: 3px solid var(--ocean);
   background: rgba(10, 77, 140, 0.05);
@@ -2228,7 +2235,7 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .cargo-icon {
   color: var(--ocean);
   flex-shrink: 0;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 .dark .cargo-icon {
   color: #64d8ec;
@@ -2236,17 +2243,17 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .cargo-content {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   min-width: 0;
 }
 .cargo-content small {
-  font-size: 7px;
+  font-size: 10.5px;
   font-weight: 850;
   color: var(--muted);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 .cargo-content strong {
-  font-size: 10px;
+  font-size: 12.5px;
   font-weight: 750;
   color: var(--text);
   line-height: 1.35;
@@ -2256,26 +2263,26 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .panel-clearances-box {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 .panel-clearances-box small {
-  font-size: 7px;
+  font-size: 10.5px;
   font-weight: 850;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   color: var(--muted);
 }
 .clearance-tags-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 5px;
 }
 .clr-tag {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 3px 6px;
-  border-radius: 5px;
-  font-size: 7.5px;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
   font-weight: 800;
 }
 .clr-tag.ok {
@@ -2287,10 +2294,177 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   color: #49dc9d;
 }
 
+/* Panel Declaration Box */
+.panel-decl-box {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.panel-decl-box:hover {
+  border-color: var(--ocean);
+  box-shadow: 0 4px 12px rgba(10, 77, 140, 0.08);
+}
+.dark .panel-decl-box {
+  background: #0d233a !important;
+  border-color: #1f3b5c !important;
+}
+.panel-decl-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.panel-decl-head small {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+.panel-decl-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.decl-ext-icon {
+  color: var(--muted);
+}
+.panel-decl-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.decl-code {
+  font-size: 13.5px;
+  color: var(--text);
+  font-family: monospace;
+}
+.decl-type {
+  font-size: 11.5px;
+  color: var(--ocean);
+  font-weight: 700;
+}
+.dark .decl-type {
+  color: #64d8ec;
+}
+
+/* Ship selector select in header */
+.ship-selector-select {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+}
+.dark .ship-selector-select {
+  background: #0f2338 !important;
+  border-color: #233a54 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Plate Badges in Dark Mode */
+.plate-badge-pending {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: #fef3c7;
+  color: #92400e;
+}
+.plate-badge-pending.warning {
+  background: #ffedd5;
+  color: #9a3412;
+}
+.dark .plate-badge-pending {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+.dark .plate-badge-pending.warning {
+  background: rgba(249, 115, 22, 0.2) !important;
+  color: #fb923c !important;
+  border: 1px solid rgba(249, 115, 22, 0.35);
+}
+.dark .official-plate-box {
+  background: #0d233a !important;
+  border-color: #1f3b5c !important;
+  color: #f1f5f9 !important;
+}
+.dark .plate-main-text strong {
+  color: #f8fafc !important;
+}
+.dark .plate-country-code {
+  background: #0284c7 !important;
+}
+
+/* Declarations Page Dark Mode Elements */
+.dark .declaration-kpis > .glass-card > svg {
+  background: rgba(0, 180, 216, 0.15) !important;
+  color: #64d8ec !important;
+}
+.dark .declarations-table-heading h2 span {
+  background: rgba(0, 180, 216, 0.18) !important;
+  color: #64d8ec !important;
+}
+.dark .status-success {
+  color: #49dc9d !important;
+  background: rgba(42, 157, 143, 0.22) !important;
+  border: 1px solid rgba(42, 157, 143, 0.35);
+}
+.dark .status-warning {
+  color: #fbb040 !important;
+  background: rgba(244, 162, 97, 0.22) !important;
+  border: 1px solid rgba(244, 162, 97, 0.35);
+}
+.dark .status-danger {
+  color: #f87171 !important;
+  background: rgba(239, 68, 68, 0.22) !important;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+.dark .status-info {
+  color: #64d8ec !important;
+  background: rgba(0, 180, 216, 0.22) !important;
+  border: 1px solid rgba(0, 180, 216, 0.35);
+}
+.dark .ship-direction-tabs {
+  background: rgba(13, 35, 58, 0.72) !important;
+}
+.dark .ship-direction-tabs button:hover {
+  color: #64d8ec !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+.dark .ship-direction-tabs button.active {
+  background: #0d233a !important;
+  color: #64d8ec !important;
+  border-color: #1f3b5c !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+}
+.dark .ship-direction-tabs button.active strong {
+  color: #64d8ec !important;
+}
+.dark .ship-direction-tabs button.active small {
+  color: #cbd5e1 !important;
+}
+
+/* Topbar Kbd in Dark Mode */
+.dark .global-search kbd, .dark .command kbd {
+  background: #162942 !important;
+  color: #94a3b8 !important;
+  border-color: #233a54 !important;
+}
+
 /* Big Action Button */
 .deck-open-registration-btn {
   width: 100%;
-  height: 42px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2299,7 +2473,7 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   border-radius: 11px;
   background: linear-gradient(135deg, #0A4D8C 0%, #0087a8 100%);
   color: #fff;
-  font-size: 10.5px;
+  font-size: 13px;
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(10, 77, 140, 0.2);
@@ -2320,6 +2494,7 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
   text-align: center;
   color: var(--muted);
   gap: 8px;
+  font-size: 12px;
 }
 .deck-empty-selection svg {
   color: var(--aqua);

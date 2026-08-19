@@ -759,7 +759,7 @@ export default function Registration() {
             <Ship size={16} /> Limandakı gəmi:
             <select
               value={shipId}
-              style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: 13, fontWeight: 600, background: '#fff' }}
+              className="ship-selector-select"
               onChange={e => {
                 const next = e.target.value
                 setShipId(next)
