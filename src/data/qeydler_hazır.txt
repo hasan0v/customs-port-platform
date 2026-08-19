@@ -101,10 +101,10 @@ Gömrük bəyannamələrində giriş çıxışa görə 2 yə bölünəcək.  Aş
 Hamısı
 13 gəmi
 
-Gedən gəmilər
+Gedən gəmilər -> Gəmi(çıxış)
 3 gəmi
 
-Gələn gəmilər
+Gələn gəmilər -> Gəmi(giriş)
 10 gəmi
 
 ```

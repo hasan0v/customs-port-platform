@@ -722,7 +722,7 @@ export default function Registration() {
       plate: v.nomre,
       declarationKod: matchedDecl?.kod || '01263000224935',
       malAdi: v.yuk || '—',
-      ceki: `${v.tonaj || 22} ton`,
+      ceki: `${(v as any).tonaj || 22} ton`,
       qeydeAlınma: now.toLocaleString('az-AZ'),
       buraxilis,
       riskVerdict: 'green',

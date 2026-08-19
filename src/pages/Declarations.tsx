@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import type { Declaration } from '../data/mockData'
 import type { GemiIstiqameti } from '../data/mockData'
-import { getShipDirection, getShipMovementSummary } from '../domain/ships'
+import { getShipDirection, getShipDirectionTabLabel, getShipMovementSummary } from '../domain/ships'
 import { useAppStore } from '../store/useAppStore'
 import { Button, Card, PageHeader, StatusBadge } from '../components/UI'
 import { DeclarationDocumentView } from '../components/DeclarationDocumentView'
@@ -220,9 +220,9 @@ export default function Declarations() {
         }
       />
 
-      {/* Gəmilərin İstiqaməti üzrə Tablar (Hamısı 13 gəmi / Gedən gəmilər 3 gəmi / Gələn gəmilər 10 gəmi) */}
+      {/* Gəmilərin İstiqaməti üzrə Tablar (Hamısı 13 gəmi / Gəmi(giriş) 10 gəmi / Gəmi(çıxış) 3 gəmi) */}
       <div className="ship-direction-tabs" role="tablist" aria-label="Bəyannamələri gəmi istiqamətinə görə göstər">
-        {(['Hamısı', 'Gedən', 'Gələn'] as const).map(direction => (
+        {(['Hamısı', 'Gələn', 'Gedən'] as const).map(direction => (
           <button
             type="button"
             role="tab"
@@ -232,10 +232,10 @@ export default function Declarations() {
             key={direction}
           >
             <span>
-              {direction === 'Hamısı' ? <Ship /> : direction === 'Gedən' ? <ArrowUpFromLine /> : <ArrowDownToLine />}
+              {direction === 'Hamısı' ? <Ship /> : direction === 'Gələn' ? <ArrowDownToLine /> : <ArrowUpFromLine />}
             </span>
             <span>
-              <strong>{direction === 'Hamısı' ? 'Hamısı' : `${direction} gəmilər`}</strong>
+              <strong>{getShipDirectionTabLabel(direction)}</strong>
               <small>
                 {directionCounts[direction]} gəmi
                 <span aria-hidden="true">·</span>

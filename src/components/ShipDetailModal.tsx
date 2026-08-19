@@ -435,7 +435,7 @@ export default function ShipDetailModal({ ship, open, onClose }: Props) {
                           <span className="tir-plate-badge">{v.nomre}</span>
                           <span className="tir-model-tag">{v.marka}</span>
                         </div>
-                        {v.ceki && <span className="tir-weight-tag"><Scale size={11} /> {v.ceki}</span>}
+                        {(v as any).ceki && <span className="tir-weight-tag"><Scale size={11} /> {(v as any).ceki}</span>}
                       </div>
 
                       <div className="tir-info-grid">

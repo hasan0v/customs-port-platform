@@ -11,7 +11,7 @@ import DateRangePicker, { type DateRange, getDefaultRange } from '../components/
 import RefreshRatePicker from '../components/RefreshRatePicker'
 import { portCalls } from '../data/operationalData'
 import type { GemiIstiqameti } from '../data/mockData'
-import { getShipDirection, getShipMovementSummary } from '../domain/ships'
+import { getShipDirection, getShipDirectionTabLabel, getShipMovementSummary } from '../domain/ships'
 import { useAppStore } from '../store/useAppStore'
 import './Dashboard.css'
 
@@ -59,11 +59,11 @@ export default function Dashboard() {
   }, [ships, shipDirection])
 
   const allDetails = useMemo(() => [
-    { label: 'Körpüdə gələn gəmi', value: movementSummary.byStatus.Körpüdə.Gələn, tone: 'green', status: 'Körpüdə' as const, direction: 'Gələn' as const },
-    { label: 'Körpüdə gedən gəmi', value: movementSummary.byStatus.Körpüdə.Gedən, tone: 'green', status: 'Körpüdə' as const, direction: 'Gedən' as const },
-    { label: 'Lövbərdə gələn gəmi', value: movementSummary.byStatus.Lövbərdə.Gələn, tone: 'amber', status: 'Lövbərdə' as const, direction: 'Gələn' as const },
-    { label: 'Yolda gələn gəmi', value: movementSummary.byStatus.Yolda.Gələn, tone: 'blue', status: 'Yolda' as const, direction: 'Gələn' as const },
-    { label: 'Yolda gedən gəmi', value: movementSummary.byStatus.Yolda.Gedən, tone: 'blue', status: 'Yolda' as const, direction: 'Gedən' as const },
+    { label: 'Körpüdə (giriş)', value: movementSummary.byStatus.Körpüdə.Gələn, tone: 'green', status: 'Körpüdə' as const, direction: 'Gələn' as const },
+    { label: 'Körpüdə (çıxış)', value: movementSummary.byStatus.Körpüdə.Gedən, tone: 'green', status: 'Körpüdə' as const, direction: 'Gedən' as const },
+    { label: 'Lövbərdə (giriş)', value: movementSummary.byStatus.Lövbərdə.Gələn, tone: 'amber', status: 'Lövbərdə' as const, direction: 'Gələn' as const },
+    { label: 'Yolda (giriş)', value: movementSummary.byStatus.Yolda.Gələn, tone: 'blue', status: 'Yolda' as const, direction: 'Gələn' as const },
+    { label: 'Yolda (çıxış)', value: movementSummary.byStatus.Yolda.Gedən, tone: 'blue', status: 'Yolda' as const, direction: 'Gedən' as const },
   ], [movementSummary])
 
   const shipStats = useMemo(() => {
@@ -132,7 +132,7 @@ export default function Dashboard() {
     </div>} />
 
     <div className="ship-direction-tabs" role="tablist" aria-label="Gəmiləri istiqamətə görə göstər">
-      {(['Hamısı', 'Gedən', 'Gələn'] as ShipDirectionFilter[]).map(direction => <button
+      {(['Hamısı', 'Gələn', 'Gedən'] as ShipDirectionFilter[]).map(direction => <button
         type="button"
         role="tab"
         aria-selected={shipDirection === direction}
@@ -140,22 +140,22 @@ export default function Dashboard() {
         onClick={() => chooseDirection(direction)}
         key={direction}
       >
-        <span>{direction === 'Hamısı' ? <Ship /> : direction === 'Gedən' ? <ArrowUpFromLine /> : <ArrowDownToLine />}</span>
-        <span><strong>{direction === 'Hamısı' ? 'Hamısı' : `${direction} gəmilər`}</strong><small>{directionCounts[direction]} gəmi</small></span>
+        <span>{direction === 'Hamısı' ? <Ship /> : direction === 'Gələn' ? <ArrowDownToLine /> : <ArrowUpFromLine />}</span>
+        <span><strong>{getShipDirectionTabLabel(direction)}</strong><small>{directionCounts[direction]} gəmi</small></span>
       </button>)}
     </div>
 
     <section className="port-overview dashboard-port-overview" aria-label="Beynəlxalq Dəniz Ticarət Limanı göstəriciləri">
       <Card className="port-overview-lead dashboard-port-overview-lead" hover={false}>
-        <div className="overview-title"><span><Anchor /></span><div><small>BEYNƏLXALQ DƏNİZ TİCARƏT LİMANI · {dateRange.label.toLocaleUpperCase('az')}</small><h2>{shipDirection === 'Hamısı' ? 'Gəmi axını' : `${shipDirection} gəmilər`}</h2></div></div>
+        <div className="overview-title"><span><Anchor /></span><div><small>BEYNƏLXALQ DƏNİZ TİCARƏT LİMANI · {dateRange.label.toLocaleUpperCase('az')}</small><h2>{shipDirection === 'Hamısı' ? 'Gəmi axını' : getShipDirectionTabLabel(shipDirection)}</h2></div></div>
         <div className="vessel-total"><strong>{shipStats.total}</strong><span>{shipDirection === 'Gedən' ? 'Körpü + yolda' : 'Körpü + lövbər + yolda'}</span></div>
         <div className="vessel-direction-stats">
           {shipStats.details.map(stat => <Link
             className="vessel-stat-link"
             to={`/gemiler?status=${encodeURIComponent(stat.status)}&direction=${encodeURIComponent(stat.direction)}`}
-            aria-label={`${stat.label}: ${stat.value}. Əlaqəli gəmilərə bax`}
-            key={stat.label}
-          ><strong>{stat.value}</strong><span><i className={`status-dot ${stat.tone}`} /> {stat.label}</span></Link>)}
+            aria-label={`${shipDirection === 'Hamısı' ? stat.label : stat.status}: ${stat.value}. Əlaqəli gəmilərə bax`}
+            key={`${stat.status}-${stat.direction}`}
+          ><strong>{stat.value}</strong><span><i className={`status-dot ${stat.tone}`} /> {shipDirection === 'Hamısı' ? stat.label : stat.status}</span></Link>)}
         </div>
       </Card>
       <Link className="glass-card flow-stat dashboard-stat-link" to="/gemiler?status=K%C3%B6rp%C3%BCd%C9%99&direction=G%C9%99l%C9%99n" aria-label={`Boşaldılan gəmilər: ${unloadingShips}. Siyahıya bax`}><span className="flow-icon orange"><ArrowDownToLine /></span><div><small>Boşaldılan gəmi</small><strong>{unloadingShips}</strong></div></Link>

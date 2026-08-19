@@ -10,17 +10,18 @@ export function Button({
   children,
   className = '',
   variant = 'primary',
+  size,
   type = 'button',
   disabled,
   onClick,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'ghost' | 'danger' | 'success' }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success'; size?: 'sm' | 'md' | 'lg' }) {
   return (
     <button
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={clsx('btn', `btn-${variant}`, className)}
+      className={clsx('btn', `btn-${variant}`, size && `btn-${size}`, className)}
       {...(props as Record<string, unknown>)}
     >
       {children}

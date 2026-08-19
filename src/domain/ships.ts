@@ -13,6 +13,12 @@ export function getAvailableShipStatuses(direction?: GemiIstiqameti | 'Hamısı'
   return INCOMING_SHIP_STATUSES
 }
 
+export function getShipDirectionTabLabel(direction: GemiIstiqameti | 'Hamısı'): string {
+  if (direction === 'Hamısı') return 'Hamısı'
+  if (direction === 'Gedən') return 'Gəmi(çıxış)'
+  return 'Gəmi(giriş)'
+}
+
 export function normalizeShipStatus(status: GemiStatus, direction: GemiIstiqameti): GemiStatus {
   if (direction === 'Gedən' && status === 'Lövbərdə') {
     return 'Körpüdə'
