@@ -8,7 +8,8 @@ import type { Avtomobil as DeckVehicle, Declaration } from '../data/mockData'
 import { Modal } from './UI'
 import { DeclarationDocumentView } from './DeclarationDocumentView'
 import {
-  buildTruckDossier, buildTruckProgress, findManifestEntry, type RegistrationSnapshot,
+  buildTruckDossier, buildTruckProgress, findManifestEntry,
+  type RegistrationSnapshot, type TruckProgressStep,
 } from '../domain/registrationFlow'
 
 type Ship = {
@@ -29,6 +30,8 @@ type Props = {
   declarations?: Declaration[]
   /** Təsdiqlənmiş qeydiyyatlar — sağ paneldəki mərhələ statusu üçün. */
   registrations?: Array<RegistrationSnapshot & { plate: string }>
+  /** Qeydiyyat axınının canlı vəziyyəti — seçilmiş tır üçün panel stepperi təkrarlayır. */
+  liveProgress?: { plate: string; steps: TruckProgressStep[] }
   onOpenShipDetails?: () => void
 }
 
@@ -69,6 +72,7 @@ export default function VehicleDeckSelector({
   onSelect,
   declarations = [],
   registrations = [],
+  liveProgress,
   onOpenShipDetails,
 }: Props) {
   const [viewMode, setViewMode] = useState<'deck' | 'list'>('deck')
@@ -155,9 +159,11 @@ export default function VehicleDeckSelector({
   }, [registrations, selectedVehicle])
 
   const progress = useMemo(() => {
+    // İşlənən tır üçün panel qeydiyyat axınının canlı vəziyyətini göstərir.
+    if (liveProgress && selectedVehicle && liveProgress.plate === selectedVehicle.nomre) return liveProgress.steps
     if (!dossier) return []
     return buildTruckProgress({ dossier, linkedCount: dossier.matched, registration: savedRegistration })
-  }, [dossier, savedRegistration])
+  }, [dossier, savedRegistration, liveProgress, selectedVehicle])
 
 
   const primaryDecl = useMemo(() => {

@@ -3531,3 +3531,109 @@ body,h1,h2,h3,.page-header h1,.brand strong{font-family:'Roboto',system-ui,-appl
 .dark .security-card p {
   color: #b8c7dc;
 }
+
+/* Vahid Qeydiyyat header — ship controls remain compact, but clearly readable. */
+.registration-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  max-width: 100%;
+}
+.registration-ship-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.registration-ship-picker-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: color-mix(in srgb, var(--text) 76%, var(--muted));
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.registration-ship-picker-label > svg {
+  flex: 0 0 auto;
+  color: var(--ocean);
+}
+.registration-ship-picker .ship-selector-select {
+  width: clamp(270px, 27vw, 390px);
+  min-height: 40px;
+  padding: 0 34px 0 13px;
+  border-radius: 10px;
+  border-color: color-mix(in srgb, var(--ocean) 25%, var(--line));
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.25;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+  transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+.registration-ship-picker .ship-selector-select:hover {
+  border-color: color-mix(in srgb, var(--ocean) 52%, var(--line));
+}
+.registration-ship-picker .ship-selector-select:focus-visible {
+  border-color: var(--ocean);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ocean) 18%, transparent);
+}
+.registration-ship-detail-btn.btn {
+  min-height: 40px;
+  padding: 0 15px;
+  gap: 7px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.registration-ship-detail-btn.btn:disabled {
+  opacity: .48;
+  cursor: not-allowed;
+}
+.dark .registration-ship-picker-label {
+  color: #cbd5e1;
+}
+.dark .registration-ship-picker .ship-selector-select {
+  background: #10263d !important;
+  border-color: #36506f !important;
+  color: #f8fafc !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 4px 12px rgba(0, 0, 0, .16);
+}
+.dark .registration-ship-picker .ship-selector-select:hover,
+.dark .registration-ship-picker .ship-selector-select:focus-visible {
+  border-color: #64d8ec !important;
+}
+
+@media(max-width:900px) {
+  .registration-header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .registration-ship-picker {
+    flex: 1 1 400px;
+  }
+  .registration-ship-picker .ship-selector-select {
+    width: auto;
+    min-width: 220px;
+    flex: 1 1 260px;
+  }
+}
+
+@media(max-width:620px) {
+  .registration-header-actions {
+    align-items: stretch;
+  }
+  .registration-ship-picker {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 7px;
+    flex-basis: 100%;
+  }
+  .registration-ship-picker .ship-selector-select,
+  .registration-ship-detail-btn.btn {
+    width: 100%;
+  }
+}

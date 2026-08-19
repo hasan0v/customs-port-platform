@@ -470,13 +470,23 @@ export type RegistrationSnapshot = {
   status?: string
 }
 
+/**
+ * Sağ paneldəki mərhələ siyahısı. Qeydiyyat səhifəsi canlı axının vəziyyətini
+ * (`vehicleRegistered`, `inspectionPending`) ötürür ki, panel və stepper eyni
+ * mənbədən qidalansın; göyərtə siyahısı isə yalnız saxlanmış qeydlə işləyir.
+ */
 export function buildTruckProgress(input: {
   dossier: TruckDossier
   linkedCount: number
   registration?: RegistrationSnapshot
+  vehicleRegistered?: boolean
+  inspectionPending?: boolean
+  /** Qeydiyyat axını öz şərtini ötürür (risk cavabı + yoxlama nəticəsi daxil). */
+  egbConfirmed?: boolean
 }): TruckProgressStep[] {
-  const { dossier, linkedCount, registration } = input
-  const egbDone = dossier.cmrs.length > 0 && linkedCount === dossier.cmrs.length
+  const { dossier, linkedCount, registration, vehicleRegistered = true, inspectionPending = false } = input
+  const egbDone = input.egbConfirmed
+    ?? (dossier.cmrs.length > 0 && linkedCount === dossier.cmrs.length && !inspectionPending)
   const vaisDone = Boolean(registration?.trailerCode)
   const permitDone = Boolean(registration?.permitBlank?.qaytarildi)
   const taxDone = Boolean(registration?.roadTaxes?.length)
@@ -485,13 +495,16 @@ export function buildTruckProgress(input: {
     {
       id: 'nv',
       label: 'Nəqliyyat vasitəsi',
-      detail: `${dossier.plate}${dossier.trailerPlate ? ` · qoşqu ${dossier.trailerPlate}` : ' · qoşqusuz'}`,
-      done: true,
+      detail: vehicleRegistered
+        ? `${dossier.plate}${dossier.trailerPlate ? ` · qoşqu ${dossier.trailerPlate}` : ' · qoşqusuz'}`
+        : `${dossier.plate} · VAİS/İGİS qeydi təsdiqlənməyib`,
+      done: vehicleRegistered,
     },
     {
       id: 'egb',
       label: 'Bəyannamə · EGB',
-      detail: `${linkedCount} / ${dossier.cmrs.length} bağlandı · ${dossier.cmrs.reduce((sum, cmr) => sum + cmr.invoices.length, 0)} invoys${dossier.mismatched ? ` · ${dossier.mismatched} uyğunsuz` : ''}`,
+      detail: `${linkedCount} / ${dossier.cmrs.length} bağlandı · ${dossier.cmrs.reduce((sum, cmr) => sum + cmr.invoices.length, 0)} invoys${
+        inspectionPending ? ' · yoxlama nəticəsi gözlənilir' : dossier.mismatched ? ` · ${dossier.mismatched} uyğunsuz` : ''}`,
       done: egbDone,
     },
     {

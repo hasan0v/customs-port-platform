@@ -14,8 +14,8 @@ import VehicleDeckSelector from '../components/VehicleDeckSelector'
 import ShipDetailModal from '../components/ShipDetailModal'
 import {
   EGB_STATUS_LABEL, GOODS_STATUS_LABEL, GOODS_STATUS_TONE, buildGoodsLines, buildTruckDossier,
-  buildVoyage, findManifestEntry, goodsControls, makeTrailerCode, normalizeId, summarizeGoods,
-  type CmrRecord, type GoodsLine, type GoodsStatus,
+  buildTruckProgress, buildVoyage, findManifestEntry, goodsControls, makeTrailerCode, normalizeId,
+  summarizeGoods, type CmrRecord, type GoodsLine, type GoodsStatus,
 } from '../domain/registrationFlow'
 
 /** Qalma müddəti — Vergi Məcəlləsi 211.1.1.3 cədvəli */
@@ -501,9 +501,18 @@ export default function Registration() {
     }
   }, [cmrs, declarationRisks])
 
+  /** Bu tır üzrə əvvəllər təsdiqlənmiş qeydiyyat (varsa). */
+  const savedForPlate = useMemo(
+    () => registrations.find(item => normalizeId(item.plate) === normalizeId(plateKey)),
+    [registrations, plateKey],
+  )
+
   /** Risk cavabı EGB sorğusu bitəndən sonra göstərilir. */
   const riskChecking = egbState === 'sorgu'
-  const riskVerdict: RiskVerdict | null = egbState === 'tapildi' || egbState === 'tapilmadi' ? autoRisk.verdict : null
+  // Sorğu getməyibsə, təsdiqlənmiş qeyddəki cavab göstərilir.
+  const riskVerdict: RiskVerdict | null = egbState === 'tapildi' || egbState === 'tapilmadi'
+    ? autoRisk.verdict
+    : savedForPlate?.riskVerdict ?? null
   const riskReasons = autoRisk.reasons
 
   const trailerPlate = dossier?.trailerPlate ?? ''
@@ -539,6 +548,29 @@ export default function Registration() {
       teyinatGomrukOrqani: inferCustomsOffice(vehicle?.teyinat ?? destination),
     })
   }, [vehicleFound, vehicle, manifestEntry, plate, ship, voyage, trailerPlate])
+
+  /**
+   * Artıq təsdiqlənmiş tır seçiləndə axın həmin qeyddən bərpa olunur — sağ paneldəki
+   * mərhələ siyahısı ilə aşağıdakı stepper eyni vəziyyəti göstərir.
+   */
+  useEffect(() => {
+    if (!vehicleFound || !plateKey) return
+    const saved = savedForPlate
+    if (!saved) return
+    setTrailerCode(saved.trailerCode ?? '')
+    setGoodsAssigned(Boolean(saved.trailerCode))
+    setPermit(current => ({
+      ...current,
+      novu: TRANSPORT_PERMIT_OPTIONS.find(option => option.label === saved.permitBlank?.novu)?.id ?? current.novu,
+      nomre: saved.permitBlank?.nomre ?? current.nomre,
+      verenOrqan: saved.permitBlank?.verenOrqan || current.verenOrqan,
+      etibarliliq: saved.permitBlank?.etibarliliq ?? current.etibarliliq,
+      qaytarildi: Boolean(saved.permitBlank?.qaytarildi),
+    }))
+    setTaxConfirmed(true)
+    setManualRoute((saved.manualRoute as ManualRoute | null) ?? null)
+    setInspection(saved.manualRoute ? (saved.status === 'Gözləmədə' ? 'gozleyir' : 'kecdi') : 'yoxdur')
+  }, [vehicleFound, plateKey, savedForPlate])
 
   // Tır seçiləndə sistem VAİS/İGİS bazasına sorğu göndərir və cavabı gözləyir.
   useEffect(() => {
@@ -621,6 +653,28 @@ export default function Registration() {
     }
     return `Yol vergisi (211.1.1.3): ${roadTax.total} USD · ${periodLabel} · ${axleLabel}`
   }, [roadTax, taxTotal, transportDetails.olkedeQalmaMuddeti, transportDetails.oxSinifi])
+
+  /** Sağ paneldəki mərhələ siyahısı üçün canlı vəziyyət (stepper ilə eyni mənbə). */
+  const liveProgress = useMemo(() => {
+    if (!dossier) return undefined
+    const steps = buildTruckProgress({
+      dossier: { ...dossier, cmrs },
+      linkedCount,
+      vehicleRegistered,
+      inspectionPending: inspectionBlocking,
+      egbConfirmed: egbComplete && Boolean(effectiveRisk) && !inspectionBlocking,
+      registration: {
+        trailerCode: trailerCode && goodsAssigned ? trailerCode : undefined,
+        permitBlank: permitReady ? { nomre: permit.nomre, qaytarildi: permit.qaytarildi } : undefined,
+        roadTaxes: taxConfirmed ? [roadTaxLabel] : undefined,
+      },
+    })
+    return { plate: plateKey, steps }
+  }, [
+    dossier, cmrs, linkedCount, vehicleRegistered, inspectionBlocking, egbComplete, effectiveRisk,
+    trailerCode, goodsAssigned, permitReady, permit.nomre, permit.qaytarildi, taxConfirmed,
+    roadTaxLabel, plateKey,
+  ])
 
   const selectDeckVehicle = (selectedVehicle: typeof vehicles[number]) => {
     setShipId(selectedVehicle.gemi)
@@ -1014,9 +1068,12 @@ export default function Registration() {
     <PageHeader
       title="Vahid Qeydiyyat"
       action={
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--muted)', fontWeight: 600 }}>
-            <Ship size={16} /> Limandakı gəmi:
+        <div className="registration-header-actions">
+          <label className="registration-ship-picker">
+            <span className="registration-ship-picker-label">
+              <Ship size={18} aria-hidden="true" />
+              Limandakı gəmi:
+            </span>
             <select
               value={shipId}
               className="ship-selector-select"
@@ -1035,15 +1092,12 @@ export default function Registration() {
           <Button
             type="button"
             variant="secondary"
+            className="registration-ship-detail-btn"
             disabled={!ship}
             onClick={() => { if (ship) setShipModalOpen(true) }}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 13px',
-              fontSize: 12, fontWeight: 700, opacity: ship ? 1 : 0.45, cursor: ship ? 'pointer' : 'not-allowed',
-            }}
             title={ship ? 'Seçilmiş gəminin bütün detallarına bax' : 'Əvvəlcə gəmi seçin'}
           >
-            <Ship size={14} /> Gəmi detalları
+            <Ship size={16} aria-hidden="true" /> Gəmi detalları
           </Button>
         </div>
       }
@@ -1083,6 +1137,7 @@ export default function Registration() {
           onSelect={selectDeckVehicle}
           declarations={declarations}
           registrations={registrations}
+          liveProgress={liveProgress}
           onOpenShipDetails={() => setShipModalOpen(true)}
         />
 
