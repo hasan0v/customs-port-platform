@@ -14,7 +14,7 @@ import ShipDetailModal from '../components/ShipDetailModal'
 import { Button, Card, Modal, PageHeader, StatusBadge } from '../components/UI'
 import { agencies, portCalls, type PortCall } from '../data/operationalData'
 import type { GemiIstiqameti } from '../data/mockData'
-import { getAvailableShipStatuses, getShipDirection, getShipMovementSummary, getShipOperationLabel, normalizeShipStatus } from '../domain/ships'
+import { getAvailableShipStatuses, getShipDirection, getShipDirectionDisplayLabel, getShipMovementSummary, getShipOperationLabel, normalizeShipStatus } from '../domain/ships'
 import { fetchAlatWeather, type LiveWeather } from '../services/liveData'
 import './Ships.css'
 
@@ -268,8 +268,8 @@ export default function Ships() {
             </select>
             <select value={direction} onChange={e => handleDirectionFilterChange(e.target.value as typeof direction)} aria-label="İstiqamət üzrə filtr">
               <option value="Hamısı">Bütün istiqamətlər</option>
-              <option value="Gələn">Gələn</option>
-              <option value="Gedən">Gedən</option>
+              <option value="Gələn">Giriş</option>
+              <option value="Gedən">Çıxış</option>
             </select>
             <label className="ships-port-filter">
               <MapPinned />
@@ -513,8 +513,7 @@ export default function Ships() {
         <label>Tonaj (ton)<input type="number" required value={newShipTonnage} onChange={e => setNewShipTonnage(e.target.value)} /></label>
         <label>İstiqamət
           <select value={newShipDirection} onChange={e => handleNewShipDirectionChange(e.target.value as GemiIstiqameti)}>
-            <option value="Gələn">Gələn</option>
-            <option value="Gedən">Gedən</option>
+            {shipDirections.map(item => <option value={item} key={item}>{getShipDirectionDisplayLabel(item)}</option>)}
           </select>
         </label>
         <label>Status

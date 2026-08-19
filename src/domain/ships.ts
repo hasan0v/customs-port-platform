@@ -19,6 +19,11 @@ export function getShipDirectionTabLabel(direction: GemiIstiqameti | 'Hamısı')
   return 'Gəmi(giriş)'
 }
 
+/** Daxili Gələn/Gedən dəyərlərini istifadəçi interfeysində Giriş/Çıxış kimi göstərir. */
+export function getShipDirectionDisplayLabel(direction: GemiIstiqameti): string {
+  return direction === 'Gedən' ? 'Çıxış' : 'Giriş'
+}
+
 export function normalizeShipStatus(status: GemiStatus, direction: GemiIstiqameti): GemiStatus {
   if (direction === 'Gedən' && status === 'Lövbərdə') {
     return 'Körpüdə'
@@ -52,7 +57,7 @@ export function getShipOperationLabel(ship: ShipMovement) {
   if (ship.status === 'Körpüdə') {
     return direction === 'Gedən' ? 'Yüklənən gəmi' : 'Boşaldılan gəmi'
   }
-  return `${ship.status} · ${direction}`
+  return `${ship.status} · ${getShipDirectionDisplayLabel(direction)}`
 }
 
 export function countShipsByMovement<T extends ShipMovement>(

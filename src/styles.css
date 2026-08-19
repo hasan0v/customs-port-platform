@@ -639,6 +639,9 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .ship-card-section{padding:13px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:flex;flex-direction:column;gap:9px}
 .ship-card-section h3{font-size:12px;font-weight:800;margin:0;display:flex;align-items:center;gap:6px;color:var(--ocean)}
 .dark .ship-card-section h3{color:#66ddf1}
+.ship-manifest-pdf-card{margin-top:11px}
+.copy-inline-btn{margin-left:6px;padding:0;border:0;background:none;color:inherit;cursor:pointer;opacity:.7;vertical-align:middle}
+.copy-inline-btn:hover{opacity:1}
 .section-hint{margin:0;font-size:10px;color:var(--muted);line-height:1.4}
 
 .ship-metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0}
@@ -666,6 +669,40 @@ select,input{border-radius:5px;background:transparent;border-color:var(--line)}s
 .voyage-stats>div{padding:7px 9px;border-radius:8px;background:var(--card);border:1px solid var(--line);display:grid;gap:2px}
 .voyage-stats small{font-size:7.5px;color:var(--muted)}
 .voyage-stats strong{font-size:9.5px}
+
+/* Ship detail route — scoped to avoid Registration's generic .voyage-strip rules. */
+.ship-voyage-card{gap:12px}
+.ship-voyage-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ship-voyage-heading>span{flex:0 0 auto;padding:4px 8px;border-radius:999px;background:rgba(10,77,140,.08);color:var(--ocean);font-size:9px;font-weight:800}
+.dark .ship-voyage-heading>span{background:rgba(0,180,216,.13);color:#70deef}
+.ship-voyage-route{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,.7fr) minmax(0,1fr);align-items:stretch;gap:12px;padding:14px;border:1px solid var(--line);border-radius:11px;background:var(--card)}
+.ship-voyage-port{display:flex;min-width:0;flex-direction:column;gap:5px}
+.ship-voyage-port>small{font-size:8px;font-weight:800;line-height:1.2;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ship-voyage-port>strong{min-height:30px;font-size:12px;line-height:1.35;color:var(--text);overflow-wrap:anywhere}
+.ship-voyage-port.destination{text-align:right}
+.ship-voyage-time{display:flex;flex-direction:column;gap:2px;margin-top:auto;padding-top:8px;border-top:1px dashed var(--line)}
+.ship-voyage-time>span{font-size:8px;color:var(--muted)}
+.ship-voyage-time>time{font-size:10px;font-weight:750;line-height:1.3;color:var(--text)}
+.ship-voyage-progress{display:flex;min-width:0;flex-direction:column;align-items:center;align-self:center;gap:3px;text-align:center}
+.ship-voyage-line{display:flex;width:100%;align-items:center;color:var(--ocean)}
+.ship-voyage-line>i{height:1px;flex:1;background:var(--line)}
+.ship-voyage-line>span{display:grid;width:28px;height:28px;flex:0 0 28px;place-items:center;border:1px solid rgba(10,77,140,.2);border-radius:50%;background:#eaf4fb;color:var(--ocean)}
+.dark .ship-voyage-line>span{border-color:rgba(0,180,216,.3);background:rgba(0,180,216,.13);color:#70deef}
+.ship-voyage-progress>strong{font-size:10px;color:var(--ocean)}
+.dark .ship-voyage-progress>strong{color:#70deef}
+.ship-voyage-progress>small{max-width:130px;font-size:8.5px;line-height:1.25;color:var(--muted)}
+.ship-voyage-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0}
+.ship-voyage-stats>div{display:grid;min-width:0;gap:4px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--card)}
+.ship-voyage-stats dt{font-size:8px;line-height:1.2;color:var(--muted)}
+.ship-voyage-stats dd{margin:0;font-size:10px;font-weight:750;line-height:1.35;color:var(--text);overflow-wrap:anywhere}
+
+@media(max-width:700px){
+  .ship-grid-two{grid-template-columns:1fr}
+  .ship-voyage-route{grid-template-columns:1fr;gap:10px}
+  .ship-voyage-port.destination{text-align:left}
+  .ship-voyage-progress{width:100%;padding:2px 0}
+  .ship-voyage-stats{grid-template-columns:1fr}
+}
 
 .cargo-decl-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .cargo-decl-stat{padding:9px 10px;border-radius:9px;background:var(--card);border:1px solid var(--line);display:grid;gap:2px}
