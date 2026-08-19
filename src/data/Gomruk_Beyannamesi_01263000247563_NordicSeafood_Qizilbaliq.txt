@@ -1,0 +1,116 @@
+## Gömrük bəyannaməsi
+
+* Bəyannamənin tipi: **ID 40**
+* Formalar: **1 / 1**
+* Məzənnə: **1$ – 1,7000 AZN**
+* Tarix: **10.07.2026**
+* Qoşma vərəq: **0**
+* Malların sayı: **1**
+* Bağlamaların sayı: **926**
+* Sorğu nömrəsi: **01263000247563**
+
+### Göndərən / ixracatçı
+
+* **NORDIC SEAFOOD KAZAKHSTAN LLP**
+* **Aktau / Qazaxıstan**
+
+### Malı qəbul edən / idxalatçı
+
+* **"CASPIAN SEAFOOD" MMC**
+* **Bakı / Azərbaycan**
+
+### Maliyyə tənzimlənməsinə məsul şəxs
+
+* **CASPIAN SEAFOOD MMC — VÖEN 1400987431**
+
+### Bəyannaməçi / təmsilçi
+
+* Nömrə: **1802077241**
+* **Azərbaycan Respublikası Dövlət Gömrük Komitəsinin "Azərterminalkompleks" Birliyi**
+
+### Ölkələr
+
+* Göndərən ölkə: **Qazaxıstan** · Ölkə kodu: **KZ / 398**
+* Mənşə ölkəsi: **Norveç** · Ölkə kodu: **NO / 578**
+* Təyinat ölkəsi: **Azərbaycan** · Ölkə kodu: **AZ / 031**
+
+### Ümumi gömrük məlumatları
+
+* Ümumi gömrük dəyəri: **201280,00**
+* S.İ.Ö.: **0**
+
+### Nəqliyyat məlumatları
+
+* Göndərən ölkədən çıxan nəqliyyat vasitəsi: **CC848WW/AA590V**
+* Qeydiyyat ölkəsi kodu: **398**
+* Sərhədi keçən nəqliyyat vasitəsi: **m/g "Bəxtiyar", səfər 118**
+* Sərhəddə nəqliyyat növü: **10** · Ölkə daxilində: **30**
+* Xüsusi şərt: **refrijerator, −18 °C**
+
+### Valyuta və invoys
+
+* Valyuta kodu: **840**
+* Malların ümumi invoys dəyəri: **118400,00**
+* Valyuta məzənnəsi: **1,7000** · Məzənnə bazası: **1**
+* Çatdırılma şərti: **CIF Bakı (Ələt)**
+
+### Sərhəd gömrük orqanı
+
+* Kod: **13005** · **Beynəlxalq Dəniz Ticarət Limanı g/p**
+
+### Malın təsviri
+
+* **DONDURULMUŞ ATLANTİK QIZILBALIĞI, BÜTÖV, BAŞSIZ**
+* Yer sayı: **926 karton / 18 palet**
+* Göstərilən çəki: **18500,00 kq**
+
+### Mal və gömrük kodları
+
+* Malın sıra nömrəsi: **1**
+* Malın kodu: **0303 1300 00**
+* Mənşə ölkəsinin kodu: **NO / 578**
+* Brutto çəki: **19022,00 kq** · Netto çəki: **18500,00 kq**
+* İmtiyazlar: **000**
+* Əməliyyat/prosedur kodu: **40 00 00** · XİFMN ölçü: **166**
+* İnvois dəyəri: **118400,00**
+* Gömrük dəyəri: **201280,00** · Statistik dəyər: **118400,00**
+
+### Təqdim olunan sənədlər
+
+* **2015 – NSK-2026/0788**, tarix: **06.07.2026**
+* **8001 – 245357**, tarix: **09.07.2026**
+* **9204 – 26KR0495**, tarix: **08.07.2026**
+* **3005 – KZ-VET-2026/114677** (baytarlıq sertifikatı), tarix: **08.07.2026**
+* **4041 – NO-CO-2026/5512**, tarix: **02.07.2026**
+
+### Gömrük ödənişlərinin hesablanması
+
+| Növ | Hesablama bazası | Tarif dərəcəsi |   Məbləğ | ÖÜ |
+| --- | ---------------: | -------------: | -------: | -: |
+| 01  |             0,00 |      30,00 AZN |    30,00 | 01 |
+| 01  |        201280,00 |              — |   300,00 | 05 |
+| 20  |        201280,00 |          15,0% | 30192,00 | 05 |
+| 32  |        231472,00 |          18,0% | 41664,96 | 05 |
+| 75  |             1,00 |      30,00 AZN |    30,00 | 05 |
+| 85  |            30,00 |          18,0% |     5,40 | 05 |
+
+### Hesablamanın detalları
+
+* Cəmi ödəniş: **72222,36 AZN**
+
+### Vəkalət verən şəxsin təsdiqi
+
+* **"AZƏRTERMİNALKOMPLEKS" BİRLİYİ**
+* Ad və soyad: **MEHDİYEV VÜSAL ŞAHRUDDİN OĞLU**
+* İxtisas attestatının nömrəsi: **0001/N**, tarix **16.03.2020**
+* Təqdim olunma tarixi: **10.07.2026**
+
+### Təyinat gömrük orqanı
+
+* Kod: **00101** · **Bakı Baş Gömrük İdarəsi**
+
+### Nəzarətin nəticəsi
+
+* AQTA baytarlıq nəzarəti: **keçib** — soyuducu zəncirin qeydiyyat lenti və nümunə yoxlanılıb, akt № AQTA-2026/07-3325
+* Kanal: **yaşıl**
+* Status: **Buraxılıb**, 10.07.2026 18:10

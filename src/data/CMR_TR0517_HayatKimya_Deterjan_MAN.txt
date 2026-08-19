@@ -1,0 +1,24 @@
+**CMR – Beynəlxalq yük qaiməsi № TR 0517884** (2-ci nüsxə — yük alan üçün)
+
+| Xana | Məlumat |
+|---|---|
+| 1. Yük göndərən | HAYAT KIMYA KAZAKHSTAN LLP — Qazaxıstan, Almatı vilayəti, Qapşağay ş., Sənaye zonası 1. BIN 120340009552 |
+| 2. Yük alan | "GƏNCƏ TİCARƏT EVİ" MMC — Azərbaycan, Gəncə ş., Kəpəz r., Həsən Əliyev küç. 24. VÖEN 2302886140 |
+| 3. Təhvil yeri | Gəncə, Azərbaycan |
+| 4. Yüklənmə yeri və tarixi | Qapşağay, Qazaxıstan — 06.07.2026 |
+| 5. Əlavə sənədlər | İnvoys № HK-2026/4471, 06.07.2026; Uyğunluq bəyannaməsi № KZ-DC-2026/3315; Konosament 245348 |
+| 6–9. Yük | 1 mövqe: maye sintetik yuyucu vasitə (deterjan), HS CODE 340250 — 620 karton; 2 mövqe: şampun, HS CODE 330510 — 470 karton. Cəmi 1 090 karton / 26 palet |
+| 11. Çəki | Brutto 20 819 kq / Netto 20 000 kq (deterjan: 12 400 / 11 900 kq; şampun: 8 419 / 8 100 kq) |
+| 12. Həcm | 68,0 m³ |
+| 13. Gömrük göstərişləri | Bir CMR üzrə iki mal mövqeyi bəyan edilir. Ələtdə rəsmiləşdirmə: 13005 g/p; təyinat orqanı 00401 Gəncə Gömrük İdarəsi |
+| 15. Ödəniş | Freight paid |
+| 16. Daşıyıcı | GAP ULUSLARARASI NAKLİYAT LTD. ŞTİ. — Türkiyə, Gaziantep, Organize Sanayi Bölgesi, 4. Cadde No: 17. Vergi D. Şehitkamil 3860041188. Lisenziya TUR/027/5188 |
+| 17. Sonrakı daşıyıcı | "GAP Trans Azərbaycan" MMC — Bakı ş., Xəzər r., Ələt qəs. VÖEN 1606041125 |
+| 21. Rəsmiləşdirmə | Qapşağay, 06.07.2026 |
+| 23. Sürücü | Mehmet Kaya, pasport U19884231 |
+| 25. Nəqliyyat | Çəkici: MAN TGX + tentli yarımqoşqu; qeydiyyat nişanları: 27 BD 815 / 27 BEE 210, Türkiyə |
+| 24. Yükün qəbulu | Doldurulmayıb |
+
+**Möhür və qeydlər:** DGK Almatı vilayəti Departamenti — ixrac icazəsi № 3315/060726/0002774; daşıyıcının TIR Carnet-i № XA 84210556 sürücüdədir.
+
+**Boş və ya oxunmayan xanalar:** 7, 8, 10, 14, 18, 19, 20, 22, 24.

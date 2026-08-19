@@ -1,0 +1,22 @@
+Sənəd — tütün məhsullarının istehsalı üçün xammal göndərişinə aid invoysdur.
+
+**Sənədin növü və nömrəsi:** INVOICE / ИНВОЙС № TB-2026/0455, tarix 05.07.2026. Müqavilə № ATL-GTE-2026/07, tarix 28.02.2026.
+
+**Satıcı (Göndərən):** ALATAU TOBACCO LEAF LLP. Hüquqi ünvan: Qazaxıstan, Türküstan vilayəti, Şımkent şəhəri, Tamerlan yolu 158. BIN: 050240004417. Bank: JSC "Halyk Bank", IBAN KZ4394 8021 3390 4417 05, SWIFT HSBKKZKX.
+
+**Alıcı:** "GƏNCƏ TÜTÜN EMALI" MMC. Hüquqi ünvan: Azərbaycan, Gəncə şəhəri, Nizami rayonu, Sənaye küçəsi 3. VÖEN: 2304471209. Bank: "Kapital Bank" ASC, IBAN AZ88 AIIB 4001 0094 4144 0230 9, SWIFT AIIBAZ2X.
+
+**Çatdırılma şərti (Incoterms 2020):** CIF Bakı (Ələt) · **Valyuta:** USD · **Ödəniş:** 60 gün ərzində köçürmə.
+
+**Nəqliyyat vasitəsi:** 2630 BV / LLU 1683 E. Konosament 245446, CMR № 26KR0502.
+
+**Mal siyahısı** (HS kodu 24039100, mənşə — Hindistan):
+
+| № | Malın adı | Yer sayı (kip) | Netto, kq | Vahid qiyməti, USD/kq | Cəmi, USD |
+|---|---|---|---|---|---|
+| 1 | Bərpa olunmuş tütün lövhəsi (reconstituted tobacco sheet), en 900 mm | 500 | 12 000 | 4,10 | 49 200,00 |
+| 2 | Bərpa olunmuş tütün lövhəsi (reconstituted tobacco sheet), en 600 mm | 350 | 8 400 | 4,10 | 34 440,00 |
+
+**Yekun:** 850 kip · netto 20 400,00 kq · brutto 20 888,00 kq · **cəmi 83 640,00 ABŞ dolları**.
+
+**Əlavə qeydlər:** Mal aksizli mal qrupuna aid xammaldır; alıcının tütün emalı üzrə lisenziyasının surəti (№ LT-2024/0177) invoysa əlavə olunub. Fitosanitar sertifikat № KZ-PH-2026/2218. Möhür: ALATAU TOBACCO LEAF LLP.

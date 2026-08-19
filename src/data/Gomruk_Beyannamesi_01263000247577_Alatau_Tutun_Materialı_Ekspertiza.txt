@@ -1,0 +1,119 @@
+## Gömrük bəyannaməsi
+
+* Bəyannamənin tipi: **ID 40**
+* Formalar: **1 / 1**
+* Məzənnə: **1$ – 1,7000 AZN**
+* Tarix: **10.07.2026**
+* Qoşma vərəq: **0**
+* Malların sayı: **1**
+* Bağlamaların sayı: **850**
+* Sorğu nömrəsi: **01263000247577**
+
+### Göndərən / ixracatçı
+
+* **ALATAU TOBACCO LEAF LLP**
+* **Şımkent / Qazaxıstan**
+
+### Malı qəbul edən / idxalatçı
+
+* **"GƏNCƏ TÜTÜN EMALI" MMC**
+* **Gəncə / Azərbaycan**
+
+### Maliyyə tənzimlənməsinə məsul şəxs
+
+* **GƏNCƏ TÜTÜN EMALI MMC — VÖEN 2304471209**
+
+### Bəyannaməçi / təmsilçi
+
+* Nömrə: **1402893341**
+* **Kaspian Logistics MMC**
+* Ünvan: **AZ1000, Bakı, Nəsimi r., 28 May küç. 15**
+
+### Ölkələr
+
+* Göndərən ölkə: **Qazaxıstan** · Ölkə kodu: **KZ / 398**
+* Mənşə ölkəsi: **Hindistan** · Ölkə kodu: **IN / 356**
+* Təyinat ölkəsi: **Azərbaycan** · Ölkə kodu: **AZ / 031**
+
+### Ümumi gömrük məlumatları
+
+* Ümumi gömrük dəyəri: **142188,00**
+* S.İ.Ö.: **0**
+
+### Nəqliyyat məlumatları
+
+* Göndərən ölkədən çıxan nəqliyyat vasitəsi: **2630BV/LLU1683E**
+* Qeydiyyat ölkəsi kodu: **398**
+* Sərhədi keçən nəqliyyat vasitəsi: **m/g "Bəxtiyar", səfər 118**
+* Sərhəddə nəqliyyat növü: **10** · Ölkə daxilində: **30**
+
+### Valyuta və invoys
+
+* Valyuta kodu: **840**
+* Malların ümumi invoys dəyəri: **83640,00**
+* Valyuta məzənnəsi: **1,7000** · Məzənnə bazası: **1**
+* Çatdırılma şərti: **CIF Bakı (Ələt)**
+
+### Sərhəd gömrük orqanı
+
+* Kod: **13005** · **Beynəlxalq Dəniz Ticarət Limanı g/p**
+
+### Malın təsviri
+
+* **TÜTÜN MƏHSULLARININ İSTEHSALI ÜÇÜN MATERİAL — BƏRPA OLUNMUŞ TÜTÜN LÖVHƏSİ**
+* Yer sayı: **850 kip / 20 palet**
+* Göstərilən çəki: **20400,00 kq**
+
+### Mal və gömrük kodları
+
+* Malın sıra nömrəsi: **1**
+* Malın kodu: **2403 9100 00**
+* Mənşə ölkəsinin kodu: **IN / 356**
+* Brutto çəki: **20888,00 kq** · Netto çəki: **20400,00 kq**
+* İmtiyazlar: **000**
+* Əməliyyat/prosedur kodu: **40 00 00** · XİFMN ölçü: **166**
+* İnvois dəyəri: **83640,00**
+* Gömrük dəyəri: **142188,00** · Statistik dəyər: **83640,00**
+
+### Təqdim olunan sənədlər
+
+* **2015 – TB-2026/0455**, tarix: **05.07.2026**
+* **8001 – 245446**, tarix: **09.07.2026**
+* **9204 – 26KR0502**, tarix: **05.07.2026**
+* **3007 – KZ-PH-2026/2218** (fitosanitar sertifikat), tarix: **05.07.2026**
+* **4041 – IN-CO-2026/3390**, tarix: **28.06.2026**
+* **1601 – LT-2024/0177** (alıcının tütün emalı lisenziyası)
+
+### Gömrük ödənişlərinin hesablanması
+
+| Növ | Hesablama bazası | Tarif dərəcəsi |   Məbləğ | ÖÜ |
+| --- | ---------------: | -------------: | -------: | -: |
+| 01  |             0,00 |      30,00 AZN |    30,00 | 01 |
+| 01  |        142188,00 |              — |   300,00 | 05 |
+| 20  |        142188,00 |          15,0% | 21328,20 | 05 |
+| 32  |        163516,20 |          18,0% | 29432,92 | 05 |
+| 30  |        142188,00 | ekspertizadan sonra | hesablanmayıb | 05 |
+| 75  |             1,00 |      30,00 AZN |    30,00 | 05 |
+| 85  |            30,00 |          18,0% |     5,40 | 05 |
+
+### Hesablamanın detalları
+
+* Hesablanmış hissə üzrə cəmi: **51126,52 AZN**
+* **30 – aksiz vergisi:** malın tütün tərkibi laboratoriya ekspertizası ilə təsdiqlənənə qədər hesablanmayıb.
+
+### Vəkalət verən şəxsin təsdiqi
+
+* **Kaspian Logistics MMC**
+* Ad və soyad: **QULİYEVA LƏMAN RÖVŞƏN QIZI**
+* İxtisas attestatının nömrəsi: **0774**, tarix **11.05.2023**
+* Təqdim olunma tarixi: **10.07.2026**
+
+### Təyinat gömrük orqanı
+
+* Kod: **00401** · **Gəncə Gömrük İdarəsi**
+
+### Nəzarətin nəticəsi
+
+* Risk profili: **qırmızı kanal** — aksizli mal qrupu üzrə xammal, HS 2403 fəsli
+* Təyin olunan yoxlama: **skaner (X-ray) nəzarəti** + **laboratoriya ekspertizası** (3 kip nümunə, akt № EKS-2026/07-0918, 10.07.2026)
+* Status: **Ekspertiza / risk nəzarəti** — nəticə gözlənilir, mal buraxılmır

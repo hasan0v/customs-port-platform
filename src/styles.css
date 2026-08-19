@@ -2932,9 +2932,9 @@ body,h1,h2,h3,.page-header h1,.brand strong{font-family:'Roboto',system-ui,-appl
 }
 
 /* Göyərtə planı — zolaq bölgüsü olmadan vahid kart şəbəkəsi */
-.deck-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px;align-content:start}
+.deck-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px;align-content:start;padding:12px 14px 18px}
 .deck-cards-grid .empty-lane{grid-column:1/-1}
-@media(max-width:560px){.deck-cards-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.deck-cards-grid{grid-template-columns:1fr;padding:10px 10px 14px}}
 
 /* ===== Manifest sənədinin yüklənməsi (IMO FAL PDF) ===== */
 .manifest-upload-card{margin-bottom:13px;padding:12px 14px}
@@ -3289,4 +3289,245 @@ body,h1,h2,h3,.page-header h1,.brand strong{font-family:'Roboto',system-ui,-appl
 .dark .road-tax-result {
   background: rgba(10, 77, 140, .16);
   border-color: #24405f;
+}
+
+/* Risk response cards: keep red/green/pending states readable in dark mode. */
+.dark .risk-result.red {
+  background: rgba(230, 57, 70, .12);
+  border-color: rgba(248, 113, 113, .38);
+  color: #fecaca;
+}
+.dark .risk-result.red > svg { color: #f87171 }
+.dark .risk-result.red strong { color: #fee2e2 }
+.dark .risk-result.red p,
+.dark .risk-result.red ul { color: #cbd5e1 }
+.dark .risk-result.green {
+  background: rgba(42, 157, 143, .12);
+  border-color: rgba(69, 211, 164, .34);
+  color: #bbf7d0;
+}
+.dark .risk-result.green > svg { color: #45d3a4 }
+.dark .risk-result.green strong { color: #dcfce7 }
+.dark .risk-result.green p { color: #cbd5e1 }
+.dark .risk-result.pending {
+  background: rgba(10, 77, 140, .18);
+  border-color: rgba(96, 165, 250, .32);
+  color: #bfdbfe;
+}
+.dark .risk-result.pending > svg { color: #60a5fa }
+.dark .risk-override button.selected.green {
+  background: rgba(42, 157, 143, .16);
+  border-color: rgba(69, 211, 164, .55);
+  color: #bbf7d0;
+}
+.dark .risk-override button.selected.red {
+  background: rgba(230, 57, 70, .16);
+  border-color: rgba(248, 113, 113, .55);
+  color: #fecaca;
+}
+
+/* Risk/EGB decision area breathing room — intentionally last in the cascade. */
+.egb-summary {
+  margin: 14px 0 0;
+  line-height: 1.55;
+}
+.risk-override {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--bg) 72%, var(--card));
+}
+.dark .risk-override {
+  background: linear-gradient(135deg, rgba(16, 29, 48, .82), rgba(9, 17, 31, .64));
+  border-color: rgba(148, 163, 184, .22);
+}
+.risk-override button {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 10px;
+  transition: background .16s ease, border-color .16s ease, color .16s ease, transform .16s ease;
+}
+.risk-override button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--ocean) 45%, var(--line));
+  color: var(--text);
+}
+.risk-result {
+  margin-top: 14px;
+  padding: 17px 19px;
+  border-radius: 16px;
+  line-height: 1.45;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, .05);
+}
+.risk-result > svg {
+  width: 24px;
+  margin-top: 1px;
+}
+.risk-result strong {
+  margin-bottom: 6px;
+  letter-spacing: .01em;
+}
+.risk-result p,
+.risk-result ul {
+  line-height: 1.6;
+}
+.risk-result ul {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+}
+.dark .risk-result {
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .22), inset 0 1px 0 rgba(255, 255, 255, .03);
+}
+.dark .risk-result.red {
+  background:
+    radial-gradient(circle at 2% 8%, rgba(248, 113, 113, .17), transparent 32%),
+    linear-gradient(135deg, rgba(69, 20, 31, .52), rgba(16, 29, 48, .82));
+  border-color: rgba(248, 113, 113, .34);
+}
+.dark .risk-result.green {
+  background:
+    radial-gradient(circle at 2% 8%, rgba(69, 211, 164, .16), transparent 32%),
+    linear-gradient(135deg, rgba(14, 63, 52, .46), rgba(16, 29, 48, .78));
+  border-color: rgba(69, 211, 164, .32);
+}
+.dark .risk-result.pending {
+  background:
+    radial-gradient(circle at 2% 8%, rgba(96, 165, 250, .15), transparent 32%),
+    linear-gradient(135deg, rgba(17, 49, 89, .5), rgba(16, 29, 48, .78));
+  border-color: rgba(96, 165, 250, .3);
+}
+.manual-route-grid {
+  margin-top: 12px;
+  gap: 10px;
+}
+.manual-route-grid > button {
+  min-height: 64px;
+  padding: 14px 15px;
+  border-radius: 15px;
+  transition: background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+.manual-route-grid > button:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--ocean) 45%, var(--line));
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .07);
+}
+.dark .manual-route-grid > button {
+  background: rgba(16, 29, 48, .64);
+  border-color: rgba(148, 163, 184, .18);
+}
+.dark .manual-route-grid > button:hover {
+  background: rgba(22, 40, 64, .78);
+  border-color: rgba(100, 216, 236, .32);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .22);
+}
+.dark .manual-route-grid > button.selected {
+  background: linear-gradient(135deg, rgba(31, 157, 106, .18), rgba(16, 29, 48, .78));
+}
+
+/* Right-side registration summary: stronger contrast for dark mode. */
+.dark .registration-summary > .glass-card {
+  background: linear-gradient(180deg, rgba(16, 29, 48, .96), rgba(10, 20, 35, .96));
+  border-color: rgba(100, 216, 236, .2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .03);
+}
+.dark .registration-summary header {
+  border-bottom-color: rgba(148, 163, 184, .2);
+}
+.dark .registration-summary header > svg {
+  color: #64d8ec;
+}
+.dark .registration-summary h3,
+.dark .registration-summary header strong {
+  color: #f8fafc;
+}
+.dark .registration-summary header p {
+  color: #b8c7dc;
+}
+.dark .summary-chain > div > span {
+  background: #0b1728;
+  border-color: #36506f;
+  color: #b8c7dc;
+}
+.dark .summary-chain > div > span i {
+  background: #64748b;
+}
+.dark .summary-chain > div:after {
+  background: #2e4562;
+}
+.dark .summary-chain small,
+.dark .saving span,
+.dark .panel-block-title,
+.dark .panel-progress small,
+.dark .panel-goods-count,
+.dark .goods-line-meta,
+.dark .goods-line-note,
+.dark .goods-line-more {
+  color: #b8c7dc;
+}
+.dark .summary-chain strong,
+.dark .panel-progress b,
+.dark .panel-goods li strong {
+  color: #edf4ff;
+}
+.dark .summary-chain > div.ok > span {
+  background: #1f9d6a;
+  border-color: #45d3a4;
+  color: #04130f;
+  box-shadow: 0 0 0 4px rgba(69, 211, 164, .12);
+}
+.dark .summary-chain > div.ok:after,
+.dark .summary-chain > div.ok > span i,
+.dark .summary-chain > div.ok:not(:last-child):after {
+  background: #45d3a4;
+}
+.dark .summary-chain > div.ok strong,
+.dark .panel-progress li.done b,
+.dark .panel-progress li.active b {
+  color: #7ee7c2;
+}
+.dark .panel-progress li > i {
+  background: #0b1728;
+  border-color: #36506f;
+}
+.dark .panel-progress li:not(:last-child) > i:after {
+  background: #2e4562;
+}
+.dark .panel-progress li.done > i,
+.dark .panel-progress li.done:not(:last-child) > i:after {
+  background: #45d3a4;
+  border-color: #45d3a4;
+}
+.dark .panel-progress li.active > i {
+  border-color: #64d8ec;
+  box-shadow: 0 0 0 4px rgba(100, 216, 236, .14);
+}
+.dark .panel-goods {
+  border-top-color: rgba(148, 163, 184, .2);
+}
+.dark .panel-goods li {
+  background: rgba(9, 17, 31, .58);
+  border-color: rgba(148, 163, 184, .16);
+}
+.dark .saving {
+  border-top-color: rgba(148, 163, 184, .2);
+}
+.dark .saving strong {
+  color: #5bdbad;
+}
+.dark .saving > div {
+  background: #17263a;
+}
+.dark .security-card {
+  background: linear-gradient(135deg, rgba(0, 180, 216, .1), rgba(42, 157, 143, .08)) !important;
+  border: 1px solid rgba(100, 216, 236, .18);
+}
+.dark .security-card > svg {
+  color: #64d8ec;
+}
+.dark .security-card strong {
+  color: #f8fafc;
+}
+.dark .security-card p {
+  color: #b8c7dc;
 }

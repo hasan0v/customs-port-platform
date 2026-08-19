@@ -1,0 +1,43 @@
+# «Bəxtiyar» — səfər 118 · sənəd paketinin xülasəsi
+
+Reys: **Aktau (Qazaxıstan) → Bakı Beynəlxalq Dəniz Ticarət Limanı (Ələt)**
+Manifest № **MNF-2026-07-3310** · yükləmə **09.07.2026** · gəlmə **10.07.2026 14:30**
+Göyərtədə **8 nəqliyyat vahidi** · brutto **284,410 t** · yükün xalis çəkisi **148,261 t**
+
+## Sənəd zənciri (1 CMR = 1 bəyannamə)
+
+| № | Tır / Qoşqu | B/L | CMR | İnvoys | Gömrük bəyannaməsi | Yük | Kanal / status |
+|---|---|---|---|---|---|---|---|
+| Y-01 | 15 AA 859 (qoşqusuz) | 245262 | 26KR0447 * | ANK-2026/0713 | 01263001286453 | Elektrik akkumulyatoru (Anker SOLIX) | qırmızı · akkumulyator, HS 8507 |
+| Y-02 | 99 YM 093 / 77 JK 093 | 245263 | 26KR0451 | KCS-2026/318 | 01263000247511 | Barit konsentratı | yaşıl · buraxılıb |
+| Y-03 | PF 275 PP / BB 850 D | 245289 | 26KR0468 | AKT-0455 | **yoxdur** — deklarant yazmayıb | Mineral bordür daşı | bəyannamə gözlənilir |
+| Y-04 | HH 255 T / QY 018 YQ | 245324 | 26KR0472 | SPC-2026/1174 | **yoxdur** — deklarant yazmayıb | Keçidli troynik 90° | bəyannamə gözlənilir |
+| Y-05 | 90 CY 711 / 99 ZB 883 | 245344 | 26KR0489 | FM-2026/2207 | 01263000247546 | Yoqurt (+2…+6 °C) | yaşıl · buraxılıb · AQTA |
+| Y-06 | 27 BD 815 / 27 BEE 210 | 245348 | TR 0517884 | HK-2026/4471 | 01263000247559 | Deterjan + şampun (2 mövqe) | yaşıl · buraxılıb |
+| Y-07 | CC 848 WW / AA 590 V | 245357 | 26KR0495 | NSK-2026/0788 | 01263000247563 | Dondurulmuş qızılbalıq (−18 °C) | yaşıl · buraxılıb · AQTA |
+| Y-08 | 2630 BV / LLU 1683 E | 245446 | 26KR0502 | TB-2026/0455 | 01263000247577 | Tütün materialı (aksizli xammal) | **qırmızı** · X-ray + ekspertiza |
+
+\* Y-01 üzrə CMR-in ayrıca transkripti yoxdur — nömrə mövcud GB skanından (01263001286453) götürülüb.
+
+## Sənəd faylları
+
+* `Gemi_Manifesti_2026-07-3310_Bextiyar_Aktau_Elet.txt` — yük bəyannaməsi + 8 sətirlik manifest cədvəli
+* `Bill_of_Lading_245344_Bextiyar_FoodMaster_Yogurt.txt` — konosament nümunəsi
+* `CMR_26KR0451_Mangystau_Barit_Mercedes.txt` · `CMR_26KR0468_AktauStone_Bordur_MAN.txt` · `CMR_26KR0472_KazPipe_Troynik_Volvo.txt` · `CMR_26KR0489_FoodMaster_Yogurt_DAF.txt` · `CMR_TR0517_HayatKimya_Deterjan_MAN.txt` · `CMR_26KR0495_NordicSeafood_Qizilbaliq_Mercedes.txt` · `CMR_26KR0502_Alatau_Tutun_Materialı_DAF.txt`
+* `Invoys_FM-2026-2207_FoodMaster_Yogurt.txt` · `Invoys_HK-2026-4471_HayatKimya_Deterjan_Sampun.txt` · `Invoys_NSK-2026-0788_NordicSeafood_Qizilbaliq.txt` · `Invoys_TB-2026-0455_Alatau_Tutun_Materialı.txt`
+* `Gomruk_Beyannamesi_01263000247511_Mangystau_Barit.txt` · `..._01263000247546_FoodMaster_Yogurt.txt` · `..._01263000247559_HayatKimya_Deterjan_Sampun.txt` · `..._01263000247563_NordicSeafood_Qizilbaliq.txt` · `..._01263000247577_Alatau_Tutun_Materialı_Ekspertiza.txt`
+
+## Hesablama qaydaları (bütün bəyannamələrdə eyni)
+
+* Məzənnə **1 USD = 1,7000 AZN**; gömrük dəyəri = invoys dəyəri × 1,7000 (CIF)
+* Statistik dəyər = gömrük dəyəri ÷ 1,7000 (yəni USD ekvivalenti)
+* İdxal rüsumu: barit **5%**, qalan mövqelər **15%**
+* ƏDV: (gömrük dəyəri + rüsum) × **18%**
+* Sabit ödənişlər: 01 — 30,00 AZN (rəsmiləşdirmə) + 300,00 AZN (sənəd), 75 — 30,00 AZN, 85 — 5,40 AZN
+
+## Prototipə köçürmə qeydləri
+
+1. Y-01 (15 AA 859) üçün mövcud demo datasında B/L **245263** yazılmışdı; həmin konosament əslində barit yükünə (Y-02) aiddir. Sənəd paketində Anker yükünə ayrıca **245262** konosamenti verilib.
+2. Y-03 və Y-04 üzrə bəyannamə qəsdən yoxdur — qeydiyyat ekranında "EGB-də tapılmadı / əl ilə əlavə et" ssenarisini göstərmək üçün.
+3. Y-08 qırmızı kanaldadır: yoxlama nəticəsi daxil edilməyincə qeydiyyat tamamlanmamalıdır (X-ray + laboratoriya ekspertizası).
+4. Bütün nəqliyyat vahidləri Aktaudan gəlir; gəmi Ro-Ro rejimində işləyir, sərhəddə nəqliyyat növü **10 (dəniz)**, ölkə daxilində **30 (avtomobil)**.

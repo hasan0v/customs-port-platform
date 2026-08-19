@@ -1,0 +1,71 @@
+Sənəd 2 hissədən ibarətdir: yük bəyannaməsi (Cargo Declaration / IMO FAL Form 2) və ona əlavə olunan nəqliyyat vahidləri cədvəli. Ələt terminalında qəbul möhürü səhifənin aşağı sağ küncündədir.
+
+## 1-ci hissə — Yük bəyannaməsi (Cargo Declaration)
+
+### Gəmi — Vessel
+
+**«Bəxtiyar»** (Bakhtiyar)
+IMO: **9345678** · Çağırış siqnalı: **4JOL** · MMSI: **423001137**
+Bayraq: **Azərbaycan** · Qeydiyyat limanı: **Bakı Limanı**
+
+### Gəmi sahibi / operator — Ship owner
+
+**ASCO — Azərbaycan Xəzər Dəniz Gəmiçiliyi QSC**
+Bakı ş., Heydər Əliyev pr. 152
+
+### Ekspeditor — Forwarder
+
+**ASCO Logistics MMC**
+
+### Kapitan — Master
+
+**R. Əliyev**
+
+### Səfər məlumatları
+
+* Səfər (voyage) №: **118**
+* Manifest №: **MNF-2026-07-3310**
+* Yükləmə limanı — Port of loading: **Aktau Beynəlxalq Dəniz Ticarət Limanı, Qazaxıstan**
+* Boşaltma limanı — Port of discharge: **Bakı Beynəlxalq Dəniz Ticarət Limanı (Ələt), Azərbaycan**
+* Yükləmə tarixi: **09.07.2026**
+* Gəlmə tarixi (ETA/faktiki): **10.07.2026, saat 14:30**
+* Yükün növü: **Müşayiətli yük avtomobilləri və yarımqoşqular (Ro-Ro)**
+* Nəqliyyat vahidlərinin sayı: **8**
+* Konosamentlərin sayı: **8**
+* Ümumi brutto (nəqliyyat vahidləri ilə birlikdə): **284,410 MTS**
+* Yükün xalis çəkisi (cargo net): **148,261 MTS**
+
+### Daşıma qeydləri
+
+* **Clean on board**
+* **Freight prepaid**
+* **Said to weight / said to contain**
+* Yükləmə yeri və tarixi: **Aktau, 09.07.2026**
+
+### Gömrük möhürü
+
+* **QAZAXISTAN RESPUBLİKASI Maliyyə Nazirliyi Dövlət Gəlirlər Komitəsi — Manqıstau vilayəti üzrə Departament**
+* Qeyd: **"Ýüklemäge rugsat berildi" / "Погрузка разрешена"**, tarix **09.07.2026**, nəzarətçi imzası oxunur, möhür № **KZ-MNG-0417**
+
+Ələt tərəfdə: **Azərbaycan Respublikası Dövlət Gömrük Komitəsi — Beynəlxalq Dəniz Ticarət Limanı gömrük postu (13005)**, qəbul qeydi **10.07.2026 14:55**.
+
+## 2-ci hissə — Nəqliyyat vahidləri cədvəli (manifest sətirləri)
+
+| № | Konosament (B/L) | Sıra № | Yükün təsviri | Brutto, t | Netto (yük), t | Nəqliyyat nişanları | Sürücü |
+|---|---|---|---|---|---|---|---|
+| 1 | 245262 | 4471 | Electric accumulators (Anker SOLIX Solarbank 2 E5000 Pro) | 36,573 | 21,573 | 15 AA 859 | Elçin Məmmədov |
+| 2 | 245263 | 4472 | Weight material in oilwell cement (barite) | 33,216 | 18,216 | 99 YM 093 / 77 JK 093 | Nurlan Seytqaliyev |
+| 3 | 245289 | 4495 | Mineral curb (online payment) | 36,930 | 21,930 | PF 275 PP / BB 850 D | Aydos Jumabekov |
+| 4 | 245324 | 4437 | Elementary reducing tee 90 degrees | 39,075 | 10,075 | HH 255 T / QY 018 YQ | Marat Ospanov |
+| 5 | 245344 | 4549 | Yogurt | 31,738 | 15,738 | 90 CY 711 / 99 ZB 883 | Erlan Baytenov |
+| 6 | 245348 | 4521 | Deterjan / şampun | 35,819 | 20,819 | 27 BD 815 / 27 BEE 210 | Mehmet Kaya |
+| 7 | 245357 | 4557 | Frozen salmon | 35,022 | 19,022 | CC 848 WW / AA 590 V | Bauırjan Əliyev |
+| 8 | 245446 | 4015 | Material for manufacture of tobacco products | 36,037 | 20,888 | 2630 BV / LLU 1683 E | Daniyar Tölegenov |
+
+**Yekun:** 8 nəqliyyat vahidi · brutto **284,410 t** · yükün xalis çəkisi **148,261 t**.
+
+### Qeydlər
+
+* 5-ci və 7-ci sətirlərin yükü temperatur rejimi tələb edir: refrijerator yarımqoşqu, **+2…+6 °C** (yoqurt) və **−18 °C** (dondurulmuş balıq). Reys boyu temperatur qeydiyyat lenti qoşquda saxlanılır.
+* 8-ci sətrin yükü aksizli mal qrupuna aid xammaldır; Ələtdə **ekspertiza və X-ray nəzarəti** üçün ayrılıb.
+* 1-ci sətir üzrə gömrük bəyannaməsi gəmi limana daxil olmazdan əvvəl (09.07.2026 17:53) qeydiyyata alınıb — GB № 01263001286453.

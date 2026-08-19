@@ -125,10 +125,21 @@ function plateHash(plate: string) {
   return [...normalizeId(plate)].reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
 }
 
-/** Simulyasiya qaydası: hər 4-cü nişan VAİS/İGİS-də tapılmır — əl ilə daxiletmə açılır. */
+/**
+ * VAİS / İGİS bazasında qeydi olan və olmayan nişanlar.
+ * Sənəd paketi olan reyslərdə (məs. «Bəxtiyar» səfər 118) nəticə əl ilə seçilir ki,
+ * hər iki ssenari — hazır qeyd və əl ilə daxiletmə — nümayiş oluna bilsin.
+ * Siyahılarda olmayan nişanlar üçün qayda: hər 4-cü nişanın qeydi tapılmır.
+ */
+const VAIS_QEYDLI = new Set(['15AA859', '99YM093', '90CY711', '27BD815', 'CC848WW', '2630BV', 'HH255T'])
+const VAIS_QEYDSIZ = new Set(['PF275PP'])
+
 function vaisHasRecord(plate: string) {
   const key = normalizeId(plate)
-  return key.length > 0 && plateHash(key) % 4 !== 0
+  if (!key) return false
+  if (VAIS_QEYDSIZ.has(key)) return false
+  if (VAIS_QEYDLI.has(key)) return true
+  return plateHash(key) % 4 !== 0
 }
 
 /** Nişan formatına görə qeydiyyat ölkəsi. */

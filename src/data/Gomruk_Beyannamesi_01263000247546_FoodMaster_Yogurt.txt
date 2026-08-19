@@ -1,0 +1,117 @@
+## Gömrük bəyannaməsi
+
+* Bəyannamənin tipi: **ID 40**
+* Formalar: **1 / 1**
+* Məzənnə: **1$ – 1,7000 AZN**
+* Tarix: **10.07.2026**
+* Qoşma vərəq: **0**
+* Malların sayı: **1**
+* Bağlamaların sayı: **1320**
+* Sorğu nömrəsi: **01263000247546**
+
+### Göndərən / ixracatçı
+
+* **FOOD MASTER KAZAKHSTAN LLP**
+* **Almatı / Qazaxıstan**
+
+### Malı qəbul edən / idxalatçı
+
+* **"BAKI SÜD TİCARƏT" MMC**
+* **Bakı / Azərbaycan**
+
+### Maliyyə tənzimlənməsinə məsul şəxs
+
+* **BAKI SÜD TİCARƏT MMC — VÖEN 1704562881**
+
+### Bəyannaməçi / təmsilçi
+
+* Nömrə: **3104866041**
+* **"TRANS GATE" Məhdud Məsuliyyətli Cəmiyyəti**
+* Ünvan: **AZ0118, Abşeron rayonu, Mehdiabad qəsəbəsi, 28 May, ev 3**
+
+### Ölkələr
+
+* Göndərən ölkə: **Qazaxıstan** · Ölkə kodu: **KZ / 398**
+* Mənşə ölkəsi: **Qazaxıstan**
+* Təyinat ölkəsi: **Azərbaycan** · Ölkə kodu: **AZ / 031**
+
+### Ümumi gömrük məlumatları
+
+* Ümumi gömrük dəyəri: **29031,75**
+* S.İ.Ö.: **0**
+
+### Nəqliyyat məlumatları
+
+* Göndərən ölkədən çıxan nəqliyyat vasitəsi: **90CY711/99ZB883**
+* Qeydiyyat ölkəsi kodu: **398**
+* Sərhədi keçən nəqliyyat vasitəsi: **m/g "Bəxtiyar", səfər 118**
+* Sərhəddə nəqliyyat növü: **10** · Ölkə daxilində: **30**
+
+### Valyuta və invoys
+
+* Valyuta kodu: **840**
+* Malların ümumi invoys dəyəri: **17077,50**
+* Valyuta məzənnəsi: **1,7000** · Məzənnə bazası: **1**
+* Çatdırılma şərti: **CIF Bakı (Ələt)**
+
+### Sərhəd gömrük orqanı
+
+* Kod: **13005** · **Beynəlxalq Dəniz Ticarət Limanı g/p**
+
+### Malın təsviri
+
+* **KARTONLARDA YOQURT (MEYVƏ ƏLAVƏLİ VƏ NATURAL, 2,5% YAĞLILIQ)**
+* Yer sayı: **1320 karton / 24 palet**
+* Göstərilən çəki: **14850,00 kq**
+
+### Mal və gömrük kodları
+
+* Malın sıra nömrəsi: **1**
+* Malın kodu: **0403 2000 00**
+* Mənşə ölkəsinin kodu: **KZ / 398**
+* Brutto çəki: **15738,00 kq** · Netto çəki: **14850,00 kq**
+* İmtiyazlar: **000**
+* Əməliyyat/prosedur kodu: **40 00 00**
+* XİFMN-dəki ölçü: **166**
+* İnvois dəyəri: **17077,50**
+* Gömrük dəyəri: **29031,75** · Statistik dəyər: **17077,50**
+
+### Təqdim olunan sənədlər
+
+* **2015 – FM-2026/2207**, tarix: **07.07.2026**
+* **8001 – 245344**, tarix: **09.07.2026**
+* **9204 – 26KR0489**, tarix: **08.07.2026**
+* **3005 – KZ-VET-2026/114508** (baytarlıq sertifikatı), tarix: **07.07.2026**
+* **4041 – KZ-CO-2026/8123**, tarix: **07.07.2026**
+
+### Gömrük ödənişlərinin hesablanması
+
+| Növ | Hesablama bazası | Tarif dərəcəsi |  Məbləğ | ÖÜ |
+| --- | ---------------: | -------------: | ------: | -: |
+| 01  |             0,00 |      30,00 AZN |   30,00 | 01 |
+| 01  |         29031,75 |              — |  300,00 | 05 |
+| 20  |         29031,75 |          15,0% | 4354,76 | 05 |
+| 32  |         33386,51 |          18,0% | 6009,57 | 05 |
+| 75  |             1,00 |      30,00 AZN |   30,00 | 05 |
+| 85  |            30,00 |          18,0% |    5,40 | 05 |
+
+### Hesablamanın detalları
+
+* Cəmi ödəniş: **10729,73 AZN**
+
+### Vəkalət verən şəxsin təsdiqi
+
+* **TRANS GATE MMC**
+* Ad və soyad: **İSMAYILOV HAFİZ HİKMƏT OĞLU**
+* İxtisas attestatının nömrəsi: **0621**, tarix **13.09.2024**
+* Təqdim olunma tarixi: **10.07.2026**
+
+### Təyinat gömrük orqanı
+
+* Kod: **00101** · **Bakı Baş Gömrük İdarəsi**
+
+### Nəzarətin nəticəsi
+
+* AQTA baytarlıq-sanitar nəzarəti: **keçib**, akt № AQTA-2026/07-3318, 10.07.2026
+* Kanal: **yaşıl**
+* Status: **Buraxılıb**, 10.07.2026 16:20

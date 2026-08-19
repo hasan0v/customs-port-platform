@@ -1,0 +1,120 @@
+## Gömrük bəyannaməsi
+
+* Bəyannamənin tipi: **ID 40**
+* Formalar: **1 / 2** (bir qoşma vərəq)
+* Məzənnə: **1$ – 1,7000 AZN**
+* Tarix: **10.07.2026**
+* Qoşma vərəq: **1**
+* Malların sayı: **2**
+* Bağlamaların sayı: **1090**
+* Sorğu nömrəsi: **01263000247559**
+
+### Göndərən / ixracatçı
+
+* **HAYAT KIMYA KAZAKHSTAN LLP**
+* **Qapşağay / Qazaxıstan**
+
+### Malı qəbul edən / idxalatçı
+
+* **"GƏNCƏ TİCARƏT EVİ" MMC**
+* **Gəncə / Azərbaycan**
+
+### Maliyyə tənzimlənməsinə məsul şəxs
+
+* **GƏNCƏ TİCARƏT EVİ MMC — VÖEN 2302886140**
+
+### Bəyannaməçi / təmsilçi
+
+* Nömrə: **3104246411**
+* **REGION BROKER MMC**
+* Ünvan: **AZ0123, Abşeron rayonu, Masazır, Yeni Bakı Yaşayış Kompleksi, ev 38, mənzil 56**
+
+### Ölkələr
+
+* Göndərən ölkə: **Qazaxıstan** · Ölkə kodu: **KZ / 398**
+* Mənşə ölkəsi: **Qazaxıstan**
+* Təyinat ölkəsi: **Azərbaycan** · Ölkə kodu: **AZ / 031**
+
+### Ümumi gömrük məlumatları
+
+* Ümumi gömrük dəyəri: **47404,50**
+* S.İ.Ö.: **0**
+
+### Nəqliyyat məlumatları
+
+* Göndərən ölkədən çıxan nəqliyyat vasitəsi: **27BD815/27BEE210**
+* Qeydiyyat ölkəsi kodu: **792** (Türkiyə — daşıyıcının nəqliyyat vasitəsi)
+* Sərhədi keçən nəqliyyat vasitəsi: **m/g "Bəxtiyar", səfər 118**
+* Sərhəddə nəqliyyat növü: **10** · Ölkə daxilində: **30**
+
+### Valyuta və invoys
+
+* Valyuta kodu: **840**
+* Malların ümumi invoys dəyəri: **27885,00**
+* Valyuta məzənnəsi: **1,7000** · Məzənnə bazası: **1**
+* Çatdırılma şərti: **CIF Bakı (Ələt)**
+
+### Sərhəd gömrük orqanı
+
+* Kod: **13005** · **Beynəlxalq Dəniz Ticarət Limanı g/p**
+
+### Malın təsviri
+
+* **1. MAYE SİNTETİK YUYUCU VASİTƏ (DETERJAN), 4 L FLAKON**
+* **2. ŞAMPUN, 0,6 L FLAKON**
+* Yer sayı: **620 + 470 = 1090 karton / 26 palet**
+
+### Mal və gömrük kodları — 1-ci mal
+
+* Malın kodu: **3402 5000 00** · Mənşə: **KZ / 398**
+* Brutto: **12400,00 kq** · Netto: **11900,00 kq**
+* Əməliyyat/prosedur kodu: **40 00 00** · XİFMN ölçü: **166**
+* İnvois dəyəri: **12495,00** · Gömrük dəyəri: **21241,50** · Statistik dəyər: **12495,00**
+* Rüsum: **15,0% – 3186,23**
+
+### Mal və gömrük kodları — 2-ci mal
+
+* Malın kodu: **3305 1000 00** · Mənşə: **KZ / 398**
+* Brutto: **8419,00 kq** · Netto: **8100,00 kq**
+* Əməliyyat/prosedur kodu: **40 00 00** · XİFMN ölçü: **166**
+* İnvois dəyəri: **15390,00** · Gömrük dəyəri: **26163,00** · Statistik dəyər: **15390,00**
+* Rüsum: **15,0% – 3924,45**
+
+### Təqdim olunan sənədlər
+
+* **2015 – HK-2026/4471**, tarix: **06.07.2026**
+* **8001 – 245348**, tarix: **09.07.2026**
+* **9204 – TR 0517884**, tarix: **06.07.2026**
+* **4041 – KZ-DC-2026/3315**, tarix: **06.07.2026**
+
+### Gömrük ödənişlərinin hesablanması
+
+| Növ | Hesablama bazası | Tarif dərəcəsi |  Məbləğ | ÖÜ |
+| --- | ---------------: | -------------: | ------: | -: |
+| 01  |             0,00 |      30,00 AZN |   30,00 | 01 |
+| 01  |         47404,50 |              — |  300,00 | 05 |
+| 20  |         47404,50 |          15,0% | 7110,68 | 05 |
+| 32  |         54515,18 |          18,0% | 9812,73 | 05 |
+| 75  |             1,00 |      30,00 AZN |   30,00 | 05 |
+| 85  |            30,00 |          18,0% |    5,40 | 05 |
+
+### Hesablamanın detalları
+
+* Cəmi ödəniş: **17288,81 AZN**
+
+### Vəkalət verən şəxsin təsdiqi
+
+* **REGION BROKER MMC**
+* Ad və soyad: **ŞİRƏLİYEV RƏSUL CƏLAL OĞLU**
+* İxtisas attestatının nömrəsi: **1068**, tarix **30.01.2025**
+* Təqdim olunma tarixi: **10.07.2026**
+
+### Təyinat gömrük orqanı
+
+* Kod: **00401** · **Gəncə Gömrük İdarəsi**
+
+### Nəzarətin nəticəsi
+
+* Sənəd yoxlaması: **uyğundur**
+* Kanal: **yaşıl**
+* Status: **Buraxılıb**, 10.07.2026 17:05

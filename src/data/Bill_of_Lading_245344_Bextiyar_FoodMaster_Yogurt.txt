@@ -1,0 +1,83 @@
+## Konosament — Bill of Lading № 245344
+
+### Sənəd məlumatları
+
+* Sənədin adı: **BILL OF LADING 245344**
+* Status: **ORIGINAL** (3 orijinal nüsxə imzalanıb)
+* Sıra (vehicle order) №: **4549**
+* Verilmə yeri və tarixi: **Aktau, 09.07.2026**
+
+### Göndərən — Shipper
+
+**FOOD MASTER KAZAKHSTAN LLP**
+Qazaxıstan, Almatı ş., Rayımbek pr. 348A
+BIN: 010440003921
+
+### Alıcı — Consignee
+
+**"BAKI SÜD TİCARƏT" MMC**
+Azərbaycan, Bakı ş., Xətai r., Babək pr. 41
+VÖEN: 1704562881
+
+### Bildiriş ünvanı — Notify address
+
+**"BAKI SÜD TİCARƏT" MMC** — tel: +994 12 447 18 20
+
+### Gəminin sahibi — Ship owner
+
+**ASCO (Azərbaycan Xəzər Dəniz Gəmiçiliyi QSC)**
+
+### Bayraq — Flag
+
+**AZERBAIJAN**
+
+### Ekspeditor — Forwarder
+
+**ASCO Logistics MMC**
+
+### Gəmi — Vessel
+
+**«Bəxtiyar»**, səfər № 118
+
+### Yükləmə limanı — Port of loading
+
+**Aktau International Sea Trade Port, Kazakhstan**
+
+### Boşaltma limanı — Port of discharge
+
+**Baku International Sea Trade Port (Alat), Azerbaijan**
+
+### Son təyinat nöqtəsi — Final destination
+
+**Bakı, Azərbaycan**
+
+### Yük məlumatları
+
+* Yükün təsviri: **YOGURT IN CARTONS, CHILLED (+2…+6 °C)**
+* Azərbaycan dilində: **Kartonlarda qablaşdırılmış yoqurt, soyudulmuş**
+* Nəqliyyat vahidi: **1 yük avtomobili + refrijerator yarımqoşqu — 90 CY 711 / 99 ZB 883**
+* Yerlərin sayı: **1 320 karton (24 palet)**
+* Yükün brutto çəkisi: **15 738 kq**
+* Yükün netto çəkisi: **14 850 kq**
+* Nəqliyyat vahidi ilə birlikdə brutto: **31,738 MTS**
+* Marks and numbers: **FM-2026/2207**
+* Measurement: **62,4 m³**
+
+### Daşıma və ödəniş qeydləri
+
+* **Clean on board**
+* **Said to contain**
+* Freight and charges: **Freight prepaid**
+* Temperatur rejimi: **+2…+6 °C**, data-logger № TL-88431 qoşquda
+* Liman: **Port of Aktau**, tarix: **09.07.2026**
+
+### Əlavə sənədlər
+
+* İnvoys № **FM-2026/2207**, tarix **07.07.2026**
+* CMR № **26KR0489**, tarix **08.07.2026**
+* Baytarlıq sertifikatı № **KZ-VET-2026/114508**, tarix **07.07.2026**
+
+### Möhürlər
+
+* Qazaxıstan Dövlət Gəlirlər Komitəsi — **"Ýüklemäge rugsat berildi"**, 09.07.2026
+* Gəmi möhürü: **«Bəxtiyar»**, kapitan imzası

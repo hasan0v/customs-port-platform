@@ -1,0 +1,129 @@
+## Gömrük bəyannaməsi
+
+* Bəyannamənin tipi: **ID 40**
+* Formalar: **1 / 1**
+* Məzənnə: **1$ – 1,7000 AZN**
+* Tarix: **09.07.2026**
+* Qoşma vərəq: **0**
+* Malların sayı: **1**
+* Bağlamaların sayı: **18**
+* Sorğu nömrəsi: **01263000247511**
+
+### Göndərən / ixracatçı
+
+* **MANGYSTAU BARITE LLP**
+* **Aktau / Qazaxıstan**
+
+### Malı qəbul edən / idxalatçı
+
+* **"XƏZƏR QAZMA TƏCHİZATI" MMC**
+* **Bakı / Azərbaycan**
+
+### Maliyyə tənzimlənməsinə məsul şəxs
+
+* **XƏZƏR QAZMA TƏCHİZATI MMC — VÖEN 1401238771**
+
+### Bəyannaməçi / təmsilçi
+
+* Nömrə: **1802077241**
+* **Azərbaycan Respublikası Dövlət Gömrük Komitəsinin "Azərterminalkompleks" Birliyi**
+* Ünvan: **AZ1104, Bakı şəhəri, Sabunçu rayonu, Maştağa ştq**
+
+### Ölkələr
+
+* Göndərən ölkə: **Qazaxıstan**
+* Ölkə kodu: **KZ / 398**
+* Mənşə ölkəsi: **Qazaxıstan**
+* Təyinat ölkəsi: **Azərbaycan**
+* Ölkə kodu: **AZ / 031**
+
+### Ümumi gömrük məlumatları
+
+* Ümumi gömrük dəyəri: **7191,00**
+* S.İ.Ö.: **0**
+
+### Nəqliyyat məlumatları
+
+* Göndərən ölkədən çıxan nəqliyyat vasitəsi: **99YM093/77JK093**
+* Qeydiyyat ölkəsi kodu: **398**
+* Sərhədi keçən nəqliyyat vasitəsi: **m/g "Bəxtiyar", səfər 118**
+* Konteyner: **0**
+* Sərhəddə nəqliyyat növü: **10** (dəniz)
+* Ölkə daxilində nəqliyyat növü: **30** (avtomobil)
+
+### Valyuta və invoys
+
+* Valyuta kodu: **840**
+* Malların ümumi invoys dəyəri: **4230,00**
+* Valyuta məzənnəsi: **1,7000**
+* Məzənnə bazası: **1**
+* Çatdırılma şərti: **CIF Bakı (Ələt)**
+
+### Sərhəd gömrük orqanı
+
+* Kod: **13005**
+* **Beynəlxalq Dəniz Ticarət Limanı g/p**
+
+### Malın təsviri
+
+* **BARİT KONSENTRATI (NEFT QUYUSU SEMENTİ ÜÇÜN AĞIRLAŞDIRICI MATERİAL)**
+* Yer sayı: **18 big-bag**
+* Göstərilən çəki: **18000,00 kq**
+
+### Mal və gömrük kodları
+
+* Malın sıra nömrəsi: **1**
+* Malın kodu: **2511 1000 00**
+* Mənşə ölkəsinin kodu: **KZ / 398**
+* Brutto çəki: **18216,00 kq**
+* Netto çəki: **18000,00 kq**
+* İmtiyazlar: **000**
+* Əməliyyat/prosedur kodu: **40 00 00**
+* XİFMN-dəki ölçü: **166**
+* İnvois dəyəri: **4230,00**
+* Gömrük dəyərinin müəyyən edilməsi üsulu: **0 / 1 / 1**
+* Gömrük dəyəri: **7191,00**
+* Statistik dəyər: **4230,00**
+
+### Təqdim olunan sənədlər
+
+* **2015 – KCS-2026/318**, tarix: **06.07.2026**
+* **8001 – 245263**, tarix: **09.07.2026**
+* **9204 – 26KR0451**, tarix: **06.07.2026**
+* **4041 – KZ-CO-2026/7741**, tarix: **06.07.2026**
+
+### Gömrük ödənişlərinin hesablanması
+
+| Növ | Hesablama bazası | Tarif dərəcəsi |  Məbləğ | ÖÜ |
+| --- | ---------------: | -------------: | ------: | -: |
+| 01  |             0,00 |      30,00 AZN |   30,00 | 01 |
+| 01  |          7191,00 |              — |  300,00 | 05 |
+| 20  |          7191,00 |           5,0% |  359,55 | 05 |
+| 32  |          7550,55 |          18,0% | 1359,10 | 05 |
+| 75  |             1,00 |      30,00 AZN |   30,00 | 05 |
+| 85  |            30,00 |          18,0% |    5,40 | 05 |
+
+### Hesablamanın detalları
+
+* **01 – 30,00 – 932**
+* Cəmi ödəniş: **2084,05 AZN**
+
+### Vəkalət verən şəxsin təsdiqi
+
+> GB-də göstərilən məlumatları təsdiq edirəm.
+
+* **"AZƏRTERMİNALKOMPLEKS" BİRLİYİ**
+* Ad və soyad: **MİRZƏYEV CAVAD MALİK OĞLU**
+* İxtisas attestatının nömrəsi: **0866**, tarix **18.10.2024**
+* Təqdim olunma tarixi: **09.07.2026**
+
+### Təyinat gömrük orqanı
+
+* Kod: **00101**
+* **Bakı Baş Gömrük İdarəsi**
+
+### Nəzarətin nəticəsi
+
+* Sənəd yoxlaması: **uyğundur**
+* Kanal: **yaşıl** — buraxılış üçün əlavə yoxlama tələb olunmur
+* Status: **Buraxılıb**, 10.07.2026 15:40

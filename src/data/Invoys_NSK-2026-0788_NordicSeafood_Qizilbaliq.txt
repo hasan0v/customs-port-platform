@@ -1,0 +1,22 @@
+Sənəd — dondurulmuş qızılbalıq göndərişi üçün kəsilmiş invoysdur (Aktau → Bakı).
+
+**Sənədin növü və nömrəsi:** INVOICE / ИНВОЙС № NSK-2026/0788, tarix 06.07.2026. Müqavilə № NSK-CSF-2026/02, tarix 15.03.2026.
+
+**Satıcı (Göndərən):** NORDIC SEAFOOD KAZAKHSTAN LLP. Hüquqi ünvan: Qazaxıstan, Manqıstau vilayəti, Aktau şəhəri, Soyuducu terminal 2. BIN: 090240007733. Bank: JSC "Bank CenterCredit", IBAN KZ8388 4001 2210 4477 03, SWIFT KCJBKZKX.
+
+**Alıcı:** "CASPIAN SEAFOOD" MMC. Hüquqi ünvan: Azərbaycan, Bakı şəhəri, Nizami rayonu, Aşıq Molla Cümə küçəsi 12. VÖEN: 1400987431. Bank: "Bank Respublika" ASC, IBAN AZ09 RESP 0000 1900 0000 4411 88, SWIFT RESPAZ22.
+
+**Çatdırılma şərti (Incoterms 2020):** CIF Bakı (Ələt) · **Valyuta:** USD · **Ödəniş:** 100% ilkin ödəniş.
+
+**Nəqliyyat vasitəsi:** CC 848 WW / AA 590 V (refrijerator, −18 °C). Konosament 245357, CMR № 26KR0495.
+
+**Mal siyahısı** (HS kodu 03031300, mənşə — Norveç):
+
+| № | Malın adı | Yer sayı (karton) | Netto, kq | Vahid qiyməti, USD/kq | Cəmi, USD |
+|---|---|---|---|---|---|
+| 1 | Dondurulmuş Atlantik qızılbalığı, bütöv, başsız, 4–5 kq | 520 | 10 400 | 6,40 | 66 560,00 |
+| 2 | Dondurulmuş Atlantik qızılbalığı, bütöv, başsız, 5–6 kq | 406 | 8 100 | 6,40 | 51 840,00 |
+
+**Yekun:** 926 karton · netto 18 500,00 kq · brutto 19 022,00 kq · **cəmi 118 400,00 ABŞ dolları**.
+
+**Əlavə qeydlər:** Baytarlıq sertifikatı № KZ-VET-2026/114677, mənşə sertifikatı № NO-CO-2026/5512. Soyuducu zəncirin qeydiyyat lenti (data-logger TL-90277) invoysun əlavəsidir. Möhür: NORDIC SEAFOOD KAZAKHSTAN LLP.

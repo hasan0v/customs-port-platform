@@ -1,0 +1,22 @@
+Sənəd — Qazaxıstandan Azərbaycana yuyucu vasitə və şampun göndərişi üçün kəsilmiş invoysdur.
+
+**Sənədin növü və nömrəsi:** INVOICE / ИНВОЙС № HK-2026/4471, tarix 06.07.2026. Müqavilə № HK-GTE-2026/11, tarix 20.01.2026.
+
+**Satıcı (Göndərən):** HAYAT KIMYA KAZAKHSTAN LLP. Hüquqi ünvan: Qazaxıstan, Almatı vilayəti, Qapşağay şəhəri, Sənaye zonası 1. BIN: 120340009552. Bank: JSC "ForteBank", IBAN KZ3496 5040 1177 8842 10, SWIFT IRTYKZKA.
+
+**Alıcı:** "GƏNCƏ TİCARƏT EVİ" MMC. Hüquqi ünvan: Azərbaycan, Gəncə şəhəri, Kəpəz rayonu, Həsən Əliyev küçəsi 24. VÖEN: 2302886140. Bank: "PAŞA Bank" ASC, IBAN AZ56 PAHA 4001 0002 2144 0871 44, SWIFT PAHAAZ22.
+
+**Çatdırılma şərti (Incoterms 2020):** CIF Bakı (Ələt) · **Valyuta:** USD · **Ödəniş:** akkreditiv, 45 gün.
+
+**Nəqliyyat vasitəsi:** 27 BD 815 / 27 BEE 210. Konosament 245348, CMR № TR 0517884.
+
+**Mal siyahısı:**
+
+| № | Malın adı | HS kodu | Yer sayı (karton) | Netto, kq | Vahid qiyməti, USD/kq | Cəmi, USD |
+|---|---|---|---|---|---|---|
+| 1 | Maye sintetik yuyucu vasitə (deterjan), 4 L flakon | 34025000 | 620 | 11 900 | 1,05 | 12 495,00 |
+| 2 | Şampun, 0,6 L flakon | 33051000 | 470 | 8 100 | 1,90 | 15 390,00 |
+
+**Yekun:** 1 090 karton · netto 20 000,00 kq · brutto 20 819,00 kq · **cəmi 27 885,00 ABŞ dolları**.
+
+**Əlavə qeydlər:** Uyğunluq bəyannaməsi № KZ-DC-2026/3315. Mallar 26 palet üzərində, streç-plyonka ilə sarınıb. Möhür: HAYAT KIMYA KAZAKHSTAN LLP, imza — ixrac üzrə menecer B. Turgunov.

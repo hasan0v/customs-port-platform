@@ -1,0 +1,26 @@
+**CMR – Beynəlxalq yük qaiməsi № 26KR0451** (2-ci nüsxə — yük alan üçün)
+
+| Xana | Məlumat |
+|---|---|
+| 1. Yük göndərən | MANGYSTAU BARITE LLP — Qazaxıstan, Manqıstau vilayəti, Aktau ş., 27-ci mikrorayon, bina 5. BIN 041240008117 |
+| 2. Yük alan | "XƏZƏR QAZMA TƏCHİZATI" MMC — Azərbaycan, Bakı ş., Səbail r., Neftçilər pr. 73. VÖEN 1401238771 |
+| 3. Təhvil yeri | Bakı, Azərbaycan |
+| 4. Yüklənmə yeri və tarixi | Aktau, Qazaxıstan — 06.07.2026 |
+| 5. Əlavə sənədlər | İnvoys № KCS-2026/318, 06.07.2026; Mənşə sertifikatı № KZ-CO-2026/7741; Konosament 245263 |
+| 6–9. Yük | Big-baglarda barit konsentratı (weight material in oilwell cement), HS CODE 251110; 18 big-bag × 1 000 kq, 6 palet |
+| 11. Çəki | Brutto 18 216 kq / Netto 18 000 kq |
+| 12. Həcm | 12,8 m³ |
+| 13. Gömrük göstərişləri | Aktau Dövlət Gəlirlər Departamenti — "İxraca icazə verildi" № 7741/060726/0004155; Ələtdə rəsmiləşdirmə: 13005 Beynəlxalq Dəniz Ticarət Limanı g/p |
+| 15. Ödəniş | Freight paid (navlun ödənilib) |
+| 16. Daşıyıcı | "KAZ TRANS LINE" LLP — Qazaxıstan, Aktau ş., Promzona 3, ofis 12. Lisenziya KZ/029/1184 |
+| 17. Sonrakı daşıyıcı | "Caspian Ro-Ro Logistics" MMC — Bakı ş., Ələt qəs., Liman ərazisi |
+| 21. Rəsmiləşdirmə | Aktau, 06.07.2026 |
+| 23. Sürücü | Nurlan Seytqaliyev, pasport N4471208 |
+| 25. Nəqliyyat | Çəkici: MERCEDES ACTROS + yarımqoşqu; qeydiyyat nişanları: 99 YM 093 / 77 JK 093, Qazaxıstan |
+| 24. Yükün qəbulu | Doldurulmayıb (yük hələ təhvil verilməyib) |
+
+**Möhür və qeydlər:** Qazaxıstan Respublikası Maliyyə Nazirliyi DGK — Manqıstau vilayəti üzrə Departament, "Ýüklemäge rugsat berildi", 09.07.2026; gəmi qəbul möhürü «Bəxtiyar», reys 118.
+
+**Standart mətn:** Daşıma CMR Konvensiyasının şərtlərinə uyğun həyata keçirilir; 1–15 və 21–22-ci xanaları göndərən, qalın çərçivəli xanaları daşıyıcı doldurur.
+
+**Boş və ya oxunmayan xanalar:** 7, 8, 10, 14, 18, 19, 20, 22, 24.

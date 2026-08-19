@@ -1,0 +1,25 @@
+Sənəd — Qazaxıstandan Azərbaycana yoqurt göndərişi üçün kəsilmiş invoysdur. Aşağıda sənəddəki bütün məlumatlar verilir.
+
+**Sənədin növü və nömrəsi:** INVOICE / ИНВОЙС № FM-2026/2207, tarix 07.07.2026. Müqavilə (Contract) № FM-BST-2026/04, tarix 12.02.2026.
+
+**Satıcı (Göndərən):** FOOD MASTER KAZAKHSTAN LLP. Hüquqi ünvan: Qazaxıstan Respublikası, Almatı şəhəri, Rayımbek prospekti 348A. BIN: 010440003921.
+
+Bank rekvizitləri: Beneficiary — FOOD MASTER KAZAKHSTAN LLP; IBAN KZ7594 8020 1450 1177 06; Bank — JSC "Halyk Bank of Kazakhstan", Almatı; SWIFT HSBKKZKX; korrespondent bank — CITIBANK N.A., SWIFT CITIUS33XXX.
+
+**Alıcı:** "BAKI SÜD TİCARƏT" MMC. Hüquqi ünvan: Azərbaycan Respublikası, Bakı şəhəri, Xətai rayonu, Babək prospekti 41. VÖEN: 1704562881. Bank: "Kapital Bank" ASC, IBAN AZ21 AIIB 4001 0094 4144 0021 8; SWIFT AIIBAZ2X.
+
+**Çatdırılma şərti (Incoterms 2020):** CIF Bakı (Ələt) · **Valyuta:** USD · **Ödəniş:** yükləmədən sonra 30 gün ərzində köçürmə.
+
+**Nəqliyyat vasitəsi:** 90 CY 711 / 99 ZB 883 (refrijerator, +2…+6 °C). Konosament 245344, CMR № 26KR0489.
+
+**Mal siyahısı** (HS kodu 04032000, mənşə — Qazaxıstan):
+
+| № | Malın adı | Yer sayı (karton) | Netto, kq | Vahid qiyməti, USD/kq | Cəmi, USD |
+|---|---|---|---|---|---|
+| 1 | "Food Master" çiyələk əlavəli yoqurt, 2,5%, 0,9 kq | 420 | 4 725 | 1,15 | 5 433,75 |
+| 2 | "Food Master" şaftalı əlavəli yoqurt, 2,5%, 0,9 kq | 420 | 4 725 | 1,15 | 5 433,75 |
+| 3 | "Food Master" natural yoqurt, 2,5%, 0,9 kq | 480 | 5 400 | 1,15 | 6 210,00 |
+
+**Yekun:** 1 320 karton · netto 14 850,00 kq · brutto 15 738,00 kq · **cəmi 17 077,50 ABŞ dolları**.
+
+**Əlavə qeydlər:** Baytarlıq sertifikatı № KZ-VET-2026/114508 (07.07.2026). Saxlanma müddəti 25 gün, istehsal tarixi 05–06.07.2026. Möhür: FOOD MASTER KAZAKHSTAN LLP, imza — kommersiya direktoru A. Sadıqov.

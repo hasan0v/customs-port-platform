@@ -65,6 +65,12 @@ function readText(source: unknown, key: string): string {
   return typeof value === 'string' ? value.trim() : ''
 }
 
+/** "18 216 kq" → 18216. Rəqəm tapılmasa 0 qaytarır. */
+function parseWeight(value: string) {
+  const digits = value.replace(/[^\d]/g, '')
+  return digits ? Number(digits) : 0
+}
+
 function unique(values: string[]) {
   return Array.from(new Set(values.filter(Boolean)))
 }
@@ -148,17 +154,20 @@ function classifyEgb(declaration: Declaration, tokens: string[]): { status: EgbS
 function buildInvoices(declaration: Declaration): InvoiceRecord[] {
   const goods = declaration.mallar ?? []
   const lead = goods[0]
-  // Manifest sıra nömrəsi (yalnız rəqəm) invoys nömrəsi deyil — o halda bəyannamə kodundan törədilir.
+  // Sənəddən gələn invoys nömrəsi varsa o götürülür; yoxdursa manifest sıra nömrəsi,
+  // o da yalnız rəqəmdirsə (invoys nömrəsi deyil) bəyannamə kodundan törədilir.
   const orderRef = declaration.vehicleOrder ?? ''
-  const no = orderRef && !/^\d{1,5}$/.test(orderRef)
-    ? `İNV ${orderRef}`
-    : `İNV ${declaration.kod.slice(-6)}`
+  const no = declaration.invoysNo
+    ? `İNV ${declaration.invoysNo}`
+    : orderRef && !/^\d{1,5}$/.test(orderRef)
+      ? `İNV ${orderRef}`
+      : `İNV ${declaration.kod.slice(-6)}`
   return [{
     no,
     mal: lead?.ad ?? '—',
     miqdar: lead ? `${lead.miqdar.toLocaleString('az-AZ')} ${lead.olcuVahidi}` : '—',
     mebleg: declaration.invoysDeyer ?? declaration.umumiDeyer ?? 0,
-    valyuta: declaration.valyuta ?? 'USD',
+    valyuta: declaration.invoysValyuta ?? declaration.valyuta ?? 'USD',
     incoterms: declaration.incoterms,
   }]
 }
@@ -210,7 +219,9 @@ export function buildTruckDossier(input: {
   const cmrs: CmrRecord[] = linked.map((declaration, index) => {
     const lead = declaration.mallar?.[0]
     const egb = classifyEgb(declaration, plateTokens)
-    const cmrNo = declaration.billOfLading
+    // CMR nömrəsi sənəddən gəlir; olmayanda konosament / manifest nömrəsi ilə əvəzlənir.
+    const cmrNo = declaration.cmrNo
+      || declaration.billOfLading
       || readText(vehicle, 'billOfLading')
       || manifestEntry?.billOfLading
       || `${declaration.kod.slice(-7)}`
@@ -221,7 +232,9 @@ export function buildTruckDossier(input: {
       yuklemeYeri,
       boshaltmaYeri: declaration.teslimYeri || boshaltmaYeri,
       malTesviri: lead?.ad || vehicle?.yuk || manifestEntry?.cargo || '—',
-      bruttoKq: lead?.bruttoCeki ?? Math.round((manifestEntry?.grossTons ?? 0) * 1000),
+      // Bir bəyannamədə bir neçə mal mövqeyi ola bilər — CMR sətri onların cəmini göstərir.
+      bruttoKq: (declaration.mallar ?? []).reduce((sum, item) => sum + (item.bruttoCeki ?? 0), 0)
+        || Math.round((manifestEntry?.grossTons ?? 0) * 1000),
       yerSayi: declaration.yukYerleri ?? lead?.miqdar ?? 0,
       invoices: buildInvoices(declaration),
       declarationKod: declaration.kod,
@@ -232,14 +245,16 @@ export function buildTruckDossier(input: {
   })
 
   if (cmrs.length === 0) {
+    // Bəyannamə yazılmayıb: sətir yalnız CMR-dən qurulur.
     cmrs.push({
-      no: `CMR ${manifestEntry?.billOfLading || readText(vehicle, 'billOfLading') || plate}`,
-      gonderen: '—',
-      alan: '—',
+      no: `CMR ${readText(vehicle, 'cmrNo') || manifestEntry?.billOfLading || readText(vehicle, 'billOfLading') || plate}`,
+      gonderen: readText(vehicle, 'gonderen') || '—',
+      alan: readText(vehicle, 'alan') || '—',
       yuklemeYeri,
       boshaltmaYeri,
       malTesviri: vehicle?.yuk || manifestEntry?.cargo || '—',
-      bruttoKq: Math.round((manifestEntry?.grossTons ?? 0) * 1000),
+      // Avtomobil qeydindəki çəki yükün brutto çəkisidir; manifestdəki rəqəm qoşqu ilə birlikdədir.
+      bruttoKq: parseWeight(readText(vehicle, 'ceki')) || Math.round((manifestEntry?.grossTons ?? 0) * 1000),
       yerSayi: 0,
       invoices: [],
       declarationKod: null,
