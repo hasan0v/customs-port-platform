@@ -3072,3 +3072,34 @@ body,h1,h2,h3,.page-header h1,.brand strong{font-family:'Roboto',system-ui,-appl
     flex-basis: 14px;
   }
 }
+
+/*
+ * These icon badges use hardcoded light backgrounds (#e9f2fb, #e8f2fd,
+ * #e7f2fc, #fff0e2) that never adapt for dark mode, so they render as
+ * bright light-blue/cream circles floating on the dark card surface.
+ * Swap them for translucent tints of the same accent color instead.
+ */
+.dark .title-icon,
+.dark .ship-table-card .ship-card-count-badge,
+.dark .ship-name > span {
+  background: rgba(157, 204, 255, .14);
+}
+
+.dark .title-icon.amber {
+  background: rgba(244, 162, 97, .16);
+}
+
+/*
+ * Native <select> dropdown popups follow the OS/browser's own light-vs-dark
+ * rendering, not the page's custom CSS variables. `color-scheme` on `.dark`
+ * hints the browser, but option rows still need explicit colors or some
+ * browsers keep rendering the popup list with a white background.
+ */
+.dark select {
+  color-scheme: dark;
+}
+
+.dark option {
+  background-color: var(--card);
+  color: var(--text);
+}

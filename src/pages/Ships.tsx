@@ -56,6 +56,7 @@ export default function Ships() {
   const [opsQuery, setOpsQuery] = useState('')
   const [weather, setWeather] = useState<LiveWeather | null>(null)
   const [loading, setLoading] = useState(true)
+  const [weatherModalOpen, setWeatherModalOpen] = useState(false)
   const [newShipModalOpen, setNewShipModalOpen] = useState(false)
   const [newShipName, setNewShipName] = useState('')
   const [newShipImo, setNewShipImo] = useState('')
@@ -208,7 +209,19 @@ export default function Ships() {
     />
 
     <section className="ops-live-strip">
-      <article>
+      <article
+        className="ops-live-weather"
+        role="button"
+        tabIndex={0}
+        aria-label="Ələt hava şəraiti xəritəsini Windy widget-də aç"
+        onClick={() => setWeatherModalOpen(true)}
+        onKeyDown={event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            setWeatherModalOpen(true)
+          }
+        }}
+      >
         <span className="ops-live-icon"><CloudSun /></span>
         <div>
           <small>Hava şəraiti: Ələt</small>
@@ -222,6 +235,7 @@ export default function Ships() {
             ) : '—'}
           </strong>
           <em>Temperatur: {weather ? `${weather.temperature}°C` : '—'}</em>
+          <span className="ops-live-click-hint">Windy xəritəsini aç</span>
         </div>
       </article>
       <article>
@@ -508,6 +522,18 @@ export default function Ships() {
         if (urlShipId) setSearchParams({})
       }}
     />
+
+    <Modal open={weatherModalOpen} onClose={() => setWeatherModalOpen(false)} title="Windy hava xəritəsi — Ələt" wide>
+      <div className="windy-widget-body">
+        <iframe
+          title="Windy.com Ələt hava şəraiti widget-i"
+          src="https://embed.windy.com/embed2.html?lat=39.99&lon=49.47&detailLat=39.99&detailLon=49.47&width=950&height=600&zoom=7&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=true&calendar=now&pressure=true&type=map&location=coordinates&detail=true&metricWind=km%2Fh&metricTemp=%C2%B0C&radarRange=-1"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          allowFullScreen
+        />
+      </div>
+    </Modal>
 
     <Modal open={newShipModalOpen} onClose={() => setNewShipModalOpen(false)} title="Yeni gəmi əlavə et">
       <form onSubmit={handleCreateShip} className="new-ship-form">
