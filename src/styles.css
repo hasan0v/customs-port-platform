@@ -3637,3 +3637,14 @@ body,h1,h2,h3,.page-header h1,.brand strong{font-family:'Roboto',system-ui,-appl
     width: 100%;
   }
 }
+
+/* Parametrlər → brauzer yaddaşı bölməsinin izahı. */
+.settings-storage-hint {
+  margin: 8px 0 12px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.settings-system-card .btn {
+  align-self: flex-start;
+}

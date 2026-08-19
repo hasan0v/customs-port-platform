@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Bell, Database, Save, User } from 'lucide-react'
+import { Bell, Database, RotateCcw, Save, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { DEFAULT_NOTIFICATIONS, useAppStore } from '../store/useAppStore'
 import { Button, Card, PageHeader } from '../components/UI'
@@ -8,7 +8,7 @@ const notificationsList = Object.keys(DEFAULT_NOTIFICATIONS)
 const integrations = ['Gəmi şəbəkəsi', 'Liman Vahid Pəncərəsi', 'Gömrük GİB sistemi', 'Post qərar modulu']
 
 export default function SettingsPage() {
-  const { profile, notifications, saveSettings } = useAppStore()
+  const { profile, notifications, saveSettings, registrations, clearRegistrations } = useAppStore()
   const [name, setName] = useState(profile.name)
   const [role, setRole] = useState(profile.role)
   const [email, setEmail] = useState(profile.email)
@@ -98,6 +98,27 @@ export default function SettingsPage() {
             <b>Aktiv</b>
           </div>
         ))}
+        <h3>Brauzerdə saxlanılan məlumatlar</h3>
+        <div className="security-info">
+          <strong>Təsdiqlənmiş qeydiyyatlar</strong>
+          <span>{registrations.length} qeyd</span>
+        </div>
+        <p className="settings-storage-hint">
+          Qeydiyyat qeydləri, profil və bildiriş ayarları bu brauzerin yaddaşında saxlanılır — səhifəni
+          yeniləyəndə silinmir. Nümayişə sıfırdan başlamaq üçün qeydləri təmizləyin.
+        </p>
+        <Button
+          variant="ghost"
+          disabled={registrations.length === 0}
+          onClick={() => {
+            if (!window.confirm(`${registrations.length} təsdiqlənmiş qeydiyyat bu brauzerdən silinsin?`)) return
+            clearRegistrations()
+            toast.success('Qeydiyyat qeydləri təmizləndi')
+          }}
+        >
+          <RotateCcw /> Qeydiyyat qeydlərini sıfırla
+        </Button>
+
         <h3>Təhlükəsizlik</h3>
         <div className="security-info"><strong>İki mərhələli doğrulama</strong><span>Aktiv</span></div>
         <div className="security-info"><strong>Son giriş</strong><span>14.07.2026 · 09:42</span></div>

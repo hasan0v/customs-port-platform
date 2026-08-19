@@ -75,6 +75,8 @@ type AppState = {
   updateDeclaration: (kod: string, patch: Partial<(typeof beyannameler)[number]>) => void
   addPostDecision: (decision: (typeof postQerarlar)[number]) => void
   addRegistration: (record: SavedRegistration) => void
+  /** Demo qeydiyyatlarını təmizləyir — brauzer yaddaşındakı qeydlər də silinir. */
+  clearRegistrations: () => void
   addManifest: (manifest: ManifestDocument) => void
   updateManifestHeader: (id: string, header: Partial<ManifestHeader>) => void
   removeManifest: (id: string) => void
@@ -180,6 +182,10 @@ export const useAppStore = create<AppState>((set) => ({
     localStorage.setItem(REG_STORAGE_KEY, JSON.stringify(registrations))
     return { registrations }
   }),
+  clearRegistrations: () => {
+    localStorage.removeItem(REG_STORAGE_KEY)
+    set({ registrations: [] })
+  },
   addManifest: (manifest) => set((state) => {
     // Eyni gəmi üçün köhnə sənədin object URL-i azad edilir.
     const previous = state.manifests.filter(item => item.shipId === manifest.shipId)

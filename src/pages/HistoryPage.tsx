@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, Download, FileDown, Filter, Scan, Search, SearchCode, UserRound } from 'lucide-react'
+import { AlertTriangle, Download, FileDown, Filter, Scan, Search, SearchCode, Trash2, UserRound } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAppStore } from '../store/useAppStore'
 import { Button, Card, Modal, PageHeader, StatusBadge } from '../components/UI'
@@ -52,7 +52,7 @@ function channelIcon(channel?: string | null) {
 }
 
 export default function HistoryPage() {
-  const { registrations, declarations, profile } = useAppStore()
+  const { registrations, declarations, profile, clearRegistrations } = useAppStore()
   const [q, setQ] = useState('')
   const [statusFilter, setStatusFilter] = useState('Hamısı')
   const [inspektorFilter, setInspektorFilter] = useState('Hamısı')
@@ -190,6 +190,20 @@ export default function HistoryPage() {
       title="İnspektorun fəaliyyəti"
       action={
         <div className="header-actions">
+          <Button
+            variant="ghost"
+            disabled={registrations.length === 0}
+            title={registrations.length === 0
+              ? 'Təsdiqlənmiş qeydiyyat yoxdur'
+              : 'Bu brauzerdə saxlanılan qeydiyyatları silir — sistem bəyannamələrinə toxunmur'}
+            onClick={() => {
+              if (!window.confirm(`${registrations.length} təsdiqlənmiş qeydiyyat bu brauzerdən silinsin?`)) return
+              clearRegistrations()
+              toast.success('Qeydiyyat qeydləri təmizləndi')
+            }}
+          >
+            <Trash2 /> Qeydləri sıfırla ({registrations.length})
+          </Button>
           <Button variant="ghost" onClick={() => window.print()}><FileDown /> PDF / Çap</Button>
           <Button onClick={exportCsv}><Download /> CSV ixrac</Button>
         </div>
