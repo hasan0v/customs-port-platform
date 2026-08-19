@@ -1,9 +1,9 @@
-import { useMemo, useState, useEffect, type FormEvent } from 'react'
+import { useMemo, useRef, useState, useEffect, type FormEvent } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  AlertTriangle, ArrowLeft, ArrowRight, Check, CheckCircle2, Dog, FileBadge, FileCheck2,
-  FileText, Link2, Pencil, Plus, Receipt, RotateCcw, Scan, ScanSearch, Search, ShieldCheck,
-  FileUp, PackageSearch, Ship, Trash2, Truck, Upload, X, type LucideIcon,
+  AlertTriangle, ArrowLeft, ArrowRight, Check, CheckCircle2, Database, Dog, FileBadge,
+  FileCheck2, Link2, Pencil, Plus, Receipt, RefreshCw, RotateCcw, Scan, ScanSearch, Search,
+  ShieldAlert, ShieldCheck, PackageSearch, Ship, Trash2, Truck, X, type LucideIcon,
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import { toast } from 'sonner'
@@ -12,10 +12,6 @@ import { useAppStore, type SavedRegistration } from '../store/useAppStore'
 import { Button, Card, Modal, PageHeader } from '../components/UI'
 import VehicleDeckSelector from '../components/VehicleDeckSelector'
 import ShipDetailModal from '../components/ShipDetailModal'
-import {
-  emptyManifestHeader, formatFileSize, inspectManifestFile,
-  type ManifestDocument, type ManifestHeader,
-} from '../domain/manifestDocument'
 import {
   EGB_STATUS_LABEL, GOODS_STATUS_LABEL, GOODS_STATUS_TONE, buildGoodsLines, buildTruckDossier,
   buildVoyage, findManifestEntry, goodsControls, makeTrailerCode, normalizeId, summarizeGoods,
@@ -74,6 +70,7 @@ const initialTransportDetails = {
 }
 
 const emptyCmrForm = {
+  beyannameKod: '',
   cmrNo: '',
   gonderen: '',
   alan: '',
@@ -91,6 +88,84 @@ const initialPermit = {
   verenOrqan: 'AYNA — Azərbaycan Yerüstü Nəqliyyat Agentliyi',
   etibarliliq: '',
   qaytarildi: false,
+}
+
+/** VAİS / İGİS bazasından gələn nəqliyyat vasitəsi qeydi. */
+type VehicleRecord = {
+  dovletNisani: string
+  qosquNisani: string
+  marka: string
+  novu: string
+  istehsalIli: string
+  oxSayi: string
+  texPasport: string
+  qeydiyyatOlkesi: string
+  dasiyici: string
+  surucu: string
+  vesiqe: string
+  menbe: string
+  sorguId: string
+}
+
+const emptyVehicleRecord: VehicleRecord = {
+  dovletNisani: '', qosquNisani: '', marka: '', novu: 'Yük avtomobili', istehsalIli: '',
+  oxSayi: '', texPasport: '', qeydiyyatOlkesi: '', dasiyici: '', surucu: '', vesiqe: '',
+  menbe: '', sorguId: '',
+}
+
+const CARRIERS = [
+  'KAZ TRANS LOGISTIC LLP',
+  'Caspian Ro-Ro Logistics MMC',
+  'Ələt Trans Servis MMC',
+  'Anadolu Uluslararası Nakliyat A.Ş.',
+  'Turkmen Ulag Ekspedisiya',
+]
+
+function plateHash(plate: string) {
+  return [...normalizeId(plate)].reduce((acc, ch) => (acc * 31 + ch.charCodeAt(0)) >>> 0, 7)
+}
+
+/** Simulyasiya qaydası: hər 4-cü nişan VAİS/İGİS-də tapılmır — əl ilə daxiletmə açılır. */
+function vaisHasRecord(plate: string) {
+  const key = normalizeId(plate)
+  return key.length > 0 && plateHash(key) % 4 !== 0
+}
+
+/** Nişan formatına görə qeydiyyat ölkəsi. */
+function inferRegistryCountry(plate: string) {
+  const key = normalizeId(plate)
+  if (/^(10|15|77|90|99)/.test(key)) return 'Azərbaycan'
+  if (key.includes('KZ') || /^(02|12)/.test(key)) return 'Qazaxıstan'
+  if (key.includes('TM')) return 'Türkmənistan'
+  if (key.includes('TR') || /^(06|34)/.test(key)) return 'Türkiyə'
+  if (key.includes('GE')) return 'Gürcüstan'
+  return 'Beynəlxalq qeydiyyat'
+}
+
+/** VAİS/İGİS cavabı — nişan üzrə deterministikdir, hər sorğuda eyni qeyd qayıdır. */
+function buildVehicleRecord(input: {
+  plate: string
+  trailerPlate: string
+  vehicle?: { marka?: string; surucu?: string; kod?: string; yuk?: string }
+}): VehicleRecord {
+  const { plate, trailerPlate, vehicle } = input
+  const hash = plateHash(plate)
+  const novu = inferVehicleType(vehicle?.yuk ?? '', vehicle?.marka)
+  return {
+    dovletNisani: plate.toUpperCase(),
+    qosquNisani: trailerPlate.toUpperCase(),
+    marka: vehicle?.marka || 'MAN TGX 18.480',
+    novu,
+    istehsalIli: String(2012 + (hash % 12)),
+    oxSayi: novu === 'Minik avtomobili' ? '2' : String(4 + (hash % 3)),
+    texPasport: `TP ${String(100000 + (hash % 900000))}`,
+    qeydiyyatOlkesi: inferRegistryCountry(plate),
+    dasiyici: CARRIERS[hash % CARRIERS.length],
+    surucu: vehicle?.surucu || '—',
+    vesiqe: `SV ${String(1000000 + (hash % 8999999))}`,
+    menbe: hash % 2 === 0 ? 'VAİS' : 'İGİS',
+    sorguId: `${hash % 2 === 0 ? 'VAİS' : 'İGİS'}-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${1000 + (hash % 9000)}`,
+  }
 }
 
 function formatShipDate(value?: string) {
@@ -119,10 +194,16 @@ function inferCustomsOffice(destination?: string) {
 
 type RiskVerdict = 'green' | 'red'
 type ManualRoute = 'Fiziki yoxlama' | 'X ray' | 'Kinoloji itin tətbiqi'
-/** Real iş axını: sənədlər → EGB uzlaşdırması → qeydiyyat + icazə → yol vergisi */
-type FlowStage = 'senedler' | 'egb' | 'vais' | 'vergi'
+/** Real iş axını: nəqliyyat vasitəsi → EGB bəyannamələri → qeydiyyat + icazə → yol vergisi */
+type FlowStage = 'nv' | 'egb' | 'vais' | 'vergi'
 
-const STAGE_ORDER: FlowStage[] = ['senedler', 'egb', 'vais', 'vergi']
+const STAGE_ORDER: FlowStage[] = ['nv', 'egb', 'vais', 'vergi']
+
+/** Xarici bazaya (VAİS/İGİS, EGB) sorğunun vəziyyəti. */
+type LookupState = 'gozleyir' | 'sorgu' | 'tapildi' | 'tapilmadi' | 'elIle'
+
+/** Qırmızı kanalda əlavə yoxlamanın nəticəsi — qeydiyyatın tamamlanmasını bağlayır. */
+type InspectionState = 'yoxdur' | 'gozleyir' | 'kecdi' | 'kecmedi'
 
 const MANUAL_ROUTES: Array<{ id: ManualRoute; icon: LucideIcon; hint: string }> = [
   { id: 'Fiziki yoxlama', icon: Search, hint: 'Yükün fiziki yoxlanılması' },
@@ -194,7 +275,6 @@ export default function Registration() {
   const [searchParams] = useSearchParams()
   const {
     ships, vehicles, declarations, addShip, addPostDecision, addRegistration, registrations, profile,
-    manifests, addManifest, updateManifestHeader, removeManifest,
   } = useAppStore()
 
   const urlShipId = searchParams.get('shipId')
@@ -205,63 +285,70 @@ export default function Registration() {
   const [plate, setPlate] = useState(urlPlate || '')
   const [vehicleFound, setVehicleFound] = useState(false)
   const [shipModalOpen, setShipModalOpen] = useState(false)
-  const [manifestViewerOpen, setManifestViewerOpen] = useState(false)
-  const [manifestBusy, setManifestBusy] = useState(false)
-  const [manifestDragging, setManifestDragging] = useState(false)
 
-  const [stage, setStage] = useState<FlowStage>('senedler')
+  const [stage, setStage] = useState<FlowStage>('nv')
   const [done, setDone] = useState(false)
   const [lastSaved, setLastSaved] = useState<SavedRegistration | null>(null)
 
-  // 03 — CMR / İnvoys
+  // 02 — nəqliyyat vasitəsinin qeydiyyatı (VAİS / İGİS sorğusu)
+  const [vaisState, setVaisState] = useState<LookupState>('gozleyir')
+  const [vaisRecord, setVaisRecord] = useState<VehicleRecord | null>(null)
+  const [vaisAttempt, setVaisAttempt] = useState(0)
+  const [manualVehicle, setManualVehicle] = useState<VehicleRecord>(emptyVehicleRecord)
+
+  // 03 — EGB bəyannamələri (hər sətir: bəyannamə + CMR + invoys)
   const [extraCmrs, setExtraCmrs] = useState<CmrRecord[]>([])
   const [cmrModalOpen, setCmrModalOpen] = useState(false)
   const [cmrForm, setCmrForm] = useState(emptyCmrForm)
   const [editingCmr, setEditingCmr] = useState<string | null>(null)
-  const [docsConfirmed, setDocsConfirmed] = useState(false)
   /** Əl ilə düzəlişlər — törədilmiş zəncirin üstünə yazılır. */
   const [cmrEdits, setCmrEdits] = useState<Record<string, Partial<CmrRecord>>>({})
   const [removedCmrs, setRemovedCmrs] = useState<string[]>([])
   const [goodsEdits, setGoodsEdits] = useState<Record<string, Partial<GoodsLine>>>({})
-
-  // 04 — Bəyannamə / EGB
+  const [egbState, setEgbState] = useState<LookupState>('gozleyir')
+  /** Sorğu anında EGB-dən gələn bəyannamə sayı — sonradan əl ilə əlavə olunanlar buraya daxil deyil. */
+  const [egbFoundCount, setEgbFoundCount] = useState(0)
+  const [egbAttempt, setEgbAttempt] = useState(0)
   const [egbFetched, setEgbFetched] = useState<string[]>([])
-  const [riskVerdict, setRiskVerdict] = useState<RiskVerdict | null>(null)
-  const [riskReasons, setRiskReasons] = useState<string[]>([])
-  const [riskChecking, setRiskChecking] = useState(false)
   const [manualRoute, setManualRoute] = useState<ManualRoute | null>(null)
+  /** Qırmızı kanalda göndərilən yoxlamanın nəticəsi. */
+  const [inspection, setInspection] = useState<InspectionState>('yoxdur')
   /** İnspektor sistem cavabını əl ilə dəyişə bilər. */
   const [riskOverride, setRiskOverride] = useState<RiskVerdict | null>(null)
 
-  // 05 — qeydiyyat + icazə blankı
+  // 04 — qeydiyyat + icazə blankı
   const [transportDetails, setTransportDetails] = useState(initialTransportDetails)
   const [trailerCode, setTrailerCode] = useState('')
   const [goodsAssigned, setGoodsAssigned] = useState(false)
   const [permit, setPermit] = useState(initialPermit)
 
-  // 06 — Yol vergisi
+  // 05 — Yol vergisi
   const [taxConfirmed, setTaxConfirmed] = useState(false)
   const [taxOverride, setTaxOverride] = useState('')
 
   const resetFlowState = () => {
-    setStage('senedler')
+    setStage('nv')
     setDone(false)
     setLastSaved(null)
+    setVaisState('gozleyir')
+    setVaisRecord(null)
+    setVaisAttempt(value => value + 1)
+    setManualVehicle(emptyVehicleRecord)
     setExtraCmrs([])
     setCmrModalOpen(false)
     setCmrForm(emptyCmrForm)
     setEditingCmr(null)
-    setDocsConfirmed(false)
     setCmrEdits({})
     setRemovedCmrs([])
     setGoodsEdits({})
+    setEgbState('gozleyir')
+    setEgbFoundCount(0)
+    setEgbAttempt(value => value + 1)
     setEgbFetched([])
     setRiskOverride(null)
     setTaxOverride('')
-    setRiskVerdict(null)
-    setRiskReasons([])
-    setRiskChecking(false)
     setManualRoute(null)
+    setInspection('yoxdur')
     setTrailerCode('')
     setGoodsAssigned(false)
     setPermit(initialPermit)
@@ -307,43 +394,7 @@ export default function Registration() {
   const ship = ships.find(g => g.id === shipId) || null
   const voyage = useMemo(() => (ship ? buildVoyage(ship) : null), [ship])
 
-  const manifestDoc = useMemo(
-    () => (ship ? manifests.find(item => item.shipId === ship.id) ?? null : null),
-    [manifests, ship],
-  )
-
-  const uploadManifest = async (file?: File | null) => {
-    if (!file || !ship) return
-    setManifestBusy(true)
-    const result = await inspectManifestFile(file)
-    setManifestBusy(false)
-    if (!result.ok) {
-      toast.error(result.error)
-      return
-    }
-
-    const now = new Date()
-    const header: ManifestHeader = {
-      ...emptyManifestHeader,
-      portLoading: ship.menshe.split(',')[0] ?? '',
-      portDischarge: (ship.teyinat ?? '').split(',')[0] ?? '',
-      arrivalDate: formatShipDate(ship.girisTarixi),
-    }
-    const document: ManifestDocument = {
-      id: `MNF-${now.getTime()}`,
-      shipId: ship.id,
-      fileName: file.name,
-      size: file.size,
-      uploadedAt: now.toLocaleString('az-AZ'),
-      url: URL.createObjectURL(file),
-      pageCount: result.pageCount,
-      header,
-    }
-    addManifest(document)
-    toast.success(`${file.name} manifest sənədi kimi qeydə alındı`)
-  }
-
-  // Seçilmiş gəminin manifestindəki tırlar
+  // Seçilmiş gəmidəki tırlar
   const shipVehicles = useMemo(() => {
     if (!ship) return []
     const matched = vehicles.filter(v => v.gemi === ship.id || v.gemi === ship.ad)
@@ -413,11 +464,44 @@ export default function Registration() {
   const primaryDeclarationKod = cmrs.find(cmr => cmr.declarationKod)?.declarationKod ?? ''
   const primaryDeclaration = declarations.find(d => d.kod === primaryDeclarationKod)
 
+  /** Hər bəyannamə sətri ayrıca risk cavabı alır — bir qırmızı sətir tırı qırmızı kanala salır. */
+  const declarationRisks = useMemo(() => {
+    const map: Record<string, { verdict: RiskVerdict; reasons: string[] }> = {}
+    cmrs.forEach(cmr => {
+      if (!cmr.declarationKod) return
+      const declaration = declarations.find(item => item.kod === cmr.declarationKod)
+      map[cmr.no] = assessGoodsRisk(declaration)
+    })
+    return map
+  }, [cmrs, declarations])
+
+  const autoRisk = useMemo(() => {
+    const red = cmrs.filter(cmr => declarationRisks[cmr.no]?.verdict === 'red')
+    if (red.length > 0) {
+      const reasons = red.flatMap(cmr =>
+        (declarationRisks[cmr.no]?.reasons ?? []).map(reason => `${cmr.declarationKod}: ${reason}`)
+      )
+      return { verdict: 'red' as RiskVerdict, reasons: Array.from(new Set(reasons)) }
+    }
+    const green = cmrs.find(cmr => declarationRisks[cmr.no])
+    return {
+      verdict: 'green' as RiskVerdict,
+      reasons: green ? declarationRisks[green.no].reasons : ['EGB-dən qırmızı statuslu bəyannamə gəlmədi'],
+    }
+  }, [cmrs, declarationRisks])
+
+  /** Risk cavabı EGB sorğusu bitəndən sonra göstərilir. */
+  const riskChecking = egbState === 'sorgu'
+  const riskVerdict: RiskVerdict | null = egbState === 'tapildi' || egbState === 'tapilmadi' ? autoRisk.verdict : null
+  const riskReasons = autoRisk.reasons
+
   const trailerPlate = dossier?.trailerPlate ?? ''
   const permitReady = Boolean(permit.novu && permit.nomre.trim() && permit.qaytarildi)
   const vaisComplete = Boolean(trailerCode && goodsAssigned && permitReady)
+  /** VAİS/İGİS cavab verib, yoxsa məlumatlar əl ilə daxil edilib. */
+  const vehicleRegistered = vaisState === 'tapildi' || vaisState === 'elIle'
 
-  // Nəqliyyat formunu manifest / avtomobil qeydindən doldur
+  // Nəqliyyat formunu gəmi sənədi / avtomobil qeydindən doldur
   useEffect(() => {
     if (!vehicleFound || !ship || (!vehicle && !manifestEntry)) return
 
@@ -445,18 +529,51 @@ export default function Registration() {
     })
   }, [vehicleFound, vehicle, manifestEntry, plate, ship, voyage, trailerPlate])
 
-  // Risk cavabı EGB mərhələsində avtomatik gəlir
+  // Tır seçiləndə sistem VAİS/İGİS bazasına sorğu göndərir və cavabı gözləyir.
   useEffect(() => {
-    if (stage !== 'egb' || !primaryDeclaration) return
-    setRiskChecking(true)
+    if (!vehicleFound || !plateKey) {
+      setVaisState('gozleyir')
+      setVaisRecord(null)
+      return
+    }
+    setVaisState('sorgu')
+    setVaisRecord(null)
     const timer = window.setTimeout(() => {
-      const result = assessGoodsRisk(primaryDeclaration)
-      setRiskVerdict(result.verdict)
-      setRiskReasons(result.reasons)
-      setRiskChecking(false)
-    }, 550)
+      if (vaisHasRecord(plateKey)) {
+        setVaisRecord(buildVehicleRecord({ plate: plateKey, trailerPlate, vehicle }))
+        setVaisState('tapildi')
+      } else {
+        setManualVehicle({
+          ...emptyVehicleRecord,
+          dovletNisani: plateKey.toUpperCase(),
+          qosquNisani: trailerPlate.toUpperCase(),
+          qeydiyyatOlkesi: inferRegistryCountry(plateKey),
+          menbe: 'Əl ilə daxil edilib',
+        })
+        setVaisState('tapilmadi')
+      }
+    }, 1100)
     return () => window.clearTimeout(timer)
-  }, [stage, primaryDeclaration])
+  }, [vehicleFound, plateKey, trailerPlate, vehicle, vaisAttempt])
+
+  /**
+   * EGB sorğusu: tırın dövlət nişanı üzrə bəyannamələr gətirilir. Sorğu anındakı
+   * sətir siyahısı ref-dən oxunur ki, sonrakı əl düzəlişləri sorğunu yenidən işə salmasın.
+   */
+  const cmrsRef = useRef(cmrs)
+  cmrsRef.current = cmrs
+
+  useEffect(() => {
+    if (stage !== 'egb' || !plateKey) return
+    setEgbState('sorgu')
+    const timer = window.setTimeout(() => {
+      const found = cmrsRef.current.filter(cmr => cmr.declarationKod)
+      setEgbFetched(found.map(cmr => cmr.no))
+      setEgbFoundCount(found.length)
+      setEgbState(found.length > 0 ? 'tapildi' : 'tapilmadi')
+    }, 950)
+    return () => window.clearTimeout(timer)
+  }, [stage, plateKey, egbAttempt])
 
   useEffect(() => {
     if (!done) return
@@ -475,6 +592,8 @@ export default function Registration() {
   )
 
   const effectiveRisk = riskOverride ?? riskVerdict
+  /** Qırmızı kanalda yoxlama uğurla bitməyibsə qeydiyyat tamamlana bilməz. */
+  const inspectionBlocking = effectiveRisk === 'red' && inspection !== 'kecdi'
   const manualTaxTotal = taxOverride.trim() === '' ? null : Number(taxOverride)
   const taxTotal = manualTaxTotal != null && Number.isFinite(manualTaxTotal) && manualTaxTotal >= 0
     ? manualTaxTotal
@@ -500,6 +619,55 @@ export default function Registration() {
   }
 
 
+  /** VAİS/İGİS cavab vermədikdə nəqliyyat vasitəsi əl ilə qeydə alınır. */
+  const saveManualVehicle = () => {
+    if (!manualVehicle.dovletNisani.trim()) return toast.warning('Dövlət qeydiyyat nişanı mütləqdir')
+    if (!manualVehicle.marka.trim()) return toast.warning('Nəqliyyat vasitəsinin markası mütləqdir')
+    const record: VehicleRecord = {
+      ...manualVehicle,
+      menbe: 'Əl ilə daxil edilib',
+      sorguId: manualVehicle.sorguId || `ƏL-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${plateHash(manualVehicle.dovletNisani) % 9000 + 1000}`,
+    }
+    setVaisRecord(record)
+    setVaisState('elIle')
+    setTransportDetails(details => ({
+      ...details,
+      dovletNisani: record.dovletNisani.toUpperCase(),
+      qosquNisani: record.qosquNisani.toUpperCase(),
+      avtomobilMarkasi: record.marka,
+      avtomobilNovu: record.novu || details.avtomobilNovu,
+      oxSinifi: Number(record.oxSayi) > 4 ? 'over4' : 'upto4',
+    }))
+    toast.success(`${record.dovletNisani} əl ilə qeydə alındı`)
+  }
+
+  const requeryVais = () => {
+    setVaisAttempt(value => value + 1)
+    toast.message('VAİS / İGİS bazasına təkrar sorğu göndərildi')
+  }
+
+  const requeryEgb = () => {
+    setEgbAttempt(value => value + 1)
+    toast.message(`EGB-yə təkrar sorğu göndərildi · ${plateKey}`)
+  }
+
+  /** Qırmızı kanalda yoxlama kanalı seçilir və nəticə gözlənilir. */
+  const sendToInspection = (route: ManualRoute) => {
+    setManualRoute(route)
+    setInspection('gozleyir')
+    toast.message(`${route} kanalına göndərildi — nəticə gözlənilir`)
+  }
+
+  const passInspection = () => {
+    setInspection('kecdi')
+    toast.success(`${manualRoute ?? 'Yoxlama'} uğurla başa çatdı — prosedur davam edir`)
+  }
+
+  const failInspection = () => {
+    setInspection('kecmedi')
+    toast.error(`${manualRoute ?? 'Yoxlama'} uğursuz oldu — nəqliyyat vasitəsi buraxılmır`)
+  }
+
   const editGoods = (id: string, patch: Partial<GoodsLine>) => {
     setGoodsEdits(edits => ({ ...edits, [id]: { ...edits[id], ...patch } }))
   }
@@ -513,6 +681,7 @@ export default function Registration() {
     }
     setEditingCmr(cmr.no)
     setCmrForm({
+      beyannameKod: cmr.declarationKod ?? '',
       cmrNo: cmr.no.replace(/^CMR\s*/i, ''),
       gonderen: cmr.gonderen === '—' ? '' : cmr.gonderen,
       alan: cmr.alan === '—' ? '' : cmr.alan,
@@ -530,7 +699,6 @@ export default function Registration() {
     setExtraCmrs(list => list.filter(item => item.no !== cmr.no))
     setRemovedCmrs(list => (list.includes(cmr.no) ? list : [...list, cmr.no]))
     setEgbFetched(list => list.filter(no => no !== cmr.no))
-    setDocsConfirmed(false)
     toast.success(`${cmr.no} zəncirdən çıxarıldı`)
   }
 
@@ -560,12 +728,28 @@ export default function Registration() {
       setCmrEdits(edits => ({ ...edits, [editingCmr]: { ...edits[editingCmr], ...patch } }))
       setEditingCmr(null)
       setCmrForm(emptyCmrForm)
+      if (cmrForm.beyannameKod.trim()) {
+        const kod = cmrForm.beyannameKod.trim()
+        const known = declarations.find(item => item.kod === kod)
+        setCmrEdits(edits => ({
+          ...edits,
+          [editingCmr]: {
+            ...edits[editingCmr],
+            declarationKod: kod,
+            declarationStatus: known?.status ?? 'Əl ilə daxil edilib',
+            egbStatus: 'bagli',
+            egbQeyd: known ? `Operator əl ilə bağladı · ${known.status}` : 'Operator əl ilə daxil etdi',
+          },
+        }))
+        setEgbFetched(list => (list.includes(editingCmr) ? list : [...list, editingCmr]))
+      }
       setCmrModalOpen(false)
-      setDocsConfirmed(false)
       toast.success(`${editingCmr} yeniləndi`)
       return
     }
 
+    const manualKod = cmrForm.beyannameKod.trim()
+    const knownDeclaration = manualKod ? declarations.find(item => item.kod === manualKod) : undefined
     const record: CmrRecord = {
       no: no.toUpperCase().startsWith('CMR') ? no.toUpperCase() : `CMR ${no.toUpperCase()}`,
       gonderen: cmrForm.gonderen || '—',
@@ -584,31 +768,23 @@ export default function Registration() {
             valyuta: cmrForm.valyuta || 'USD',
           }]
         : [],
-      declarationKod: null,
-      declarationStatus: null,
-      egbStatus: 'gozleyir',
-      egbQeyd: 'Deklarant hələ bəyannamə yazmayıb',
+      declarationKod: manualKod || null,
+      declarationStatus: manualKod ? (knownDeclaration?.status ?? 'Əl ilə daxil edilib') : null,
+      egbStatus: manualKod ? 'bagli' : 'gozleyir',
+      egbQeyd: manualKod
+        ? (knownDeclaration ? `Operator əl ilə əlavə etdi · ${knownDeclaration.status}` : 'Operator əl ilə əlavə etdi — EGB-də tapılmadı')
+        : 'Bəyannamə yazılmayıb — EGB-də qeyd yoxdur',
     }
     setExtraCmrs(list => [...list, record])
+    if (manualKod) setEgbFetched(list => (list.includes(record.no) ? list : [...list, record.no]))
     setCmrForm(emptyCmrForm)
     setCmrModalOpen(false)
-    setDocsConfirmed(false)
-    toast.success(`${record.no} sənəd zəncirinə əlavə edildi`)
+    toast.success(manualKod
+      ? `${manualKod} bəyannaməsi siyahıya əlavə edildi`
+      : `${record.no} siyahıya əlavə edildi — bəyannamə gözlənilir`)
   }
 
-  /** EGB-də tırın nömrəsi axtarılır və deklarasiya həmin tıra mənimsədilir. */
-  const fetchFromEgb = (cmr: CmrRecord) => {
-    setEgbFetched(list => (list.includes(cmr.no) ? list : [...list, cmr.no]))
-    setGoodsAssigned(false)
-    toast.success(
-      cmr.declarationKod
-        ? `EGB: ${cmr.declarationKod} bəyannaməsi ${plateKey} tırına mənimsədildi`
-        : `EGB: ${cmr.no} üzrə axtarış qeydə alındı — bəyannamə gözlənilir`,
-    )
-  }
-
-  /** Qoşqu varsa onun, yoxdursa tırın nişanı üzrə qeydiyyat kodu alınır. */
-  /** Deklarasiyanı əl ilə bu CMR-ə bağlayır (EGB-də tapılan kod daxil edilir). */
+  /** Deklarasiyanı əl ilə bu sətrə bağlayır (EGB-də tapılan kod daxil edilir). */
   const bindDeclaration = (cmr: CmrRecord, kod: string) => {
     const trimmed = kod.trim()
     if (!trimmed) return
@@ -666,16 +842,21 @@ export default function Registration() {
   }
 
   const goNext = () => {
-    if (stage === 'senedler') {
-      if (cmrs.length === 0) return toast.warning('Ən azı bir CMR olmalıdır')
-      setDocsConfirmed(true)
+    if (stage === 'nv') {
+      if (vaisState === 'sorgu') return toast.warning('VAİS / İGİS cavabı gözlənilir')
+      if (!vehicleRegistered) {
+        return toast.warning('Nəqliyyat vasitəsi VAİS/İGİS-də tapılmadı — məlumatları əl ilə əlavə edin')
+      }
       setStage('egb')
       return
     }
     if (stage === 'egb') {
-      if (!egbComplete) return toast.warning('Bütün CMR-lər EGB-də bəyannamə ilə bağlanmalıdır')
+      if (egbState === 'sorgu') return toast.warning('EGB cavabı gözlənilir')
+      if (cmrs.length === 0) return toast.warning('Ən azı bir bəyannamə olmalıdır')
+      if (!egbComplete) return toast.warning('Hər sətir EGB bəyannaməsi ilə bağlanmalıdır')
       if (!effectiveRisk) return toast.warning('Risk cavabı gözlənilir')
-      if (effectiveRisk === 'red' && !manualRoute) return toast.warning('Qırmızı riskdə yönləndirmə kanalı seçin')
+      if (effectiveRisk === 'red' && !manualRoute) return toast.warning('Qırmızı statusda yoxlama kanalı seçin')
+      // Yoxlama nəticəsi gözlənilə bilər — növbəti mərhələlər açıqdır, yalnız yekun təsdiq bağlıdır.
       setStage('vais')
       return
     }
@@ -699,12 +880,21 @@ export default function Registration() {
   const finalConfirm = () => {
     if (!ship || !voyage) return toast.warning('Əvvəlcə gəmi seçin')
     if (!taxConfirmed) return toast.warning('Yol vergisini təsdiqləyin')
-    if (!egbComplete) return toast.warning('Bütün CMR-lər bəyannamə ilə bağlanmalıdır (Addım 4)')
-    if (!vaisComplete) return toast.warning('Qeydiyyat və icazə blankı tamamlanmalıdır (Addım 5)')
+    if (!vehicleRegistered) {
+      setStage('nv')
+      return toast.warning('Nəqliyyat vasitəsi qeydə alınmalıdır (Addım 2)')
+    }
+    if (!egbComplete) return toast.warning('Bütün sətirlər bəyannamə ilə bağlanmalıdır (Addım 3)')
+    if (!vaisComplete) return toast.warning('Qeydiyyat və icazə blankı tamamlanmalıdır (Addım 4)')
     // Sərbəst keçid mərhələ yoxlamalarını atlaya bilər — məcburi qayda burada da tətbiq olunur.
     if (effectiveRisk === 'red' && !manualRoute) {
       setStage('egb')
-      return toast.error('Qırmızı riskdə yönləndirmə kanalı mütləqdir')
+      return toast.error('Qırmızı statusda yoxlama kanalı mütləqdir')
+    }
+    // Qırmızı kanal: yoxlama uğurla bitmədən qeydiyyat tamamlanmır.
+    if (inspectionBlocking) {
+      setStage('egb')
+      return toast.error('Yoxlamanın nəticəsi gözlənilir — “Yoxlamadan uğurla keçdi” təsdiqindən sonra tamamlana bilər')
     }
 
     const postKod = effectiveRisk === 'red'
@@ -721,7 +911,10 @@ export default function Registration() {
     const egbNotes = cmrs.filter(c => c.egbStatus === 'uygunsuzluq').map(c => `${c.no}: ${c.egbQeyd}`)
     const blockedGoods = goodsLines.filter(line => line.status === 'saxlanilib' || line.status === 'nezaretde')
     const goodsNotes = blockedGoods.map(line => `${line.ad}: ${GOODS_STATUS_LABEL[line.status]} — ${line.statusQeyd}`)
-    const holdRequired = effectiveRisk === 'red' && Boolean(manualRoute)
+    const inspectionNote = effectiveRisk === 'red' && manualRoute
+      ? `Əlavə yoxlama: ${manualRoute} · nəticə: ${inspection === 'kecdi' ? 'uğurla keçdi' : inspection === 'kecmedi' ? 'uğursuz' : 'gözlənilir'}`
+      : null
+    const holdRequired = effectiveRisk === 'red' && inspection !== 'kecdi'
 
     const record: SavedRegistration = {
       id: `REG-${now.getTime()}`,
@@ -738,14 +931,20 @@ export default function Registration() {
       riskReasons: riskOverride ? [...riskReasons, `İnspektor əl ilə dəyişdi: ${riskOverride === 'red' ? 'qırmızı' : 'yaşıl'}`] : riskReasons,
       manualRoute: effectiveRisk === 'red' ? manualRoute : null,
       waitReasons: effectiveRisk === 'red'
-        ? [...(manualRoute ? [`Əlavə yoxlama kanalı: ${manualRoute}`] : []), ...riskReasons, ...egbNotes, ...goodsNotes]
+        ? [...(inspectionNote ? [inspectionNote] : []), ...riskReasons, ...egbNotes, ...goodsNotes]
         : ([...egbNotes, ...goodsNotes].length ? [...egbNotes, ...goodsNotes] : undefined),
       roadTaxes: [roadTaxLabel],
       permits: [`${permitLabel} № ${permit.nomre} · ${permit.verenOrqan}`],
-      transport: { ...transportDetails, qosquKodu: trailerCode },
-      voyageId: manifestDoc?.header.voyageNo ? `SFR-${manifestDoc.header.voyageNo}` : voyage.id,
-      manifestNo: voyage.manifestNo,
-      manifestFile: manifestDoc?.fileName,
+      transport: {
+        ...transportDetails,
+        qosquKodu: trailerCode,
+        qeydiyyatMenbeyi: vaisRecord?.menbe ?? '—',
+        qeydiyyatSorgusu: vaisRecord?.sorguId ?? '—',
+        texPasport: vaisRecord?.texPasport ?? '—',
+        dasiyici: vaisRecord?.dasiyici ?? '—',
+        surucu: vaisRecord?.surucu ?? '—',
+      },
+      voyageId: voyage.id,
       cmrCount: cmrs.length,
       declarationKods: cmrs.map(c => c.declarationKod).filter((k): k is string => Boolean(k)),
       trailerPlate,
@@ -775,7 +974,9 @@ export default function Registration() {
       kod: postKod,
       gemi: ship.ad,
       novu: 'Giriş',
-      status: holdRequired ? `Təsdiqləndi · ${manualRoute}` : 'Təsdiqləndi',
+      status: effectiveRisk === 'red' && manualRoute
+        ? `Təsdiqləndi · ${manualRoute}${inspection === 'kecdi' ? ' (keçdi)' : ''}`
+        : 'Təsdiqləndi',
       operator: profile.name,
     })
     setLastSaved(record)
@@ -786,17 +987,16 @@ export default function Registration() {
 
   const steps: Array<{ n: string; label: string; ok: boolean; icon: LucideIcon; target?: FlowStage }> = [
     { n: '1', label: 'Gəmi · Səfər', ok: Boolean(ship), icon: Ship },
-    { n: '2', label: 'Manifest · Tır', ok: vehicleFound, icon: Truck },
-    { n: '3', label: 'CMR · İnvoys', ok: docsConfirmed, icon: FileText, target: 'senedler' },
-    { n: '4', label: 'Bəyannamə · EGB', ok: egbComplete && Boolean(effectiveRisk), icon: ScanSearch, target: 'egb' },
-    { n: '5', label: 'Qeydiyyat · İcazə', ok: vaisComplete, icon: FileBadge, target: 'vais' },
-    { n: '6', label: 'Yol vergisi', ok: taxConfirmed, icon: Receipt, target: 'vergi' },
+    { n: '2', label: 'Nəqliyyat vasitəsinin qeydiyyatı', ok: vehicleRegistered, icon: Truck, target: 'nv' },
+    { n: '3', label: 'Bəyannamə · EGB', ok: egbComplete && Boolean(effectiveRisk) && !inspectionBlocking, icon: ScanSearch, target: 'egb' },
+    { n: '4', label: 'Qeydiyyat · İcazə', ok: vaisComplete, icon: FileBadge, target: 'vais' },
+    { n: '5', label: 'Yol vergisi', ok: taxConfirmed, icon: Receipt, target: 'vergi' },
   ]
-  const activeStepIndex = done ? 5
-    : stage === 'vergi' ? 5
-    : stage === 'vais' ? 4
-    : stage === 'egb' ? 3
-    : vehicleFound ? 2
+  const activeStepIndex = done ? 4
+    : stage === 'vergi' ? 4
+    : stage === 'vais' ? 3
+    : stage === 'egb' ? 2
+    : vehicleFound ? 1
     : ship ? 1 : 0
 
   return <>
@@ -846,7 +1046,7 @@ export default function Registration() {
           </div>
           <h2>Limandakı gəmini seçin</h2>
           <p>
-            Qeydiyyat prosesinə başlamaq, tırların göyərtə planını və manifest məlumatlarını görmək üçün yuxarıdakı menyudan gəmi seçin.
+            Qeydiyyat prosesinə başlamaq və gəmidəki tırların göyərtə planını görmək üçün yuxarıdakı menyudan gəmi seçin.
           </p>
           <div className="registration-quick-ships">
             <small>Mövcud aktiv gəmilər:</small>
@@ -864,142 +1064,6 @@ export default function Registration() {
       </Card>
     ) : (
       <>
-        {voyage && (
-          <div className="voyage-strip">
-            <div>
-              <small>SƏFƏR</small>
-              <strong>{manifestDoc?.header.voyageNo ? `№ ${manifestDoc.header.voyageNo}` : voyage.id}</strong>
-            </div>
-            <div>
-              <small>MANİFEST</small>
-              <strong>{manifestDoc ? manifestDoc.fileName : voyage.manifestNo}</strong>
-            </div>
-            <div>
-              <small>MANİFESTDƏ TIR</small>
-              <strong>
-                {manifestDoc?.header.vehicleCount
-                  ? `${manifestDoc.header.vehicleCount} + ${manifestDoc.header.trailerCount || 0} qoşqu`
-                  : shipVehicles.length}
-              </strong>
-            </div>
-            <div>
-              <small>MARŞRUT · GİRİŞ</small>
-              <strong>{voyage.marsrut} · {formatShipDate(voyage.girisTarixi) || '—'}</strong>
-            </div>
-            <div>
-              <small>QEYDİYYATDAN KEÇƏN</small>
-              <strong>{registrations.filter(r => r.shipId === ship.id).length} / {shipVehicles.length}</strong>
-            </div>
-          </div>
-        )}
-
-        <Card className="manifest-upload-card" hover={false}>
-          {!manifestDoc ? (
-            <label
-              className={`manifest-dropzone${manifestDragging ? ' dragging' : ''}${manifestBusy ? ' busy' : ''}`}
-              onDragOver={e => { e.preventDefault(); setManifestDragging(true) }}
-              onDragLeave={() => setManifestDragging(false)}
-              onDrop={e => {
-                e.preventDefault()
-                setManifestDragging(false)
-                void uploadManifest(e.dataTransfer.files?.[0])
-              }}
-            >
-              <input
-                type="file"
-                accept="application/pdf,.pdf"
-                hidden
-                onChange={e => {
-                  void uploadManifest(e.target.files?.[0])
-                  e.target.value = ''
-                }}
-              />
-              <Upload size={20} />
-              <div>
-                <strong>{manifestBusy ? 'Fayl yoxlanılır…' : 'Gəmi manifestini yüklə (PDF)'}</strong>
-                <small>
-                  Faylı bura atın və ya seçmək üçün klikləyin · IMO FAL paketi:
-                  General Declaration, Cargo Declaration, ekipaj/sərnişin siyahısı və tır cədvəli
-                </small>
-              </div>
-            </label>
-          ) : (
-            <div className="manifest-loaded">
-              <div className="manifest-file">
-                <span className="manifest-file-icon"><FileUp size={18} /></span>
-                <div>
-                  <strong>{manifestDoc.fileName}</strong>
-                  <small>
-                    {formatFileSize(manifestDoc.size)}
-                    {manifestDoc.pageCount ? ` · ${manifestDoc.pageCount} səhifə` : ''}
-                    {' · '}{manifestDoc.uploadedAt}
-                  </small>
-                </div>
-                <div className="manifest-file-actions">
-                  <Button type="button" variant="secondary" onClick={() => setManifestViewerOpen(true)}>
-                    <FileText size={14} /> Bax
-                  </Button>
-                  <label className="btn btn-ghost manifest-replace">
-                    <input
-                      type="file"
-                      accept="application/pdf,.pdf"
-                      hidden
-                      onChange={e => {
-                        void uploadManifest(e.target.files?.[0])
-                        e.target.value = ''
-                      }}
-                    />
-                    <Upload size={14} /> Əvəz et
-                  </label>
-                  <Button type="button" variant="ghost" onClick={() => removeManifest(manifestDoc.id)}>
-                    <Trash2 size={14} />
-                  </Button>
-                </div>
-              </div>
-
-              <details className="manifest-fields">
-                <summary>Manifest başlığı — General Declaration üzrə əl ilə doldurulur</summary>
-                <div className="tax-params-grid">
-                  <label>Səfər №
-                    <input value={manifestDoc.header.voyageNo} onChange={e => updateManifestHeader(manifestDoc.id, { voyageNo: e.target.value })} placeholder="125" />
-                  </label>
-                  <label>Kapitan
-                    <input value={manifestDoc.header.master} onChange={e => updateManifestHeader(manifestDoc.id, { master: e.target.value })} placeholder="Annamyradov M." />
-                  </label>
-                  <label>Gəmi agenti
-                    <input value={manifestDoc.header.agent} onChange={e => updateManifestHeader(manifestDoc.id, { agent: e.target.value })} placeholder="Baku International Sea Trade Port CJSC" />
-                  </label>
-                  <label>Yükləmə limanı
-                    <input value={manifestDoc.header.portLoading} onChange={e => updateManifestHeader(manifestDoc.id, { portLoading: e.target.value })} />
-                  </label>
-                  <label>Boşaltma limanı
-                    <input value={manifestDoc.header.portDischarge} onChange={e => updateManifestHeader(manifestDoc.id, { portDischarge: e.target.value })} />
-                  </label>
-                  <label>Gəliş tarixi
-                    <input value={manifestDoc.header.arrivalDate} onChange={e => updateManifestHeader(manifestDoc.id, { arrivalDate: e.target.value })} />
-                  </label>
-                  <label>Qoşqulu avtomaşın, əd.
-                    <input type="number" min="0" value={manifestDoc.header.vehicleCount} onChange={e => updateManifestHeader(manifestDoc.id, { vehicleCount: e.target.value })} placeholder="42" />
-                  </label>
-                  <label>Ayrıca qoşqu, əd.
-                    <input type="number" min="0" value={manifestDoc.header.trailerCount} onChange={e => updateManifestHeader(manifestDoc.id, { trailerCount: e.target.value })} placeholder="9" />
-                  </label>
-                  <label>Boş gələn, əd.
-                    <input type="number" min="0" value={manifestDoc.header.emptyCount} onChange={e => updateManifestHeader(manifestDoc.id, { emptyCount: e.target.value })} placeholder="9" />
-                  </label>
-                  <label>Ümumi brutto, kq
-                    <input type="number" min="0" value={manifestDoc.header.totalGrossKg} onChange={e => updateManifestHeader(manifestDoc.id, { totalGrossKg: e.target.value })} placeholder="1569014" />
-                  </label>
-                </div>
-                <p className="manifest-note">
-                  <AlertTriangle size={13} /> Skan edilmiş PDF-in mətn qatı olmadığına görə 51 tır sətri avtomatik oxunmur —
-                  sənəd qeyd kimi saxlanılır, sətirlər manifest siyahısından və ya «CMR / İnvoys əlavə et» ilə daxil edilir.
-                </p>
-              </details>
-            </div>
-          )}
-        </Card>
-
         <VehicleDeckSelector
           ship={ship}
           vehicles={shipVehicles}
@@ -1013,7 +1077,7 @@ export default function Registration() {
 
         {vehicleFound && dossier && (
           <div id="reg-flow">
-            <nav className="registration-stepper registration-stepper-6 is-navigable" aria-label="Qeydiyyat mərhələləri">
+            <nav className="registration-stepper registration-stepper-5 is-navigable" aria-label="Qeydiyyat mərhələləri">
               {steps.map((step, i) => {
                 const Icon = step.icon
                 return (
@@ -1040,280 +1104,175 @@ export default function Registration() {
             </nav>
 
             <Card className="registration-form" hover={false}>
-              {stage === 'senedler' && (
+              {stage === 'nv' && (
                 <section className="registration-step">
                   <header>
-                    <span className="step-number">03</span>
+                    <span className="step-number">02</span>
                     <div>
-                      <h2>CMR və İnvoys</h2>
-                      <p>Xaricdən göndərilən hər malın CMR-i və invoysu olur. Bir tırda bir neçə CMR ola bilər.</p>
+                      <h2>Nəqliyyat vasitəsinin qeydiyyatı</h2>
+                      <p>Tır seçiləndə sistem VAİS / İGİS bazasına sorğu göndərir və nəqliyyat vasitəsinin qeydiyyat məlumatlarını gətirir.</p>
                     </div>
-                    {docsConfirmed && <CheckCircle2 className="step-check" />}
+                    {vehicleRegistered && <CheckCircle2 className="step-check" />}
                   </header>
 
-                  <div className="table-scroll">
-                    <table className="payments-table chain-table">
-                      <thead>
-                        <tr>
-                          <th>CMR</th>
-                          <th>Göndərən → Alan</th>
-                          <th>Mal təsviri</th>
-                          <th>Yer / Brutto</th>
-                          <th>İnvoys</th>
-                          <th>Əməliyyat</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {cmrs.map(cmr => (
-                          <tr key={cmr.no}>
-                            <td>
-                              <strong>{cmr.no}</strong>
-                              <small className="chain-sub">{cmr.yuklemeYeri} → {cmr.boshaltmaYeri}</small>
-                            </td>
-                            <td>{cmr.gonderen}<small className="chain-sub">→ {cmr.alan}</small></td>
-                            <td>
-                              {cmr.malTesviri}
-                              {goodsLines
-                                .filter(line => line.cmrNo === cmr.no)
-                                .slice(0, 2)
-                                .map(line => (
-                                  <span
-                                    key={line.id}
-                                    className={`status-chip ${GOODS_STATUS_TONE[line.status]} goods-status-chip`}
-                                    title={line.statusQeyd}
-                                  >
-                                    {GOODS_STATUS_LABEL[line.status]}
-                                  </span>
-                                ))}
-                            </td>
-                            <td>
-                              {cmr.yerSayi ? `${cmr.yerSayi.toLocaleString('az-AZ')} yer` : '—'}
-                              <small className="chain-sub">{cmr.bruttoKq ? `${cmr.bruttoKq.toLocaleString('az-AZ')} kq` : '—'}</small>
-                            </td>
-                            <td>
-                              {cmr.invoices.length === 0 ? <span className="status-chip neutral">İnvoys yoxdur</span> : cmr.invoices.map(inv => (
-                                <div key={inv.no}>
-                                  <strong>{inv.no}</strong>
-                                  <small className="chain-sub">
-                                    {inv.mebleg ? `${inv.mebleg.toLocaleString('az-AZ')} ${inv.valyuta}` : '—'}
-                                    {inv.incoterms ? ` · ${inv.incoterms}` : ''}
-                                  </small>
-                                </div>
-                              ))}
-                            </td>
-                            <td>
-                              <div className="row-actions">
-                                <button type="button" onClick={() => openCmrEditor(cmr)} title="CMR və invoysu redaktə et">
-                                  <Pencil size={13} />
-                                </button>
-                                <button type="button" className="danger" onClick={() => removeCmr(cmr)} title="Zəncirdən çıxar">
-                                  <Trash2 size={13} />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="chain-footer">
-                    <span className="chain-rule">
-                      <FileCheck2 size={13} /> 1 CMR = 1 bəyannamə · {cmrs.length} CMR → {cmrs.length} bəyannamə
-                      {' · '}mal mövqeyi: {goodsSummary.total} ({goodsSummary.released} buraxılıb)
+                  <div className={`lookup-banner ${vaisState === 'sorgu' ? 'busy' : vaisState === 'tapilmadi' ? 'warn' : vehicleRegistered ? 'ok' : ''}`}>
+                    <span className="lookup-icon">
+                      {vaisState === 'sorgu'
+                        ? <ScanSearch className="spin" />
+                        : vaisState === 'tapilmadi' ? <AlertTriangle /> : <Database />}
                     </span>
-                    <Button type="button" variant="ghost" onClick={() => openCmrEditor()}>
-                      <Plus /> CMR / İnvoys əlavə et
+                    <div>
+                      <strong>
+                        {vaisState === 'sorgu' ? 'VAİS / İGİS bazasına sorğu göndərilir…'
+                          : vaisState === 'tapildi' ? `VAİS / İGİS: qeyd tapıldı · sorğu ${vaisRecord?.sorguId ?? ''}`
+                          : vaisState === 'elIle' ? `Əl ilə qeydə alındı · ${vaisRecord?.sorguId ?? ''}`
+                          : vaisState === 'tapilmadi' ? 'VAİS / İGİS-də bu nişan üzrə qeyd tapılmadı'
+                          : 'Göyərtə planından tır seçin'}
+                      </strong>
+                      <small>
+                        {vaisState === 'sorgu' ? `Dövlət nişanı ${plateKey} üzrə axtarış aparılır…`
+                          : vaisState === 'tapilmadi' ? 'Nəqliyyat vasitəsinin məlumatlarını aşağıdakı formada əl ilə daxil edin'
+                          : vehicleRegistered ? 'Məlumatlar bazadan gəldi — yoxlayın və “Növbəti mərhələ” ilə davam edin'
+                          : 'Sorğu üçün nəqliyyat vasitəsi seçilməlidir'}
+                      </small>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={requeryVais}
+                      disabled={vaisState === 'sorgu' || !vehicleFound}
+                    >
+                      <RefreshCw size={13} /> Təkrar sorğu
                     </Button>
                   </div>
-                </section>
-              )}
 
-              {stage === 'egb' && (
-                <section className="registration-step">
-                  <header>
-                    <span className="step-number">04</span>
-                    <div>
-                      <h2>Bəyannamə və EGB uzlaşdırması</h2>
-                      <p>Deklarant hər CMR üzrə bəyannamə yazır və EGB-yə yükləyir. Burada həmin bəyannamələr tıra mənimsədilir.</p>
-                    </div>
-                    {egbComplete && <CheckCircle2 className="step-check" />}
-                  </header>
-
-                  <div className="egb-reconcile">
-                    {cmrs.map(cmr => {
-                      const linked = isLinked(cmr)
-                      const tone = linked ? 'success' : cmr.egbStatus === 'uygunsuzluq' ? 'danger' : 'warning'
-                      return (
-                        <article key={cmr.no} className={`egb-row ${tone}`}>
-                          <div className="egb-cell">
-                            <small>CMR</small>
-                            <strong>{cmr.no}</strong>
-                          </div>
-                          <Link2 size={14} className="egb-link-icon" />
-                          <div className="egb-cell">
-                            <small>BƏYANNAMƏ</small>
-                            <strong>{cmr.declarationKod ?? 'Yazılmayıb'}</strong>
-                          </div>
-                          <div className="egb-cell grow">
-                            <small>EGB QEYDİ</small>
-                            <span>{linked && cmr.egbStatus !== 'bagli' ? 'Operator EGB-dən götürdü və tıra mənimsətdi' : cmr.egbQeyd}</span>
-                          </div>
-                          <span className={`status-chip ${tone}`}>
-                            {linked ? EGB_STATUS_LABEL.bagli : EGB_STATUS_LABEL[cmr.egbStatus]}
-                          </span>
-                          <div className="egb-actions">
-                            {!linked && (
-                              <Button type="button" variant="secondary" onClick={() => fetchFromEgb(cmr)}>
-                                <ScanSearch size={14} /> EGB-dən götür
-                              </Button>
-                            )}
-                            <input
-                              list="egb-declaration-codes"
-                              className="egb-bind-input"
-                              placeholder="Bəyannamə kodu…"
-                              defaultValue={cmr.declarationKod ?? ''}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault()
-                                  bindDeclaration(cmr, (e.target as HTMLInputElement).value)
-                                }
-                              }}
-                              onBlur={e => {
-                                const value = e.target.value.trim()
-                                if (value && value !== (cmr.declarationKod ?? '')) bindDeclaration(cmr, value)
-                              }}
-                            />
-                            {cmr.declarationKod && (
-                              <button type="button" className="egb-unbind" onClick={() => unbindDeclaration(cmr)} title="Bağlantını ləğv et">
-                                <X size={13} />
-                              </button>
-                            )}
-                          </div>
-                        </article>
-                      )
-                    })}
-                  </div>
-
-                  <datalist id="egb-declaration-codes">
-                    {declarations.slice(0, 200).map(item => (
-                      <option key={item.kod} value={item.kod}>{item.avtomobil} · {item.status}</option>
-                    ))}
-                  </datalist>
-
-                  <p className="egb-summary">
-                    Gözlənilən <b>{cmrs.length}</b> · Bağlanmış <b>{linkedCount}</b> · Çatışmır <b>{cmrs.length - linkedCount}</b>
-                    {' · '}EGB axtarışı tır nömrəsi üzrə: <b>{plateKey}</b>
-                  </p>
-
-                  <div className="risk-override">
-                    <small>SİSTEM CAVABINI ƏL İLƏ DƏYİŞ</small>
-                    <div>
-                      <button type="button" className={effectiveRisk === 'green' ? 'selected green' : ''} onClick={() => setRiskOverride('green')}>Yaşıl</button>
-                      <button type="button" className={effectiveRisk === 'red' ? 'selected red' : ''} onClick={() => setRiskOverride('red')}>Qırmızı</button>
-                      <button type="button" onClick={() => setRiskOverride(null)} disabled={!riskOverride}>Avtomatik</button>
-                    </div>
-                  </div>
-
-                  {riskChecking && !riskOverride && (
-                    <div className="risk-result pending">
-                      <ScanSearch className="spin" />
-                      <div><strong>Risk yoxlanılır…</strong></div>
+                  {vaisState === 'sorgu' && (
+                    <div className="lookup-skeleton">
+                      {[0, 1, 2, 3, 4, 5].map(row => <span key={row} className="skeleton" />)}
                     </div>
                   )}
-                  {(!riskChecking || riskOverride) && effectiveRisk === 'green' && (
-                    <div className="risk-result green">
-                      <ShieldCheck />
-                      <div>
-                        <strong>Sistem cavabı: YAŞIL</strong>
-                        <p>{riskOverride ? 'İnspektor əl ilə yaşıl kanal seçdi' : riskReasons[0]}</p>
-                      </div>
-                    </div>
-                  )}
-                  {(!riskChecking || riskOverride) && effectiveRisk === 'red' && (
+
+                  {vehicleRegistered && vaisRecord && (
                     <>
-                      <div className="risk-result red">
-                        <AlertTriangle />
-                        <div>
-                          <strong>Sistem cavabı: QIRMIZI</strong>
-                          <p>Yönləndirmə kanalı seçilmədən növbəti mərhələ açılmır.</p>
-                          <ul>{riskReasons.map(r => <li key={r}>{r}</li>)}</ul>
-                        </div>
+                      <div className="review-summary-grid vais-record-grid">
+                        <Data label="Dövlət qeydiyyat nişanı" value={vaisRecord.dovletNisani || '—'} />
+                        <Data label="Qoşqu nişanı" value={vaisRecord.qosquNisani || 'Qoşqusuz'} />
+                        <Data label="Marka / model" value={vaisRecord.marka || '—'} />
+                        <Data label="Nəqliyyat vasitəsinin növü" value={vaisRecord.novu || '—'} />
+                        <Data label="Buraxılış ili" value={vaisRecord.istehsalIli || '—'} />
+                        <Data label="Ox sayı" value={vaisRecord.oxSayi || '—'} />
+                        <Data label="Texniki pasport" value={vaisRecord.texPasport || '—'} />
+                        <Data label="Qeydiyyat ölkəsi" value={vaisRecord.qeydiyyatOlkesi || '—'} />
+                        <Data label="Daşıyıcı" value={vaisRecord.dasiyici || '—'} />
+                        <Data label="Sürücü" value={vaisRecord.surucu || '—'} />
+                        <Data label="Sürücülük vəsiqəsi" value={vaisRecord.vesiqe || '—'} />
+                        <Data label="Məlumat mənbəyi" value={vaisRecord.menbe || '—'} />
                       </div>
-                      <div className="manual-route-grid">
-                        {MANUAL_ROUTES.map(route => {
-                          const Icon = route.icon
-                          return (
-                            <button
-                              type="button"
-                              key={route.id}
-                              className={manualRoute === route.id ? 'selected' : ''}
-                              onClick={() => setManualRoute(route.id)}
-                            >
-                              <Icon />
-                              <span><b>{route.id}</b><small>{route.hint}</small></span>
-                              {manualRoute === route.id && <Check />}
-                            </button>
-                          )
-                        })}
-                      </div>
+                      <p className="egb-summary">
+                        Qeyd mənbəyi <b>{vaisRecord.menbe}</b> · sorğu nömrəsi <b>{vaisRecord.sorguId}</b>
+                        {' · '}növbəti mərhələdə bəyannamələr <b>{plateKey}</b> nişanı üzrə EGB-dən gətiriləcək.
+                      </p>
                     </>
                   )}
-                </section>
-              )}
 
-              {stage === 'vais' && (
-                <section className="registration-step">
-                  <header>
-                    <span className="step-number">05</span>
-                    <div>
-                      <h2>Qeydiyyat və icazə blankı</h2>
-                      <p>Gəmi qeydiyyatdan sonra avtomobil bölməsində tır və qoşqu qeydə alınır, qoşqu kodu götürülür.</p>
-                    </div>
-                    {vaisComplete && <CheckCircle2 className="step-check" />}
-                  </header>
-
-                  <div className="vais-track">
-                    <article className="vais-step done">
-                      <span><Check size={13} /></span>
-                      <div>
-                        <b>Gəmi qeydiyyatı</b>
-                        <small>{ship.ad} · {voyage?.id}</small>
-                      </div>
-                    </article>
-                    <article className={`vais-step ${trailerCode ? 'done' : 'active'}`}>
-                      <span>{trailerCode ? <Check size={13} /> : '2'}</span>
-                      <div>
-                        <b>Tır və qoşqu qeydiyyatı</b>
-                        <small>
-                          Tır {transportDetails.dovletNisani || plateKey}
-                          {trailerPlate ? ` · Qoşqu ${trailerPlate}` : ' · qoşqusuz (manifestdə qeyd yoxdur)'}
-                        </small>
-                      </div>
-                      {trailerCode
-                        ? <input
-                            className="vais-code-input"
-                            value={trailerCode}
-                            onChange={e => setTrailerCode(e.target.value.toUpperCase())}
-                            title="Qoşqu kodunu əl ilə düzəlt"
+                  {vaisState === 'tapilmadi' && (
+                    <div className="manual-vehicle-card">
+                      <header>
+                        <span><Plus size={14} /></span>
+                        <div>
+                          <b>Nəqliyyat vasitəsini əl ilə əlavə et</b>
+                          <small>Baza cavab vermədikdə operator məlumatları özü daxil edir və qeydiyyat davam edir.</small>
+                        </div>
+                      </header>
+                      <div className="tax-params-grid">
+                        <label>Dövlət qeydiyyat nişanı
+                          <input
+                            value={manualVehicle.dovletNisani}
+                            onChange={e => setManualVehicle(v => ({ ...v, dovletNisani: e.target.value.toUpperCase() }))}
+                            placeholder="Məsələn: 52 AEJ 596"
                           />
-                        : <Button type="button" onClick={registerTrailer}>
-                            {trailerPlate ? 'Qoşqunu qeydiyyata al' : 'Tırı qeydiyyata al'}
-                          </Button>}
-                    </article>
-                    <article className={`vais-step ${goodsAssigned ? 'done' : trailerCode ? 'active' : ''}`}>
-                      <span>{goodsAssigned ? <Check size={13} /> : '3'}</span>
-                      <div>
-                        <b>Malların tıra mənimsədilməsi</b>
-                        <small>{linkedCount} bəyannamə · {cmrs.length} CMR</small>
+                        </label>
+                        <label>Qoşqu nişanı
+                          <input
+                            value={manualVehicle.qosquNisani}
+                            onChange={e => setManualVehicle(v => ({ ...v, qosquNisani: e.target.value.toUpperCase() }))}
+                            placeholder="Məsələn: 52 ACY 559"
+                          />
+                        </label>
+                        <label>Marka / model
+                          <input
+                            value={manualVehicle.marka}
+                            onChange={e => setManualVehicle(v => ({ ...v, marka: e.target.value }))}
+                            placeholder="Məsələn: Mercedes Actros"
+                          />
+                        </label>
+                        <label>Nəqliyyat vasitəsinin növü
+                          <select value={manualVehicle.novu} onChange={e => setManualVehicle(v => ({ ...v, novu: e.target.value }))}>
+                            <option>Yük avtomobili</option>
+                            <option>Minik avtomobili</option>
+                            <option>Avtobus</option>
+                          </select>
+                        </label>
+                        <label>Buraxılış ili
+                          <input
+                            value={manualVehicle.istehsalIli}
+                            onChange={e => setManualVehicle(v => ({ ...v, istehsalIli: e.target.value }))}
+                            placeholder="Məsələn: 2019"
+                          />
+                        </label>
+                        <label>Ox sayı
+                          <input
+                            value={manualVehicle.oxSayi}
+                            onChange={e => setManualVehicle(v => ({ ...v, oxSayi: e.target.value }))}
+                            placeholder="Məsələn: 5"
+                          />
+                        </label>
+                        <label>Texniki pasport
+                          <input
+                            value={manualVehicle.texPasport}
+                            onChange={e => setManualVehicle(v => ({ ...v, texPasport: e.target.value.toUpperCase() }))}
+                            placeholder="Məsələn: TP 481203"
+                          />
+                        </label>
+                        <label>Qeydiyyat ölkəsi
+                          <input
+                            value={manualVehicle.qeydiyyatOlkesi}
+                            onChange={e => setManualVehicle(v => ({ ...v, qeydiyyatOlkesi: e.target.value }))}
+                            placeholder="Məsələn: Qazaxıstan"
+                          />
+                        </label>
+                        <label>Daşıyıcı
+                          <input
+                            value={manualVehicle.dasiyici}
+                            onChange={e => setManualVehicle(v => ({ ...v, dasiyici: e.target.value }))}
+                            placeholder="Məsələn: KAZ TRANS LOGISTIC LLP"
+                          />
+                        </label>
+                        <label>Sürücü
+                          <input
+                            value={manualVehicle.surucu}
+                            onChange={e => setManualVehicle(v => ({ ...v, surucu: e.target.value }))}
+                            placeholder="Ad, soyad"
+                          />
+                        </label>
+                        <label>Sürücülük vəsiqəsi
+                          <input
+                            value={manualVehicle.vesiqe}
+                            onChange={e => setManualVehicle(v => ({ ...v, vesiqe: e.target.value.toUpperCase() }))}
+                            placeholder="Məsələn: SV 4820193"
+                          />
+                        </label>
                       </div>
-                      {!goodsAssigned && (
-                        <Button type="button" variant="secondary" disabled={!trailerCode} onClick={assignGoods}>
-                          Malları mənimsət
+                      <div className="manual-vehicle-actions">
+                        <span className="chain-rule">
+                          <FileCheck2 size={13} /> Əl ilə daxil edilən qeyd sorğu jurnalında “Əl ilə” mənbəyi ilə saxlanılır.
+                        </span>
+                        <Button type="button" onClick={saveManualVehicle}>
+                          <Plus /> Nəqliyyat vasitəsini qeydə al
                         </Button>
-                      )}
-                    </article>
-                  </div>
+                      </div>
+                    </div>
+                  )}
 
                   <details className="manual-fields" open>
                     <summary>Nəqliyyat vasitəsi haqqında məlumatlar — əl ilə düzəliş</summary>
@@ -1361,6 +1320,295 @@ export default function Registration() {
                       </label>
                     </div>
                   </details>
+                </section>
+              )}
+
+              {stage === 'egb' && (
+                <section className="registration-step">
+                  <header>
+                    <span className="step-number">03</span>
+                    <div>
+                      <h2>Bəyannamə · EGB</h2>
+                      <p>Sistem tırın dövlət nişanı üzrə EGB-yə sorğu göndərir və bu nəqliyyat vasitəsinə yazılmış bəyannamələri CMR/invoys məlumatı ilə birlikdə siyahı kimi gətirir.</p>
+                    </div>
+                    {egbComplete && !inspectionBlocking && <CheckCircle2 className="step-check" />}
+                  </header>
+
+                  <div className={`lookup-banner ${egbState === 'sorgu' ? 'busy' : egbState === 'tapilmadi' ? 'warn' : egbComplete ? 'ok' : ''}`}>
+                    <span className="lookup-icon">
+                      {egbState === 'sorgu' ? <ScanSearch className="spin" /> : egbState === 'tapilmadi' ? <AlertTriangle /> : <Database />}
+                    </span>
+                    <div>
+                      <strong>
+                        {egbState === 'sorgu' ? 'EGB-yə sorğu göndərilir…'
+                          : egbState === 'tapilmadi' ? 'EGB-də bu nişan üzrə bəyannamə tapılmadı'
+                          : `EGB: ${egbFoundCount} bəyannamə gətirildi`}
+                      </strong>
+                      <small>
+                        {egbState === 'sorgu' ? `Dövlət nişanı ${plateKey} üzrə bəyannamələr axtarılır…`
+                          : egbState === 'tapilmadi' ? 'Bəyannaməni əl ilə əlavə edin və ya təkrar sorğu göndərin'
+                          : `${plateKey} · siyahıda ${cmrs.length} sətir${cmrs.length > egbFoundCount ? ` (${cmrs.length - egbFoundCount} əl ilə)` : ''} · ${cmrs.reduce((sum, cmr) => sum + cmr.invoices.length, 0)} invoys`}
+                      </small>
+                    </div>
+                    <Button type="button" variant="secondary" onClick={requeryEgb} disabled={egbState === 'sorgu'}>
+                      <RefreshCw size={13} /> Təkrar sorğu
+                    </Button>
+                  </div>
+
+                  {egbState === 'sorgu' ? (
+                    <div className="lookup-skeleton rows">
+                      {[0, 1, 2].map(row => <span key={row} className="skeleton" />)}
+                    </div>
+                  ) : (
+                    <div className="egb-reconcile">
+                      {cmrs.map(cmr => {
+                        const linked = isLinked(cmr)
+                        const tone = linked ? 'success' : cmr.egbStatus === 'uygunsuzluq' ? 'danger' : 'warning'
+                        const risk = declarationRisks[cmr.no]
+                        return (
+                          <article key={cmr.no} className={`egb-row ${tone}`}>
+                            <div className="egb-cell">
+                              <small>BƏYANNAMƏ</small>
+                              <strong>{cmr.declarationKod ?? 'Yazılmayıb'}</strong>
+                              <span>{cmr.declarationStatus ?? 'EGB-də qeyd yoxdur'}</span>
+                            </div>
+                            <Link2 size={14} className="egb-link-icon" />
+                            <div className="egb-cell">
+                              <small>CMR · İNVOYS</small>
+                              <strong>{cmr.no}</strong>
+                              <span>
+                                {cmr.invoices[0]
+                                  ? `${cmr.invoices[0].no}${cmr.invoices[0].mebleg ? ` · ${cmr.invoices[0].mebleg.toLocaleString('az-AZ')} ${cmr.invoices[0].valyuta}` : ''}`
+                                  : 'invoys yoxdur'}
+                              </span>
+                            </div>
+                            <div className="egb-cell grow">
+                              <small>MAL · GÖNDƏRƏN → ALAN</small>
+                              <strong>{cmr.malTesviri}</strong>
+                              <span>
+                                {cmr.gonderen} → {cmr.alan}
+                                {cmr.bruttoKq ? ` · ${cmr.bruttoKq.toLocaleString('az-AZ')} kq` : ''}
+                              </span>
+                            </div>
+                            {risk && (
+                              <span
+                                className={`status-chip ${risk.verdict === 'red' ? 'danger' : 'success'}`}
+                                title={risk.reasons.join(' · ')}
+                              >
+                                {risk.verdict === 'red' ? 'Qırmızı status' : 'Yaşıl status'}
+                              </span>
+                            )}
+                            <span className={`status-chip ${tone}`}>
+                              {linked ? EGB_STATUS_LABEL.bagli : EGB_STATUS_LABEL[cmr.egbStatus]}
+                            </span>
+                            <div className="egb-actions">
+                              <input
+                                list="egb-declaration-codes"
+                                className="egb-bind-input"
+                                placeholder="Bəyannamə kodu…"
+                                defaultValue={cmr.declarationKod ?? ''}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault()
+                                    bindDeclaration(cmr, (e.target as HTMLInputElement).value)
+                                  }
+                                }}
+                                onBlur={e => {
+                                  const value = e.target.value.trim()
+                                  if (value && value !== (cmr.declarationKod ?? '')) bindDeclaration(cmr, value)
+                                }}
+                              />
+                              <button type="button" onClick={() => openCmrEditor(cmr)} title="Sətri redaktə et" className="egb-icon-btn">
+                                <Pencil size={13} />
+                              </button>
+                              {cmr.declarationKod && (
+                                <button type="button" className="egb-unbind" onClick={() => unbindDeclaration(cmr)} title="Bağlantını ləğv et">
+                                  <X size={13} />
+                                </button>
+                              )}
+                              <button type="button" className="egb-icon-btn danger" onClick={() => removeCmr(cmr)} title="Siyahıdan çıxar">
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          </article>
+                        )
+                      })}
+                      {cmrs.length === 0 && (
+                        <p className="egb-empty">EGB-dən bəyannamə gəlmədi — sətri əl ilə əlavə edin.</p>
+                      )}
+                    </div>
+                  )}
+
+                  <datalist id="egb-declaration-codes">
+                    {declarations.slice(0, 200).map(item => (
+                      <option key={item.kod} value={item.kod}>{item.avtomobil} · {item.status}</option>
+                    ))}
+                  </datalist>
+
+                  <div className="chain-footer">
+                    <span className="chain-rule">
+                      <FileCheck2 size={13} /> 1 CMR = 1 bəyannamə · {cmrs.length} sətir → {linkedCount} bağlandı
+                      {' · '}mal mövqeyi: {goodsSummary.total} ({goodsSummary.released} buraxılıb)
+                    </span>
+                    <Button type="button" variant="ghost" onClick={() => openCmrEditor()}>
+                      <Plus /> Bəyannamə əlavə et
+                    </Button>
+                  </div>
+
+                  <p className="egb-summary">
+                    Gözlənilən <b>{cmrs.length}</b> · Bağlanmış <b>{linkedCount}</b> · Çatışmır <b>{cmrs.length - linkedCount}</b>
+                    {' · '}EGB axtarışı nişan üzrə: <b>{plateKey}</b>
+                  </p>
+
+                  <div className="risk-override">
+                    <small>SİSTEM CAVABINI ƏL İLƏ DƏYİŞ</small>
+                    <div>
+                      <button type="button" className={effectiveRisk === 'green' ? 'selected green' : ''} onClick={() => setRiskOverride('green')}>Yaşıl</button>
+                      <button type="button" className={effectiveRisk === 'red' ? 'selected red' : ''} onClick={() => setRiskOverride('red')}>Qırmızı</button>
+                      <button type="button" onClick={() => setRiskOverride(null)} disabled={!riskOverride}>Avtomatik</button>
+                    </div>
+                  </div>
+
+                  {riskChecking && !riskOverride && (
+                    <div className="risk-result pending">
+                      <ScanSearch className="spin" />
+                      <div><strong>Bəyannamə statusları yoxlanılır…</strong></div>
+                    </div>
+                  )}
+                  {(!riskChecking || riskOverride) && effectiveRisk === 'green' && (
+                    <div className="risk-result green">
+                      <ShieldCheck />
+                      <div>
+                        <strong>Sistem cavabı: YAŞIL</strong>
+                        <p>{riskOverride ? 'İnspektor əl ilə yaşıl kanal seçdi' : riskReasons[0]}</p>
+                      </div>
+                    </div>
+                  )}
+                  {(!riskChecking || riskOverride) && effectiveRisk === 'red' && (
+                    <>
+                      <div className="risk-result red">
+                        <AlertTriangle />
+                        <div>
+                          <strong>Sistem cavabı: QIRMIZI</strong>
+                          <p>EGB-dən qırmızı statuslu bəyannamə gəldi — yoxlama kanalı seçilməlidir.</p>
+                          <ul>{riskReasons.map(reason => <li key={reason}>{reason}</li>)}</ul>
+                        </div>
+                      </div>
+                      <div className="manual-route-grid">
+                        {MANUAL_ROUTES.map(route => {
+                          const Icon = route.icon
+                          return (
+                            <button
+                              type="button"
+                              key={route.id}
+                              className={manualRoute === route.id ? 'selected' : ''}
+                              onClick={() => sendToInspection(route.id)}
+                            >
+                              <Icon />
+                              <span><b>{route.id}</b><small>{route.hint}</small></span>
+                              {manualRoute === route.id && <Check />}
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {manualRoute && (
+                        <div className={`inspection-panel ${inspection}`}>
+                          <header>
+                            <span>
+                              {inspection === 'kecdi' ? <CheckCircle2 /> : inspection === 'kecmedi' ? <AlertTriangle /> : <ShieldAlert />}
+                            </span>
+                            <div>
+                              <b>
+                                {inspection === 'kecdi' ? `${manualRoute} — uğurla keçdi`
+                                  : inspection === 'kecmedi' ? `${manualRoute} — uğursuz`
+                                  : `${manualRoute} — nəticə gözlənilir`}
+                              </b>
+                              <small>
+                                {inspection === 'kecdi'
+                                  ? 'Normal prosedur davam edir — qeydiyyat tamamlana bilər.'
+                                  : inspection === 'kecmedi'
+                                    ? 'Nəqliyyat vasitəsi buraxılmır. Təkrar yoxlamaya göndərilə bilər.'
+                                    : 'Növbəti mərhələlərə keçmək olar, lakin yoxlama təsdiqlənmədən qeydiyyat tamamlanmır.'}
+                              </small>
+                            </div>
+                          </header>
+                          <div className="inspection-actions">
+                            {inspection !== 'kecdi' && (
+                              <Button type="button" variant="success" onClick={passInspection}>
+                                <ShieldCheck /> Yoxlamadan uğurla keçdi — davam et
+                              </Button>
+                            )}
+                            {inspection === 'gozleyir' && (
+                              <Button type="button" variant="danger" onClick={failInspection}>
+                                <AlertTriangle /> Yoxlama uğursuz oldu
+                              </Button>
+                            )}
+                            {inspection !== 'gozleyir' && (
+                              <Button type="button" variant="ghost" onClick={() => setInspection('gozleyir')}>
+                                <RotateCcw /> Təkrar yoxlamaya göndər
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </section>
+              )}
+
+              {stage === 'vais' && (
+                <section className="registration-step">
+                  <header>
+                    <span className="step-number">04</span>
+                    <div>
+                      <h2>Qeydiyyat və icazə blankı</h2>
+                      <p>Gəmi qeydiyyatdan sonra avtomobil bölməsində tır və qoşqu qeydə alınır, qoşqu kodu götürülür.</p>
+                    </div>
+                    {vaisComplete && <CheckCircle2 className="step-check" />}
+                  </header>
+
+                  <div className="vais-track">
+                    <article className="vais-step done">
+                      <span><Check size={13} /></span>
+                      <div>
+                        <b>Gəmi qeydiyyatı</b>
+                        <small>{ship.ad} · {voyage?.id}</small>
+                      </div>
+                    </article>
+                    <article className={`vais-step ${trailerCode ? 'done' : 'active'}`}>
+                      <span>{trailerCode ? <Check size={13} /> : '2'}</span>
+                      <div>
+                        <b>Tır və qoşqu qeydiyyatı</b>
+                        <small>
+                          Tır {transportDetails.dovletNisani || plateKey}
+                          {trailerPlate ? ` · Qoşqu ${trailerPlate}` : ' · qoşqusuz (qeyd yoxdur)'}
+                        </small>
+                      </div>
+                      {trailerCode
+                        ? <input
+                            className="vais-code-input"
+                            value={trailerCode}
+                            onChange={e => setTrailerCode(e.target.value.toUpperCase())}
+                            title="Qoşqu kodunu əl ilə düzəlt"
+                          />
+                        : <Button type="button" onClick={registerTrailer}>
+                            {trailerPlate ? 'Qoşqunu qeydiyyata al' : 'Tırı qeydiyyata al'}
+                          </Button>}
+                    </article>
+                    <article className={`vais-step ${goodsAssigned ? 'done' : trailerCode ? 'active' : ''}`}>
+                      <span>{goodsAssigned ? <Check size={13} /> : '3'}</span>
+                      <div>
+                        <b>Malların tıra mənimsədilməsi</b>
+                        <small>{linkedCount} bəyannamə · {cmrs.length} CMR</small>
+                      </div>
+                      {!goodsAssigned && (
+                        <Button type="button" variant="secondary" disabled={!trailerCode} onClick={assignGoods}>
+                          Malları mənimsət
+                        </Button>
+                      )}
+                    </article>
+                  </div>
 
                   <div className="tax-params-grid">
                     <label>İcazə blankının növü
@@ -1407,13 +1655,30 @@ export default function Registration() {
               {stage === 'vergi' && (
                 <section className="registration-step">
                   <header>
-                    <span className="step-number">06</span>
+                    <span className="step-number">05</span>
                     <div>
                       <h2>Yol vergisi</h2>
                       <p>Vergi Məcəlləsi 211.1.1.3 — yük avtomobilləri, qoşqulu və yarımqoşqulu nəqliyyat</p>
                     </div>
                     {taxConfirmed && <CheckCircle2 className="step-check" />}
                   </header>
+
+                  {inspectionBlocking && (
+                    <div className="stage-blocked-note">
+                      <ShieldAlert />
+                      <div>
+                        <b>Qırmızı kanal — yoxlama nəticəsi gözlənilir</b>
+                        <small>
+                          {manualRoute
+                            ? `${manualRoute} nəticəsi daxil edilmədən qeydiyyat tamamlanmır. 3-cü addımda “Yoxlamadan uğurla keçdi” düyməsini basın.`
+                            : '3-cü addımda yoxlama kanalını seçin və nəticəni təsdiqləyin.'}
+                        </small>
+                      </div>
+                      <Button type="button" variant="secondary" onClick={() => setStage('egb')}>
+                        3-cü addıma keç
+                      </Button>
+                    </div>
+                  )}
 
                   <div className="tax-params-grid">
                     <label>Ölkədə qalma müddəti
@@ -1519,12 +1784,18 @@ export default function Registration() {
                   </div>
 
                   <div className="review-summary-grid" style={{ marginTop: 14 }}>
-                    <Data label="Səfər / Manifest" value={`${voyage?.id ?? '—'} · ${voyage?.manifestNo ?? '—'}`} />
-                    <Data label="Tır / Qoşqu" value={`${transportDetails.dovletNisani || plateKey}${trailerPlate ? ` · ${trailerPlate}` : ''}`} />
+                    <Data label="Səfər" value={voyage?.id ?? '—'} />
+                    <Data label="Nəqliyyat vasitəsi / Qoşqu" value={`${transportDetails.dovletNisani || plateKey}${trailerPlate ? ` · ${trailerPlate}` : ''}`} />
+                    <Data label="Qeydiyyat mənbəyi" value={vaisRecord ? `${vaisRecord.menbe} · ${vaisRecord.sorguId}` : '—'} />
                     <Data label="Qoşqu kodu" value={trailerCode || '—'} />
-                    <Data label="CMR → Bəyannamə" value={`${cmrs.length} → ${linkedCount}`} />
+                    <Data label="Bəyannamə" value={`${cmrs.length} sətir → ${linkedCount} bağlandı`} />
                     <Data label="Mal mövqeləri" value={`${goodsSummary.released}/${goodsSummary.total} buraxılıb · ${goodsSummary.blocked} nəzarətdə`} />
-                    <Data label="Risk" value={`${effectiveRisk === 'red' ? `Qırmızı · ${manualRoute ?? '—'}` : 'Yaşıl'}${riskOverride ? ' (əl ilə)' : ''}`} />
+                    <Data
+                      label="Risk / Yoxlama"
+                      value={`${effectiveRisk === 'red'
+                        ? `Qırmızı · ${manualRoute ?? '—'} · ${inspection === 'kecdi' ? 'keçdi' : inspection === 'kecmedi' ? 'uğursuz' : 'nəticə gözlənilir'}`
+                        : 'Yaşıl'}${riskOverride ? ' (əl ilə)' : ''}`}
+                    />
                     <Data label="İcazə blankı" value={permit.nomre ? `${TRANSPORT_PERMIT_OPTIONS.find(p => p.id === permit.novu)?.label} № ${permit.nomre}` : '—'} />
                   </div>
                 </section>
@@ -1532,10 +1803,17 @@ export default function Registration() {
 
               <footer className="registration-actions">
                 <Button variant="ghost" onClick={goBack}>
-                  <ArrowLeft /> {stage === 'senedler' ? 'Manifestə qayıt' : 'Geri'}
+                  <ArrowLeft /> {stage === 'nv' ? 'Tır seçiminə qayıt' : 'Geri'}
                 </Button>
                 {stage === 'vergi' ? (
-                  <Button variant="success" onClick={finalConfirm} disabled={!taxConfirmed}>
+                  <Button
+                    variant="success"
+                    onClick={finalConfirm}
+                    disabled={!taxConfirmed || inspectionBlocking}
+                    title={inspectionBlocking
+                      ? 'Qırmızı kanal: yoxlama nəticəsi təsdiqlənmədən qeydiyyat tamamlanmır'
+                      : !taxConfirmed ? 'Əvvəlcə yol vergisini təsdiqləyin' : 'Qeydiyyatı tamamla'}
+                  >
                     <ShieldCheck /> Qeydiyyatı təsdiqlə
                   </Button>
                 ) : (
@@ -1672,32 +1950,6 @@ export default function Registration() {
           </Card>
         )}
 
-        {manifestDoc && (
-          <Modal
-            open={manifestViewerOpen}
-            onClose={() => setManifestViewerOpen(false)}
-            title={`Manifest sənədi · ${manifestDoc.fileName}`}
-            wide
-          >
-            <div className="manifest-viewer">
-              <iframe src={manifestDoc.url} title={manifestDoc.fileName} />
-              <div className="manifest-viewer-actions">
-                <small>
-                  {formatFileSize(manifestDoc.size)}
-                  {manifestDoc.pageCount ? ` · ${manifestDoc.pageCount} səhifə` : ''}
-                  {' · '}yükləndi {manifestDoc.uploadedAt}
-                </small>
-                <a className="btn btn-secondary" href={manifestDoc.url} target="_blank" rel="noreferrer">
-                  Yeni pəncərədə aç
-                </a>
-              </div>
-              <small className="manifest-viewer-hint">
-                Önizləmə açılmırsa (brauzerin PDF görüntüləyicisi söndürülüb), sənədi yeni pəncərədə açın.
-              </small>
-            </div>
-          </Modal>
-        )}
-
         <ShipDetailModal ship={ship} open={shipModalOpen} onClose={() => setShipModalOpen(false)} />
       </>
     )}
@@ -1705,10 +1957,20 @@ export default function Registration() {
     <Modal
       open={cmrModalOpen}
       onClose={() => { setCmrModalOpen(false); setEditingCmr(null) }}
-      title={editingCmr ? `${editingCmr} — redaktə` : 'CMR və İnvoys əlavə et'}
+      title={editingCmr ? `${editingCmr} — redaktə` : 'Bəyannamə əlavə et'}
     >
       <form onSubmit={submitCmr} className="manual-declaration-form">
-        <label>CMR nömrəsi<input required disabled={Boolean(editingCmr)} value={cmrForm.cmrNo} onChange={e => setCmrForm(f => ({ ...f, cmrNo: e.target.value }))} placeholder="Məsələn: DA 1604513" /></label>
+        <div className="manual-form-row">
+          <label>Bəyannamə kodu (EGB)
+            <input
+              list="egb-declaration-codes"
+              value={cmrForm.beyannameKod}
+              onChange={e => setCmrForm(f => ({ ...f, beyannameKod: e.target.value }))}
+              placeholder="Məsələn: 01263000224935"
+            />
+          </label>
+          <label>CMR nömrəsi<input required disabled={Boolean(editingCmr)} value={cmrForm.cmrNo} onChange={e => setCmrForm(f => ({ ...f, cmrNo: e.target.value }))} placeholder="Məsələn: DA 1604513" /></label>
+        </div>
         <div className="manual-form-row">
           <label>Göndərən<input value={cmrForm.gonderen} onChange={e => setCmrForm(f => ({ ...f, gonderen: e.target.value }))} placeholder="Məsələn: EURO Plywood LLP" /></label>
           <label>Alan<input value={cmrForm.alan} onChange={e => setCmrForm(f => ({ ...f, alan: e.target.value }))} placeholder="Məsələn: OBA MARKET MMC" /></label>
@@ -1730,7 +1992,7 @@ export default function Registration() {
           </select>
         </label>
         <p className="chain-rule" style={{ margin: 0 }}>
-          <FileCheck2 size={13} /> Yeni CMR bəyannaməsiz əlavə olunur — deklarant yazandan sonra EGB mərhələsində bağlanacaq.
+          <FileCheck2 size={13} /> Bəyannamə kodu doldurulsa sətir dərhal bağlanır; boş qalsa deklarant yazana qədər “Çatışmır” statusunda saxlanılır.
         </p>
         <div className="manual-form-actions">
           <Button type="button" variant="ghost" onClick={() => { setCmrModalOpen(false); setEditingCmr(null) }}><X /> Ləğv et</Button>
@@ -1777,6 +2039,7 @@ export default function Registration() {
                 <b className={lastSaved.riskVerdict === 'green' ? 'ok' : 'warn'}>
                   {lastSaved.riskVerdict === 'green' ? 'Yaşıl' : 'Qırmızı'}
                   {lastSaved.manualRoute ? ` · ${lastSaved.manualRoute}` : ''}
+                  {lastSaved.manualRoute ? ` · ${lastSaved.status === 'Gözləmədə' ? 'gözləmədə' : 'yoxlamadan keçdi'}` : ''}
                 </b>
               </div>
               <div>

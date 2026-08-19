@@ -29,17 +29,14 @@ export type SavedRegistration = {
   roadTaxes: string[]
   permits: string[]
   transport: Record<string, string>
-  /** Səfər / manifest konteksti — gəmi sabitdir, səfər hər gəlişdə yenidir. */
+  /** Səfər konteksti — gəmi sabitdir, səfər hər gəlişdə yenidir. */
   voyageId?: string
-  manifestNo?: string
   /** Sənəd zənciri: 1 CMR = 1 bəyannamə */
   cmrCount?: number
   declarationKods?: string[]
   /** Qoşqu qeydiyyatı */
   trailerPlate?: string
   trailerCode?: string
-  /** Yüklənmiş manifest sənədi (fayl adı — sənədin özü sessiyada saxlanılır) */
-  manifestFile?: string
   /** Mal mövqelərinin yekun statusu (əl ilə düzəlişlər daxil) */
   goods?: Array<{ ad: string; hsKod: string; status: string; qeyd: string }>
   /** İcazə blankı — qeydə alınıb sürücüyə qaytarılır */

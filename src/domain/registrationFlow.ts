@@ -3,7 +3,7 @@ import { alatKurikManifestSeed, type ManifestEntrySeed } from '../data/documentS
 
 /**
  * Qeydiyyat sənəd zənciri:
- *   Gəmi → Səfər → Manifest → Tır/Qoşqu → CMR → İnvoys → Bəyannamə → EGB
+ *   Gəmi → Səfər → Tır/Qoşqu (VAİS/İGİS) → CMR → İnvoys → Bəyannamə → EGB
  *
  * Qayda: 1 CMR = 1 bəyannamə. Bir tırda bir neçə CMR ola bilər, ona görə
  * bir tıra düşən bəyannamə sayı həmin tırın CMR sayına bərabərdir.
@@ -114,7 +114,7 @@ export function resolveTrailer(vehicle?: Avtomobil, manifestEntry?: ManifestEntr
 
   const plate = readText(vehicle, 'nomre')
   const fromManifest = (manifestEntry?.vehicleIds ?? []).find(id => normalizeId(id) !== normalizeId(plate))
-  if (fromManifest) return { plate: fromManifest, source: 'Manifest (vehicle marks)' }
+  if (fromManifest) return { plate: fromManifest, source: 'Gəmi sənədi (vehicle marks)' }
 
   return { plate: '', source: '' }
 }
@@ -468,21 +468,15 @@ export function buildTruckProgress(input: {
 
   const steps: Array<Omit<TruckProgressStep, 'state'> & { done: boolean }> = [
     {
-      id: 'manifest',
-      label: 'Manifest',
+      id: 'nv',
+      label: 'Nəqliyyat vasitəsi',
       detail: `${dossier.plate}${dossier.trailerPlate ? ` · qoşqu ${dossier.trailerPlate}` : ' · qoşqusuz'}`,
       done: true,
     },
     {
-      id: 'cmr',
-      label: 'CMR · İnvoys',
-      detail: `${dossier.cmrs.length} CMR · ${dossier.cmrs.reduce((sum, cmr) => sum + cmr.invoices.length, 0)} invoys`,
-      done: dossier.cmrs.length > 0,
-    },
-    {
       id: 'egb',
       label: 'Bəyannamə · EGB',
-      detail: `${linkedCount} / ${dossier.cmrs.length} bağlandı${dossier.mismatched ? ` · ${dossier.mismatched} uyğunsuz` : ''}`,
+      detail: `${linkedCount} / ${dossier.cmrs.length} bağlandı · ${dossier.cmrs.reduce((sum, cmr) => sum + cmr.invoices.length, 0)} invoys${dossier.mismatched ? ` · ${dossier.mismatched} uyğunsuz` : ''}`,
       done: egbDone,
     },
     {

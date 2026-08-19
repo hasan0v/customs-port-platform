@@ -35,7 +35,7 @@ type Props = {
 type StatusFilter = 'all' | 'pending' | 'completed' | 'inspected'
 type VehicleWorkflowStatus = Exclude<StatusFilter, 'all'>
 
-/** Qoşqu nişanı — avtomobil qeydində varsa göstərilir (manifest: tır + qoşqu). */
+/** Qoşqu nişanı — avtomobil qeydində varsa göstərilir (tır + qoşqu). */
 function trailerPlate(vehicle: DeckVehicle): string {
   const value = (vehicle as Record<string, unknown>)['qoşqu']
   return typeof value === 'string' ? value : ''
@@ -78,7 +78,7 @@ export default function VehicleDeckSelector({
 
   const completedSet = useMemo(() => new Set(registeredPlates), [registeredPlates])
 
-  // Manifest sırası üzrə yer nömrəsi
+  // Göyərtə sırası üzrə yer nömrəsi
   const deckVehicles = useMemo(() => {
     return vehicles.slice(0, 30).map((vehicle, idx) => {
       const bayNumber = `Y-${String(idx + 1).padStart(2, '0')}`
@@ -172,7 +172,7 @@ export default function VehicleDeckSelector({
   const inspectedCount = deckVehicles.filter(v => v.workflowStatus === 'inspected').length
 
   return (
-    <section className="vehicle-deck-selector" aria-label="Ro-Ro gəmisində avtomobil və manifest nəzarəti">
+    <section className="vehicle-deck-selector" aria-label="Ro-Ro gəmisində nəqliyyat vasitəsi nəzarəti">
       {/* Control & Filter Bar */}
       <div className="deck-controls-bar">
         {/* Search */}
@@ -238,17 +238,17 @@ export default function VehicleDeckSelector({
             type="button"
             className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
             onClick={() => setViewMode('list')}
-            title="Manifest cədvəli"
+            title="Nəqliyyat vasitələri cədvəli"
           >
             <List size={13} />
-            <span>Manifest siyahısı</span>
+            <span>Siyahı</span>
           </button>
         </div>
       </div>
 
       {/* Main Content Layout */}
       <div className="deck-selector-layout">
-        {/* Left Side: Manifest kartları və ya cədvəl */}
+        {/* Left Side: nəqliyyat vasitəsi kartları və ya cədvəl */}
         <div className="deck-main-viewport">
           {viewMode === 'deck' ? (
             <div className="roro-deck-schematic">
@@ -505,7 +505,7 @@ export default function VehicleDeckSelector({
   )
 }
 
-// Manifest kartı
+// Nəqliyyat vasitəsi kartı
 type CardProps = {
   vehicle: DeckVehicle & {
     bayNumber: string
