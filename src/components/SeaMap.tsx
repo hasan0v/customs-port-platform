@@ -124,7 +124,7 @@ export default function SeaMap({
       </MapContainer>
 
       <div className="map-overlay">
-        <span>AIS XƏRİTƏSİ · CANLI İZLƏMƏ</span>
+        <span>XƏRİTƏ · CANLI İZLƏMƏ</span>
         <small>{displayedShips.length} aktiv gəmi</small>
       </div>
 

@@ -168,7 +168,7 @@ export default function Dashboard() {
     <section className="command-grid">
       <div className="command-map-column">
         <Card className="command-map" hover={false}>
-          <header className="command-card-head"><div><span className="command-head-icon"><MapPinned /></span><div><h2>Gəmi mövqeləri</h2><small>AIS / GPS · Xəzər dənizi</small></div></div><button type="button" onClick={() => setMapOpen(true)}>Tam ekran <ExternalLink /></button></header>
+          <header className="command-card-head"><div><span className="command-head-icon"><MapPinned /></span><div><h2>Gəmi mövqeləri</h2><small>GPS · Xəzər dənizi</small></div></div><button type="button" onClick={() => setMapOpen(true)}>Tam ekran <ExternalLink /></button></header>
           <Suspense fallback={<div className="map-skeleton" />}><SeaMap compact visibleShips={filteredShips} /></Suspense>
         </Card>
       </div>
@@ -201,7 +201,7 @@ export default function Dashboard() {
       </Card>
     </section>
 
-    <Modal open={mapOpen} onClose={() => setMapOpen(false)} title="Gəmi mövqeləri · AIS / GPS" wide><div className="map-modal-body"><Suspense fallback={<div className="map-skeleton" />}><SeaMap visibleShips={filteredShips} /></Suspense></div></Modal>
+    <Modal open={mapOpen} onClose={() => setMapOpen(false)} title="Gəmi mövqeləri · GPS" wide><div className="map-modal-body"><Suspense fallback={<div className="map-skeleton" />}><SeaMap visibleShips={filteredShips} /></Suspense></div></Modal>
     <Modal open={!!selectedItem} onClose={() => chooseVehicle('')} title={selectedItem ? `${selectedItem.vehicle.nomre} · Nəqliyyat detalları` : 'Nəqliyyat detalları'}>
       {selectedItem && <section className="vehicle-context vehicle-detail-modal">
         <header><div><small>SEÇİLMİŞ NƏQLİYYAT</small><h3>{selectedItem.vehicle.nomre}</h3></div><StatusBadge status={queueFilterLabels[selectedItem.state]} /></header>

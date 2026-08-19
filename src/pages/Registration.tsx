@@ -119,7 +119,7 @@ function inferCustomsOffice(destination?: string) {
 
 type RiskVerdict = 'green' | 'red'
 type ManualRoute = 'Fiziki yoxlama' | 'X ray' | 'Kinoloji itin tətbiqi'
-/** Real iş axını: sənədlər → EGB uzlaşdırması → VAİS qeydiyyatı + icazə → yol vergisi */
+/** Real iş axını: sənədlər → EGB uzlaşdırması → qeydiyyat + icazə → yol vergisi */
 type FlowStage = 'senedler' | 'egb' | 'vais' | 'vergi'
 
 const STAGE_ORDER: FlowStage[] = ['senedler', 'egb', 'vais', 'vergi']
@@ -233,7 +233,7 @@ export default function Registration() {
   /** İnspektor sistem cavabını əl ilə dəyişə bilər. */
   const [riskOverride, setRiskOverride] = useState<RiskVerdict | null>(null)
 
-  // 05 — VAİS qeydiyyatı + icazə blankı
+  // 05 — qeydiyyat + icazə blankı
   const [transportDetails, setTransportDetails] = useState(initialTransportDetails)
   const [trailerCode, setTrailerCode] = useState('')
   const [goodsAssigned, setGoodsAssigned] = useState(false)
@@ -607,7 +607,7 @@ export default function Registration() {
     )
   }
 
-  /** Qoşqu varsa onun, yoxdursa tırın nişanı üzrə VAİS kodu alınır. */
+  /** Qoşqu varsa onun, yoxdursa tırın nişanı üzrə qeydiyyat kodu alınır. */
   /** Deklarasiyanı əl ilə bu CMR-ə bağlayır (EGB-də tapılan kod daxil edilir). */
   const bindDeclaration = (cmr: CmrRecord, kod: string) => {
     const trimmed = kod.trim()
@@ -654,7 +654,7 @@ export default function Registration() {
     setGoodsAssigned(false)
     toast.success(
       trailerPlate
-        ? `Qoşqu VAİS-də qeydiyyata alındı · kod ${code}`
+        ? `Qoşqu qeydiyyata alındı · kod ${code}`
         : `Tır qoşqusuz qeydiyyata alındı · kod ${code}`,
     )
   }
@@ -680,7 +680,7 @@ export default function Registration() {
       return
     }
     if (stage === 'vais') {
-      if (!trailerCode) return toast.warning('Qoşqunu VAİS-də qeydiyyata alın')
+      if (!trailerCode) return toast.warning('Qoşqunu qeydiyyata alın')
       if (!goodsAssigned) return toast.warning('Malları tıra mənimsədin')
       if (!permitReady) return toast.warning('İcazə blankını qeydə alın və sürücüyə qaytarın')
       setStage('vergi')
@@ -700,7 +700,7 @@ export default function Registration() {
     if (!ship || !voyage) return toast.warning('Əvvəlcə gəmi seçin')
     if (!taxConfirmed) return toast.warning('Yol vergisini təsdiqləyin')
     if (!egbComplete) return toast.warning('Bütün CMR-lər bəyannamə ilə bağlanmalıdır (Addım 4)')
-    if (!vaisComplete) return toast.warning('VAİS qeydiyyatı və icazə blankı tamamlanmalıdır (Addım 5)')
+    if (!vaisComplete) return toast.warning('Qeydiyyat və icazə blankı tamamlanmalıdır (Addım 5)')
     // Sərbəst keçid mərhələ yoxlamalarını atlaya bilər — məcburi qayda burada da tətbiq olunur.
     if (effectiveRisk === 'red' && !manualRoute) {
       setStage('egb')
@@ -789,7 +789,7 @@ export default function Registration() {
     { n: '2', label: 'Manifest · Tır', ok: vehicleFound, icon: Truck },
     { n: '3', label: 'CMR · İnvoys', ok: docsConfirmed, icon: FileText, target: 'senedler' },
     { n: '4', label: 'Bəyannamə · EGB', ok: egbComplete && Boolean(effectiveRisk), icon: ScanSearch, target: 'egb' },
-    { n: '5', label: 'VAİS · İcazə', ok: vaisComplete, icon: FileBadge, target: 'vais' },
+    { n: '5', label: 'Qeydiyyat · İcazə', ok: vaisComplete, icon: FileBadge, target: 'vais' },
     { n: '6', label: 'Yol vergisi', ok: taxConfirmed, icon: Receipt, target: 'vergi' },
   ]
   const activeStepIndex = done ? 5
@@ -1267,7 +1267,7 @@ export default function Registration() {
                   <header>
                     <span className="step-number">05</span>
                     <div>
-                      <h2>VAİS qeydiyyatı və icazə blankı</h2>
+                      <h2>Qeydiyyat və icazə blankı</h2>
                       <p>Gəmi qeydiyyatdan sonra avtomobil bölməsində tır və qoşqu qeydə alınır, qoşqu kodu götürülür.</p>
                     </div>
                     {vaisComplete && <CheckCircle2 className="step-check" />}
@@ -1521,7 +1521,7 @@ export default function Registration() {
                   <div className="review-summary-grid" style={{ marginTop: 14 }}>
                     <Data label="Səfər / Manifest" value={`${voyage?.id ?? '—'} · ${voyage?.manifestNo ?? '—'}`} />
                     <Data label="Tır / Qoşqu" value={`${transportDetails.dovletNisani || plateKey}${trailerPlate ? ` · ${trailerPlate}` : ''}`} />
-                    <Data label="Qoşqu kodu (VAİS)" value={trailerCode || '—'} />
+                    <Data label="Qoşqu kodu" value={trailerCode || '—'} />
                     <Data label="CMR → Bəyannamə" value={`${cmrs.length} → ${linkedCount}`} />
                     <Data label="Mal mövqeləri" value={`${goodsSummary.released}/${goodsSummary.total} buraxılıb · ${goodsSummary.blocked} nəzarətdə`} />
                     <Data label="Risk" value={`${effectiveRisk === 'red' ? `Qırmızı · ${manualRoute ?? '—'}` : 'Yaşıl'}${riskOverride ? ' (əl ilə)' : ''}`} />

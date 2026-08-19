@@ -266,7 +266,6 @@ export default function ShipDetailModal({ ship, open, onClose }: Props) {
                 <Upload size={22} />
                 <div>
                   <strong>{manifestBusy ? 'Fayl yoxlanılır…' : 'Manifest/Bill of PDF əlavə et'}</strong>
-                  <small>PDF faylını seçin və ya bura sürükləyin. Maksimum 30 MB.</small>
                 </div>
                 <input hidden type="file" accept="application/pdf,.pdf" onChange={event => void uploadManifest(event.target.files?.[0])} />
               </label>

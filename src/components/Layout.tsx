@@ -122,7 +122,7 @@ function CommandPalette({ onClose, onSelect }: { onClose: () => void; onSelect: 
   const results = useMemo(() => {
     if (!q) {
       return [
-        { title: 'Gəmi əməliyyat mərkəzi', sub: 'AIS + VAİS vahid görünüş', path: '/gemiler', icon: '→' },
+        { title: 'Gəmi əməliyyat mərkəzi', sub: 'Gəmi və qeydiyyat vahid görünüşü', path: '/gemiler', icon: '→' },
         { title: 'Qeydiyyat', sub: 'Gəmi → avtomobil → bəyannamə', path: '/qeydiyyat', icon: '→' },
         { title: 'İnspektorun fəaliyyəti', sub: 'Maşın · bəyannamə · status', path: '/tarixce', icon: '→' },
         { title: 'Analitika', sub: 'Giriş-çıxış və risk paneli', path: '/analitika', icon: '→' },

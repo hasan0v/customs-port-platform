@@ -5,7 +5,7 @@ import { DEFAULT_NOTIFICATIONS, useAppStore } from '../store/useAppStore'
 import { Button, Card, PageHeader } from '../components/UI'
 
 const notificationsList = Object.keys(DEFAULT_NOTIFICATIONS)
-const integrations = ['AIS gəmi şəbəkəsi', 'Liman Vahid Pəncərəsi', 'Gömrük GİB sistemi', 'Post qərar modulu']
+const integrations = ['Gəmi şəbəkəsi', 'Liman Vahid Pəncərəsi', 'Gömrük GİB sistemi', 'Post qərar modulu']
 
 export default function SettingsPage() {
   const { profile, notifications, saveSettings } = useAppStore()

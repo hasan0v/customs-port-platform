@@ -141,7 +141,6 @@ export default function Ships() {
     [opsQuery],
   )
 
-  const totalCargo = portCalls.reduce((sum, item) => sum + item.cargoTons, 0)
   const approvals = portCalls.flatMap(item => Object.values(item.clearances)).filter(item => item === 'approved').length
   const approvalRate = Math.round(approvals / (portCalls.length * 5) * 100)
 
@@ -178,7 +177,7 @@ export default function Ships() {
   const exportCsv = () => {
     const header = 'Tip,ID,Gəmi,Status,İstiqamət,Əməliyyat,Detal,Tonaj/Risk\n'
     const shipLines = ships.map(g =>
-      ['AIS', g.id, g.ad, g.status, getShipDirection(g), getShipOperationLabel(g), g.kanal, g.tonaj].map(v => `"${v}"`).join(','),
+      ['Gəmi', g.id, g.ad, g.status, getShipDirection(g), getShipOperationLabel(g), g.kanal, g.tonaj].map(v => `"${v}"`).join(','),
     )
     const callLines = portCalls.map(c =>
       ['PortCall', c.id, c.vessel, c.status, '', '', c.imo, c.riskScore].map(v => `"${v}"`).join(','),
@@ -213,24 +212,31 @@ export default function Ships() {
         <span className="ops-live-icon"><CloudSun /></span>
         <div>
           <small>Hava şəraiti: Ələt</small>
-          <strong>{weather ? `${weather.temperature}°C` : '—'}</strong>
-          <em><Wind /> {weather ? `${weather.windSpeed} km/saat` : '—'}</em>
+          <strong className="weather-primary-wind">
+            <Wind />
+            {weather ? (
+              <>
+                <span className="wind-speed-value">{weather.windSpeed}</span>
+                <span className="wind-speed-unit">km/saat</span>
+              </>
+            ) : '—'}
+          </strong>
+          <em>Temperatur: {weather ? `${weather.temperature}°C` : '—'}</em>
         </div>
       </article>
       <article>
         <span className="ops-live-icon amber"><ShipIcon /></span>
         <div>
-          <small>AIS gəmilər</small>
+          <small>Gəmilər</small>
           <strong>{movementSummary.total}</strong>
           <em>{movementSummary.byStatus.Körpüdə.total} körpüdə · {movementSummary.byStatus.Lövbərdə.Gələn} lövbərdə (giriş) · {movementSummary.byStatus.Yolda.total} yolda</em>
         </div>
       </article>
-      <article>
+      <article className="ops-live-compact">
         <span className="ops-live-icon violet"><Boxes /></span>
         <div>
-          <small>Port çağırış / yük</small>
+          <small>Port kontrol müraciəti</small>
           <strong>{portCalls.length}</strong>
-          <em>{totalCargo.toLocaleString('az-AZ', { maximumFractionDigits: 0 })} t</em>
         </div>
       </article>
       <article>
@@ -250,7 +256,7 @@ export default function Ships() {
             <div className="ship-card-title-main">
               <span className="title-icon"><ShipIcon /></span>
               <div>
-                <h2>AIS gəmilər</h2>
+                <h2>Gəmilər</h2>
                 <p>Xəzər dənizi akvatoriyasında aktiv və gözləmədə olan gəmilər</p>
               </div>
             </div>
@@ -334,7 +340,7 @@ export default function Ships() {
         <header className="card-heading">
           <div>
             <span className="title-icon"><Waves /></span>
-            <h2>AIS radar paneli</h2>
+            <h2>Radar paneli</h2>
           </div>
         </header>
         <SeaMap visibleShips={rows} />
@@ -345,7 +351,7 @@ export default function Ships() {
       <Card className="ops-queue" hover={false}>
         <header className="ops-card-header">
           <div>
-            <h2>Liman çağırışları · VAİS</h2>
+            <h2>Liman çağırışları</h2>
           </div>
           <label className="ops-search">
             <Search />

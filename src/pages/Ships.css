@@ -1,4 +1,4 @@
-/* Scoped styling for AIS Vessel Table & Filters */
+/* Scoped styling for Vessel Table & Filters */
 .ship-table-card .ship-card-header {
   display: flex;
   flex-direction: column;
@@ -255,7 +255,7 @@
 /*
  * Desktop operations view readability
  *
- * The VAIS queue intentionally packs a large amount of operational data into
+ * The registration queue intentionally packs a large amount of operational data into
  * one screen. Its original 6–10px labels become illegible on Full HD desktop
  * displays, so keep the compact layout while enforcing readable type sizes.
  * Tablet and mobile layouts retain their existing responsive rules.

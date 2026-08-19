@@ -72,5 +72,5 @@ export const dataSources = [
   { name: 'Open-Meteo', description: 'Ələt üzrə hava və külək', kind: 'API' },
   { name: 'ExchangeRate API', description: 'USD əsaslı valyuta məzənnələri', kind: 'API' },
   { name: 'UN/LOCODE 2025-1', description: 'Liman və məkan kodları', kind: 'Açıq data' },
-  { name: 'VAİS / MSW sxemi', description: 'Şəkillərdən normallaşdırılmış əməliyyat modeli', kind: 'Demo model' },
+  { name: 'MSW sxemi', description: 'Şəkillərdən normallaşdırılmış əməliyyat modeli', kind: 'Demo model' },
 ]

@@ -35,7 +35,7 @@ export type SavedRegistration = {
   /** Sənəd zənciri: 1 CMR = 1 bəyannamə */
   cmrCount?: number
   declarationKods?: string[]
-  /** VAİS qeydiyyatı */
+  /** Qoşqu qeydiyyatı */
   trailerPlate?: string
   trailerCode?: string
   /** Yüklənmiş manifest sənədi (fayl adı — sənədin özü sessiyada saxlanılır) */

@@ -119,7 +119,7 @@ export function resolveTrailer(vehicle?: Avtomobil, manifestEntry?: ManifestEntr
   return { plate: '', source: '' }
 }
 
-/** VAİS qeydiyyatından qaytarılan qoşqu kodu — nişan üzrə deterministikdir. */
+/** Qeydiyyatdan qaytarılan qoşqu kodu — nişan üzrə deterministikdir. */
 export function makeTrailerCode(trailerPlate: string, voyageId: string) {
   const clean = normalizeId(trailerPlate)
   if (!clean) return ''
@@ -487,7 +487,7 @@ export function buildTruckProgress(input: {
     },
     {
       id: 'vais',
-      label: 'VAİS qeydiyyatı',
+      label: 'Qoşqu qeydiyyatı',
       detail: registration?.trailerCode ? `Qoşqu kodu ${registration.trailerCode}` : 'Qoşqu kodu alınmayıb',
       done: vaisDone,
     },
