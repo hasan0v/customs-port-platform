@@ -2723,3 +2723,259 @@ body,h1,h2,h3,.page-header h1,.brand strong{font-family:'Roboto',system-ui,-appl
   color: #a66222;
 }
 
+
+/* ===== Qeydiyyat: səfər → manifest → CMR → bəyannamə → EGB → VAİS zənciri ===== */
+.voyage-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:10px 14px;margin-bottom:12px;border:1px solid var(--line);border-radius:13px;background:var(--card)}
+.voyage-strip>div{display:flex;flex-direction:column;min-width:0}
+.voyage-strip small{font-size:8px;font-weight:800;letter-spacing:.08em;color:var(--muted)}
+.voyage-strip strong{font-size:11px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.chain-table td strong{display:block;font-size:11px}
+.chain-sub{display:block;font-size:9px;color:var(--muted);margin-top:2px}
+.chain-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px}
+.chain-rule{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:700;color:var(--muted)}
+.chain-rule>svg{color:var(--ocean);flex:0 0 auto}
+
+.egb-reconcile{display:grid;gap:8px}
+.egb-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.egb-row.success{border-color:#b5d7ca;background:#f2faf7}
+.egb-row.warning{border-color:#e9cfa6;background:#fdf8ef}
+.egb-row.danger{border-color:#f0c2bd;background:#fff5f4}
+.dark .egb-row.success{background:rgba(42,157,143,.1);border-color:#28524c}
+.dark .egb-row.warning{background:rgba(244,162,97,.1);border-color:#5c4527}
+.dark .egb-row.danger{background:rgba(230,57,70,.1);border-color:#5e2b2b}
+.egb-cell{display:flex;flex-direction:column;min-width:110px}
+.egb-cell.grow{flex:1;min-width:180px}
+.egb-cell small{font-size:8px;font-weight:800;letter-spacing:.07em;color:var(--muted)}
+.egb-cell strong{font-size:11px;margin-top:2px;overflow-wrap:anywhere}
+.egb-cell span{font-size:10px;color:var(--muted);margin-top:2px}
+.egb-link-icon{color:var(--muted);flex:0 0 auto}
+.egb-row .btn{min-height:32px;padding:0 12px;font-size:11px}
+.egb-summary{margin:12px 0 0;font-size:11px;color:var(--muted)}
+.egb-summary b{color:var(--text)}
+.status-chip.danger{background:rgba(230,57,70,.12);color:#a52834}
+.dark .status-chip.danger{background:rgba(230,57,70,.2);color:#ff9d9d}
+
+.vais-track{display:grid;gap:8px;margin-bottom:14px}
+.vais-step{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.vais-step>span{width:24px;height:24px;flex:0 0 24px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:800;background:var(--card);border:1px solid var(--line);color:var(--muted)}
+.vais-step>div{flex:1;min-width:0;display:flex;flex-direction:column}
+.vais-step b{font-size:12px}
+.vais-step small{font-size:10px;color:var(--muted);margin-top:2px}
+.vais-step.active{border-color:var(--ocean);background:#f2f8fd}
+.vais-step.active>span{background:#e8f2fd;border-color:var(--ocean);color:var(--ocean)}
+.vais-step.done{border-color:#b5d7ca;background:#f2faf7}
+.vais-step.done>span{background:var(--green);border-color:var(--green);color:#fff}
+.dark .vais-step.active{background:rgba(10,77,140,.14)}
+.dark .vais-step.done{background:rgba(42,157,143,.1);border-color:#28524c}
+.vais-code{font-size:13px;font-weight:800;color:var(--ocean);letter-spacing:.02em}
+.vais-step .btn{min-height:34px;padding:0 14px;font-size:11px}
+
+@media(max-width:900px){
+  .voyage-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .egb-row{gap:8px}
+  .egb-cell{min-width:90px}
+}
+@media(max-width:560px){
+  .voyage-strip{grid-template-columns:1fr;gap:8px}
+  .vais-step{flex-wrap:wrap}
+  .vais-step .btn,.vais-code{width:100%;text-align:center}
+}
+
+/* ===== Sağ panel: tırın mərhələ statusu və mal mövqeləri ===== */
+.panel-block-title{display:block;font-size:9px;font-weight:850;letter-spacing:.07em;color:var(--muted)}
+
+.panel-progress{margin-top:10px}
+.panel-progress ol{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:0}
+.panel-progress li{position:relative;display:flex;gap:9px;padding:0 0 9px 0}
+.panel-progress li:last-child{padding-bottom:0}
+.panel-progress li>i{position:relative;flex:0 0 10px;width:10px;height:10px;margin-top:3px;border-radius:50%;background:var(--card);border:2px solid var(--line)}
+.panel-progress li:not(:last-child)>i:after{content:"";position:absolute;left:50%;top:10px;transform:translateX(-50%);width:2px;height:calc(100% + 9px);background:var(--line)}
+.panel-progress li>div{display:flex;flex-direction:column;min-width:0}
+.panel-progress b{font-size:11px;line-height:1.25}
+.panel-progress small{font-size:9.5px;color:var(--muted);margin-top:1px;overflow-wrap:anywhere}
+.panel-progress li.done>i{background:var(--green);border-color:var(--green)}
+.panel-progress li.done:not(:last-child)>i:after{background:var(--green)}
+.panel-progress li.active>i{background:var(--card);border-color:var(--ocean);box-shadow:0 0 0 3px rgba(10,77,140,.12)}
+.panel-progress li.active b{color:var(--ocean)}
+.panel-progress li.idle b{color:var(--muted)}
+
+.panel-goods{margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}
+.panel-goods-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.panel-goods-count{font-size:9px;font-weight:800;color:var(--muted)}
+.panel-goods ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:7px}
+.panel-goods li{padding:8px 9px;border:1px solid var(--line);border-radius:9px;background:var(--bg)}
+.goods-line-head{display:flex;align-items:center;gap:6px}
+.goods-line-head strong{flex:1;min-width:0;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.goods-line-head .status-chip{font-size:9px;padding:3px 6px}
+.goods-line-meta{display:block;margin-top:4px;font-size:9px;color:var(--muted);font-variant-numeric:tabular-nums}
+.goods-line-note{display:block;margin-top:3px;font-size:9px;color:var(--muted);font-style:italic;overflow-wrap:anywhere}
+.goods-line-more{display:block;margin-top:7px;font-size:9px;font-weight:700;color:var(--muted)}
+
+.clr-tag.wait{background:rgba(244,162,97,.16);color:#9a5b1e}
+.dark .clr-tag.wait{background:rgba(244,162,97,.2);color:#f0b57a}
+
+/* Mal statusu — CMR cədvəlində ayrı sətirdə */
+.goods-status-chip{display:flex;width:fit-content;margin-top:4px;font-size:9px;padding:3px 6px}
+.panel-progress-link{margin-left:auto;flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ocean);border-radius:6px;padding:3px 5px;line-height:0;cursor:pointer}
+.panel-progress-link:hover{border-color:var(--ocean)}
+
+/* ===== Qeydiyyat idarəetmə paneli: əl ilə düzəliş elementləri ===== */
+.registration-stepper.is-navigable>div.clickable{cursor:pointer;border-radius:9px;transition:background .15s ease}
+.registration-stepper.is-navigable>div.clickable:hover{background:rgba(10,77,140,.06)}
+.registration-stepper.is-navigable>div.clickable:focus-visible{outline:2px solid var(--ocean);outline-offset:2px}
+.dark .registration-stepper.is-navigable>div.clickable:hover{background:rgba(0,180,216,.1)}
+
+.row-actions{display:inline-flex;gap:5px}
+.row-actions button{display:grid;place-items:center;width:26px;height:26px;border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s ease}
+.row-actions button:hover{border-color:var(--ocean);color:var(--ocean)}
+.row-actions button.danger:hover{border-color:var(--red);color:var(--red)}
+
+.egb-actions{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.egb-bind-input{height:32px;width:170px;border:1px solid var(--line);border-radius:8px;padding:0 9px;background:var(--card);color:var(--text);font:inherit;font-size:11px}
+.egb-bind-input:focus{outline:none;border-color:var(--ocean)}
+.egb-unbind{display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--muted);cursor:pointer}
+.egb-unbind:hover{border-color:var(--red);color:var(--red)}
+
+.risk-override{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 12px;border:1px dashed var(--line);border-radius:11px}
+.risk-override>small{font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)}
+.risk-override>div{display:inline-flex;gap:6px}
+.risk-override button{height:30px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer}
+.risk-override button:disabled{opacity:.45;cursor:not-allowed}
+.risk-override button.selected.green{border-color:#1f9d6a;background:#edf8f3;color:#135f4d}
+.risk-override button.selected.red{border-color:#d64545;background:#fff1f0;color:#9b2c2c}
+
+.manual-fields{margin-bottom:14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.manual-fields>summary{padding:10px 13px;font-size:11px;font-weight:800;color:var(--muted);cursor:pointer;list-style:none}
+.manual-fields>summary::-webkit-details-marker{display:none}
+.manual-fields>summary:before{content:"▸ ";color:var(--ocean)}
+.manual-fields[open]>summary:before{content:"▾ "}
+.manual-fields .tax-params-grid{margin:0;padding:0 13px 13px}
+
+.vais-code-input{height:34px;width:170px;border:1px solid var(--line);border-radius:8px;padding:0 10px;background:var(--card);color:var(--ocean);font:inherit;font-size:12px;font-weight:800;text-align:center}
+.vais-code-input:focus{outline:none;border-color:var(--ocean)}
+
+/* ===== Mal mövqeləri — detallı bölmə ===== */
+.goods-detail-card{margin-top:13px;padding:16px 18px}
+.goods-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.goods-detail-head h2{display:flex;align-items:center;gap:7px;margin:0 0 3px;font-size:15px}
+.goods-detail-head p{margin:0;font-size:10px;color:var(--muted);max-width:620px}
+.goods-detail-summary{display:inline-flex;gap:6px;flex-wrap:wrap}
+.goods-detail-table{width:100%;min-width:820px;table-layout:fixed}
+.goods-detail-table td{vertical-align:top;padding:7px 8px;overflow-wrap:anywhere}
+.goods-detail-table th{padding:7px 8px;white-space:nowrap}
+.goods-detail-table col.c-no{width:34px}
+.goods-detail-table col.c-name{width:19%}
+.goods-detail-table col.c-hs{width:11%}
+.goods-detail-table col.c-qty{width:9%}
+.goods-detail-table col.c-net,.goods-detail-table col.c-gross{width:8%}
+.goods-detail-table col.c-value{width:9%}
+.goods-detail-table col.c-doc{width:13%}
+.goods-detail-table col.c-control{width:12%}
+.goods-detail-table col.c-status{width:11%}
+.goods-detail-table .goods-row.success td:first-child{box-shadow:inset 3px 0 0 var(--green)}
+.goods-detail-table .goods-row.warning td:first-child{box-shadow:inset 3px 0 0 var(--amber)}
+.goods-detail-table .goods-row.danger td:first-child{box-shadow:inset 3px 0 0 var(--red)}
+.goods-detail-table .goods-row.neutral td:first-child{box-shadow:inset 3px 0 0 var(--line)}
+.cell-input{width:100%;height:28px;border:1px solid transparent;border-radius:7px;padding:0 6px;background:transparent;color:var(--text);font:inherit;font-size:11px}
+.cell-input.wide{width:100%}
+.cell-input.num{width:100%;text-align:right;font-variant-numeric:tabular-nums}
+.cell-input:hover{border-color:var(--line);background:var(--bg)}
+.cell-input:focus{outline:none;border-color:var(--ocean);background:var(--bg)}
+.cell-select{width:100%;height:28px;border:1px solid var(--line);border-radius:7px;padding:0 4px;background:var(--bg);color:var(--text);font:inherit;font-size:10.5px;font-weight:700}
+.cell-select:focus{outline:none;border-color:var(--ocean)}
+.cell-select.status-success{color:#176f62}
+.cell-select.status-warning{color:#b84328}
+.cell-select.status-danger{color:#a52834}
+
+@media(max-width:700px){
+  .goods-detail-head{flex-direction:column}
+  .risk-override{flex-direction:column;align-items:stretch}
+  .egb-bind-input{width:100%}
+}
+
+/* Göyərtə planı — zolaq bölgüsü olmadan vahid kart şəbəkəsi */
+.deck-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:9px;align-content:start}
+.deck-cards-grid .empty-lane{grid-column:1/-1}
+@media(max-width:560px){.deck-cards-grid{grid-template-columns:1fr}}
+
+/* ===== Manifest sənədinin yüklənməsi (IMO FAL PDF) ===== */
+.manifest-upload-card{margin-bottom:13px;padding:12px 14px}
+.manifest-dropzone{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px dashed var(--line);border-radius:12px;background:var(--bg);cursor:pointer;transition:all .15s ease}
+.manifest-dropzone:hover,.manifest-dropzone.dragging{border-color:var(--ocean);background:rgba(10,77,140,.05)}
+.manifest-dropzone.busy{opacity:.6;pointer-events:none}
+.manifest-dropzone>svg{flex:0 0 auto;color:var(--ocean)}
+.manifest-dropzone>div{display:flex;flex-direction:column;min-width:0}
+.manifest-dropzone strong{font-size:12px}
+.manifest-dropzone small{font-size:10px;color:var(--muted);margin-top:2px}
+
+.manifest-loaded{display:grid;gap:10px}
+.manifest-file{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.manifest-file-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:9px;background:rgba(10,77,140,.1);color:var(--ocean)}
+.manifest-file>div:not(.manifest-file-actions){display:flex;flex-direction:column;flex:1;min-width:0}
+.manifest-file strong{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.manifest-file small{font-size:10px;color:var(--muted);margin-top:2px}
+.manifest-file-actions{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.manifest-file-actions .btn{min-height:32px;padding:0 11px;font-size:11px}
+.manifest-replace{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+
+.manifest-fields{border:1px solid var(--line);border-radius:11px;background:var(--bg)}
+.manifest-fields>summary{padding:9px 12px;font-size:11px;font-weight:800;color:var(--muted);cursor:pointer;list-style:none}
+.manifest-fields>summary::-webkit-details-marker{display:none}
+.manifest-fields>summary:before{content:"▸ ";color:var(--ocean)}
+.manifest-fields[open]>summary:before{content:"▾ "}
+.manifest-fields .tax-params-grid{margin:0;padding:0 12px 10px}
+.manifest-note{display:flex;gap:7px;align-items:flex-start;margin:0;padding:0 12px 12px;font-size:10px;line-height:1.45;color:var(--muted)}
+.manifest-note>svg{flex:0 0 auto;margin-top:1px;color:var(--amber)}
+
+.manifest-viewer{display:grid;gap:10px}
+.manifest-viewer iframe{width:100%;height:min(68vh,620px);border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.manifest-viewer-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.manifest-viewer-actions small{font-size:10px;color:var(--muted)}
+.manifest-viewer-actions .btn{text-decoration:none}
+
+@media(max-width:700px){
+  .manifest-dropzone{align-items:flex-start}
+  .manifest-file-actions{width:100%}
+  .manifest-viewer iframe{height:min(58vh,460px)}
+}
+.manifest-viewer-hint{display:block;font-size:10px;color:var(--muted)}
+
+
+/* Manifest siyahısı — sabit sütun enləri, kəsilmə yox */
+.deck-manifest-table{table-layout:fixed}
+.deck-manifest-table th,.deck-manifest-table td{padding:7px 7px;font-size:11.5px}
+.deck-manifest-table th{font-size:9.5px;white-space:nowrap}
+.deck-manifest-table col.m-bay{width:34px}
+.deck-manifest-table col.m-plate{width:96px}
+.deck-manifest-table col.m-model{width:88px}
+.deck-manifest-table col.m-cargo{width:auto}
+.deck-manifest-table col.m-driver{width:100px}
+.deck-manifest-table col.m-weight{width:48px}
+.deck-manifest-table col.m-bl{width:66px}
+.deck-manifest-table col.m-status{width:90px}
+/* Geniş ekranda sütunlar rahatlanır */
+@media(min-width:1450px){
+  .deck-manifest-table th,.deck-manifest-table td{padding:8px 10px;font-size:12px}
+  .deck-manifest-table col.m-bay{width:44px}
+  .deck-manifest-table col.m-plate{width:104px}
+  .deck-manifest-table col.m-model{width:114px}
+  .deck-manifest-table col.m-driver{width:126px}
+  .deck-manifest-table col.m-weight{width:60px}
+  .deck-manifest-table col.m-bl{width:84px}
+  .deck-manifest-table col.m-status{width:108px}
+}
+.deck-manifest-table .table-cargo-text{max-width:100%}
+.deck-manifest-table .table-driver-col span,
+.deck-manifest-table .table-driver-col small,
+.deck-manifest-table .table-model-col strong,
+.deck-manifest-table .table-bl-code{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.deck-manifest-table .status-chip{width:100%;justify-content:center;padding:4px 5px;font-size:10px}
+.deck-manifest-table .table-plate-badge strong{font-size:11px;white-space:nowrap}
+.deck-manifest-table .table-plate-badge{flex-wrap:nowrap}
+.deck-registered-note{display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 13px;border:1px solid #b5d7ca;border-radius:9px;background:#f2faf7;color:#135f4d;font-size:12px;font-weight:700}
+.dark .deck-registered-note{background:rgba(42,157,143,.1);border-color:#28524c;color:#49dc9d}
+
+/* Manifest sıra nömrəsi — dar sütunda sətir keçirmir */
+.deck-manifest-table .row-index{display:block;text-align:center;font-size:11px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.manifest-row.selected .row-index{color:var(--ocean)}

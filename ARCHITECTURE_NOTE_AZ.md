@@ -51,12 +51,26 @@ Bu o deməkdir ki, sistemin əsas fokus nöqtəsi product/UX validation və iş 
 
 ### 4.2 Vehicle registration flow
 
-1. Avtomobil seçilir
-2. Manifest / Bill of lading məlumatı tapılır
-3. Yüklənmiş mal və bəyannamə ilə əlaqə qurulur
-4. Risk yoxlaması aparılır
-5. Gərəkli icazə və vergi məlumatı toplanır
-6. Qərar verilir və tarixçəyə yazılır
+Qeydiyyat limandakı real sənəd zəncirini izləyir:
+
+1. **Gəmi · Səfər** — gəmi sabit kartoçkadır, hər gəliş yeni səfər və yeni manifest yaradır
+2. **Manifest · Tır** — səfərin manifestindəki tırlar (göyərtə planı / manifest siyahısı) arasından biri seçilir
+3. **CMR · İnvoys** — hər tırın CMR-ləri və onlara aid invoyslar; bir tırda bir neçə CMR ola bilər
+4. **Bəyannamə · EGB** — qayda: 1 CMR = 1 bəyannamə. Deklarasiyalar EGB-də tır nömrəsi üzrə axtarılıb
+   həmin tıra mənimsədilir; uzlaşdırma ekranı gözlənilən / bağlanmış / uyğunsuz sayını göstərir.
+   Risk cavabı (yaşıl / qırmızı → fiziki yoxlama, X-ray, kinoloji) bu mərhələdə verilir
+5. **VAİS · İcazə blankı** — gəmidən sonra tır və qoşqu qeydiyyata alınır, qoşqu kodu götürülür,
+   mallar tıra mənimsədilir; sürücünün gətirdiyi kağız icazə blankı qeydə alınıb özünə qaytarılır
+6. **Yol vergisi · Təsdiq** — Vergi Məcəlləsi 211.1.1.3 üzrə hesablama, təsdiq və tarixçəyə yazılma
+
+Səfər səviyyəsində gəminin manifest sənədi (IMO FAL paketi — General Declaration, Cargo
+Declaration, ekipaj/sərnişin siyahısı və tır cədvəli) PDF kimi yüklənir. Skanların mətn qatı
+olmadığına görə sətirlər avtomatik oxunmur: sənəd `%PDF-` imzası üzrə yoxlanılır, səhifə sayı
+təyin edilir, başlıq sahələri operator tərəfindən doldurulur. Backend olmadığına görə fayl
+sessiya daxilində object URL kimi saxlanılır — `src/domain/manifestDocument.ts`.
+
+Zəncirin data modeli `src/domain/registrationFlow.ts` faylındadır: mövcud manifest, avtomobil və
+bəyannamə fixturlarından tır üzrə CMR → İnvoys → Bəyannamə → EGB statusu törədilir.
 
 ### 4.3 Declaration workflow
 

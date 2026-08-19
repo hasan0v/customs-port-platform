@@ -1,13 +1,15 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Anchor, ArrowRight, CheckCircle2, ChevronRight, CircleDot, Container,
-  FileCheck, FileText, Filter, Layers, List, Navigation, Search,
-  ShieldAlert, ShieldCheck, Ship, Truck, UserCheck, Waves, ExternalLink,
+  CheckCircle2, CircleDot, Container, ExternalLink, Layers, List,
+  Search, ShieldAlert, Ship, Truck,
 } from 'lucide-react'
 import type { Avtomobil as DeckVehicle, Declaration } from '../data/mockData'
 import { Modal } from './UI'
 import { DeclarationDocumentView } from './DeclarationDocumentView'
+import {
+  buildTruckDossier, buildTruckProgress, findManifestEntry, type RegistrationSnapshot,
+} from '../domain/registrationFlow'
 
 type Ship = {
   id: string
@@ -25,13 +27,19 @@ type Props = {
   registeredPlates: string[]
   onSelect: (vehicle: DeckVehicle) => void
   declarations?: Declaration[]
-  onConfirmRegistration?: (vehicle: DeckVehicle) => void
+  /** Təsdiqlənmiş qeydiyyatlar — sağ paneldəki mərhələ statusu üçün. */
+  registrations?: Array<RegistrationSnapshot & { plate: string }>
   onOpenShipDetails?: () => void
 }
 
-type DeckLane = 'all' | 'port' | 'center' | 'starboard'
 type StatusFilter = 'all' | 'pending' | 'completed' | 'inspected'
 type VehicleWorkflowStatus = Exclude<StatusFilter, 'all'>
+
+/** Qoşqu nişanı — avtomobil qeydində varsa göstərilir (manifest: tır + qoşqu). */
+function trailerPlate(vehicle: DeckVehicle): string {
+  const value = (vehicle as Record<string, unknown>)['qoşqu']
+  return typeof value === 'string' ? value : ''
+}
 
 // Country flag / badge helper based on plate format
 function getCountryCode(plate: string): { code: string; color: string } {
@@ -60,37 +68,20 @@ export default function VehicleDeckSelector({
   registeredPlates,
   onSelect,
   declarations = [],
-  onConfirmRegistration,
+  registrations = [],
   onOpenShipDetails,
 }: Props) {
   const [viewMode, setViewMode] = useState<'deck' | 'list'>('deck')
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedLane, setSelectedLane] = useState<DeckLane>('all')
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
   const [declModalOpen, setDeclModalOpen] = useState(false)
 
   const completedSet = useMemo(() => new Set(registeredPlates), [registeredPlates])
 
-  // Enhance vehicles with bay assignment and lanes (Port = Sol bort, Center = Mərkəz, Starboard = Sağ bort)
+  // Manifest sırası üzrə yer nömrəsi
   const deckVehicles = useMemo(() => {
     return vehicles.slice(0, 30).map((vehicle, idx) => {
-      let lane: 'port' | 'center' | 'starboard' = 'center'
-      let bayNumber = ''
-      let bayPrefix = 'C'
-
-      if (idx % 3 === 0) {
-        lane = 'port'
-        bayPrefix = 'P'
-        bayNumber = `${bayPrefix}-${String(Math.floor(idx / 3) + 1).padStart(2, '0')}`
-      } else if (idx % 3 === 1) {
-        lane = 'center'
-        bayPrefix = 'C'
-        bayNumber = `${bayPrefix}-${String(Math.floor(idx / 3) + 1).padStart(2, '0')}`
-      } else {
-        lane = 'starboard'
-        bayPrefix = 'S'
-        bayNumber = `${bayPrefix}-${String(Math.floor(idx / 3) + 1).padStart(2, '0')}`
-      }
+      const bayNumber = `Y-${String(idx + 1).padStart(2, '0')}`
 
       const isRegistered = completedSet.has(vehicle.nomre)
       const isInspected = vehicle.status === 'Yoxlanılır' || idx % 7 === 0
@@ -104,7 +95,6 @@ export default function VehicleDeckSelector({
       return {
         ...vehicle,
         bayNumber,
-        lane,
         isRegistered,
         isInspected,
         workflowStatus,
@@ -123,18 +113,11 @@ export default function VehicleDeckSelector({
           .toLocaleLowerCase('az')
           .includes(searchQuery.toLocaleLowerCase('az'))
 
-      const matchLane = selectedLane === 'all' || v.lane === selectedLane
-
       const matchStatus = statusFilter === 'all' || v.workflowStatus === statusFilter
 
-      return matchSearch && matchLane && matchStatus
+      return matchSearch && matchStatus
     })
-  }, [deckVehicles, searchQuery, selectedLane, statusFilter])
-
-  // Group vehicles by lane for the deck view
-  const portLaneVehicles = useMemo(() => filteredVehicles.filter(v => v.lane === 'port'), [filteredVehicles])
-  const centerLaneVehicles = useMemo(() => filteredVehicles.filter(v => v.lane === 'center'), [filteredVehicles])
-  const starboardLaneVehicles = useMemo(() => filteredVehicles.filter(v => v.lane === 'starboard'), [filteredVehicles])
+  }, [deckVehicles, searchQuery, statusFilter])
 
   // Selected vehicle or fallback to first
   const selectedVehicle = useMemo(() => {
@@ -153,6 +136,35 @@ export default function VehicleDeckSelector({
       (Boolean(selectedVehicle.billOfLading) && d.billOfLading === selectedVehicle.billOfLading)
     )
   }, [declarations, selectedVehicle])
+
+  /** Seçilmiş tırın sənəd dosyesi — sağ panel bunun statuslarını göstərir. */
+  const dossier = useMemo(() => {
+    if (!selectedVehicle) return null
+    return buildTruckDossier({
+      plate: selectedVehicle.nomre,
+      vehicle: selectedVehicle,
+      manifestEntry: findManifestEntry(selectedVehicle.nomre, selectedVehicle),
+      declarations,
+      route: { menshe: selectedVehicle.menshe, teyinat: selectedVehicle.teyinat },
+    })
+  }, [selectedVehicle, declarations])
+
+  const savedRegistration = useMemo(() => {
+    if (!selectedVehicle) return undefined
+    return registrations.find(item => item.plate === selectedVehicle.nomre)
+  }, [registrations, selectedVehicle])
+
+  const progress = useMemo(() => {
+    if (!dossier) return []
+    return buildTruckProgress({ dossier, linkedCount: dossier.matched, registration: savedRegistration })
+  }, [dossier, savedRegistration])
+
+
+  const primaryDecl = useMemo(() => {
+    const kod = dossier?.cmrs.find(cmr => cmr.declarationKod)?.declarationKod
+    return kod ? declarations.find(item => item.kod === kod) ?? linkedDecl : linkedDecl
+  }, [dossier, declarations, linkedDecl])
+
 
   const totalCount = deckVehicles.length
   const registeredCount = deckVehicles.filter(v => v.workflowStatus === 'completed').length
@@ -236,79 +248,21 @@ export default function VehicleDeckSelector({
 
       {/* Main Content Layout */}
       <div className="deck-selector-layout">
-        {/* Left Side: Deck Lanes or Table */}
+        {/* Left Side: Manifest kartları və ya cədvəl */}
         <div className="deck-main-viewport">
           {viewMode === 'deck' ? (
             <div className="roro-deck-schematic">
-              {/* 3 Lane Columns Grid */}
-              <div className="deck-lanes-grid">
-                {/* Port Lane */}
-                {(selectedLane === 'all' || selectedLane === 'port') && (
-                  <div className="deck-lane-column port-lane">
-                    <div className="lane-header">
-                      <span className="lane-tag">ZOLAĞ 1 · SOL BORT</span>
-                      <small>{portLaneVehicles.length} TIR</small>
-                    </div>
-                    <div className="lane-cards-list">
-                      {portLaneVehicles.map(v => (
-                        <DeckVehicleCard
-                          key={v.kod}
-                          vehicle={v}
-                          isSelected={v.nomre === selectedVehicle?.nomre}
-                          onSelect={() => onSelect(v)}
-                        />
-                      ))}
-                      {portLaneVehicles.length === 0 && (
-                        <div className="empty-lane">Bu zolaqda TIR tapılmadı</div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Center Lane */}
-                {(selectedLane === 'all' || selectedLane === 'center') && (
-                  <div className="deck-lane-column center-lane">
-                    <div className="lane-header">
-                      <span className="lane-tag">ZOLAĞ 2 · MƏRKƏZ</span>
-                      <small>{centerLaneVehicles.length} TIR</small>
-                    </div>
-                    <div className="lane-cards-list">
-                      {centerLaneVehicles.map(v => (
-                        <DeckVehicleCard
-                          key={v.kod}
-                          vehicle={v}
-                          isSelected={v.nomre === selectedVehicle?.nomre}
-                          onSelect={() => onSelect(v)}
-                        />
-                      ))}
-                      {centerLaneVehicles.length === 0 && (
-                        <div className="empty-lane">Bu zolaqda TIR tapılmadı</div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Starboard Lane */}
-                {(selectedLane === 'all' || selectedLane === 'starboard') && (
-                  <div className="deck-lane-column starboard-lane">
-                    <div className="lane-header">
-                      <span className="lane-tag">ZOLAĞ 3 · SAĞ BORT</span>
-                      <small>{starboardLaneVehicles.length} TIR</small>
-                    </div>
-                    <div className="lane-cards-list">
-                      {starboardLaneVehicles.map(v => (
-                        <DeckVehicleCard
-                          key={v.kod}
-                          vehicle={v}
-                          isSelected={v.nomre === selectedVehicle?.nomre}
-                          onSelect={() => onSelect(v)}
-                        />
-                      ))}
-                      {starboardLaneVehicles.length === 0 && (
-                        <div className="empty-lane">Bu zolaqda TIR tapılmadı</div>
-                      )}
-                    </div>
-                  </div>
+              <div className="deck-cards-grid">
+                {filteredVehicles.map(v => (
+                  <DeckVehicleCard
+                    key={v.kod}
+                    vehicle={v}
+                    isSelected={v.nomre === selectedVehicle?.nomre}
+                    onSelect={() => onSelect(v)}
+                  />
+                ))}
+                {filteredVehicles.length === 0 && (
+                  <div className="empty-lane">Axtarış filtrinə uyğun TIR tapılmadı</div>
                 )}
               </div>
             </div>
@@ -316,9 +270,14 @@ export default function VehicleDeckSelector({
             /* Table View */
             <div className="deck-table-viewport">
               <table className="deck-manifest-table">
+                <colgroup>
+                  <col className="m-bay" /><col className="m-plate" /><col className="m-model" />
+                  <col className="m-cargo" /><col className="m-driver" /><col className="m-weight" />
+                  <col className="m-bl" /><col className="m-status" />
+                </colgroup>
                 <thead>
                   <tr>
-                    <th>Bay / Yer</th>
+                    <th>№</th>
                     <th>Dövlət Nişanı</th>
                     <th>Nəqliyyat / Model</th>
                     <th>Yük Təsviri</th>
@@ -326,7 +285,6 @@ export default function VehicleDeckSelector({
                     <th>Çəki</th>
                     <th>Bill of Lading</th>
                     <th>Status</th>
-                    <th>Əməliyyat</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -339,7 +297,7 @@ export default function VehicleDeckSelector({
                         onClick={() => onSelect(v)}
                       >
                         <td>
-                          <span className="bay-badge">{v.bayNumber}</span>
+                          <span className="row-index">{v.bayNumber.replace(/^Y-/, '')}</span>
                         </td>
                         <td>
                           <div className="table-plate-badge">
@@ -352,7 +310,6 @@ export default function VehicleDeckSelector({
                         <td>
                           <div className="table-model-col">
                             <strong>{v.marka}</strong>
-                            <small>{v.lane === 'port' ? 'Sol bort' : v.lane === 'center' ? 'Mərkəz' : 'Sağ bort'}</small>
                           </div>
                         </td>
                         <td>
@@ -387,24 +344,12 @@ export default function VehicleDeckSelector({
                             </span>
                           )}
                         </td>
-                        <td>
-                          <button
-                            type="button"
-                            className="select-row-btn"
-                            onClick={e => {
-                              e.stopPropagation()
-                              onSelect(v)
-                            }}
-                          >
-                            Seç <ChevronRight size={12} />
-                          </button>
-                        </td>
                       </tr>
                     )
                   })}
                   {filteredVehicles.length === 0 && (
                     <tr>
-                      <td colSpan={9} className="empty-table-message">
+                      <td colSpan={8} className="empty-table-message">
                         Axtarış filtrinə uyğun heç bir nəqliyyat vasitəsi tapılmadı.
                       </td>
                     </tr>
@@ -496,115 +441,37 @@ export default function VehicleDeckSelector({
                   )}
                 </div>
 
-                {/* Details Grid - Manifest 02 məlumatları */}
-                <dl className="panel-details-grid">
-                  <div>
-                    <dt>Marka / Model</dt>
-                    <dd>{selectedVehicle.marka}</dd>
-                  </div>
-                  <div>
-                    <dt>Sürücü</dt>
-                    <dd>{selectedVehicle.surucu}</dd>
-                  </div>
-                  <div>
-                    <dt>Göyərtə Zolağı</dt>
-                    <dd>
-                      {selectedVehicle.lane === 'port'
-                        ? 'Zolaq 1 (Sol bort)'
-                        : selectedVehicle.lane === 'center'
-                        ? 'Zolaq 2 (Mərkəz)'
-                        : 'Zolaq 3 (Sağ bort)'}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Brutto Çəki</dt>
-                    <dd>{selectedVehicle.weightTons} ton</dd>
-                  </div>
-                  <div>
-                    <dt>Bill of Lading (B/L)</dt>
-                    <dd>{selectedVehicle.billOfLading || 'BL-245263'}</dd>
-                  </div>
-                  <div>
-                    <dt>Marşrut</dt>
-                    <dd>{selectedVehicle.menshe} → {selectedVehicle.teyinat}</dd>
-                  </div>
-                  <div>
-                    <dt>Təyinat Gömrük</dt>
-                    <dd>13005 Beynəlxalq Dəniz Limanı</dd>
-                  </div>
-                  <div>
-                    <dt>Keçmə Məqsədi</dt>
-                    <dd>Tranzit (İD 80)</dd>
-                  </div>
-                </dl>
-
-                {/* Cargo Badge */}
-                <div className="panel-cargo-box">
-                  <Container size={16} className="cargo-icon" />
-                  <div className="cargo-content">
-                    <small>MANİFEST YÜKÜ TƏSVİRİ</small>
-                    <strong>{selectedVehicle.yuk}</strong>
-                  </div>
+                {/* Qeydiyyat mərhələsi — cədvəldə görünməyən status məlumatı */}
+                <div className="panel-progress">
+                  <small className="panel-block-title">QEYDİYYAT MƏRHƏLƏSİ</small>
+                  <ol>
+                    {progress.map(step => (
+                      <li key={step.id} className={step.state}>
+                        <i />
+                        <div>
+                          <b>{step.label}</b>
+                          <small>{step.detail}</small>
+                        </div>
+                        {step.id === 'egb' && primaryDecl && (
+                          <button
+                            type="button"
+                            className="panel-progress-link"
+                            onClick={() => setDeclModalOpen(true)}
+                            title="Tam gömrük bəyannaməsini aç"
+                          >
+                            <ExternalLink size={12} />
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
                 </div>
 
-                {/* Linked Customs Declaration */}
-                <div
-                  className="panel-decl-box"
-                  onClick={() => setDeclModalOpen(true)}
-                  title="Tam gömrük bəyannaməsini aç"
-                >
-                  <div className="panel-decl-head">
-                    <small>GÖMRÜK BƏYANNAMƏSİ (EGB)</small>
-                    <div className="panel-decl-status">
-                      <span className="status-chip success">
-                        {linkedDecl?.status || 'Təsdiqlənib'}
-                      </span>
-                      <ExternalLink size={12} className="decl-ext-icon" />
-                    </div>
-                  </div>
-                  <div className="panel-decl-body">
-                    <strong className="decl-code">
-                      {linkedDecl?.kod || '01263000224935'}
-                    </strong>
-                    <span className="decl-type">
-                      {linkedDecl?.senedNovu || 'İD 80 · Tranzit'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Single Window Clearances Pill */}
-                <div className="panel-clearances-box" style={{ marginTop: 10 }}>
-                  <small>VAHİD PƏNCƏRƏ İCAZƏLƏRİ</small>
-                  <div className="clearance-tags-list">
-                    <span className="clr-tag ok"><ShieldCheck size={11} /> DGK: Təsdiq</span>
-                    <span className="clr-tag ok"><ShieldCheck size={11} /> DSX: Təsdiq</span>
-                    <span className="clr-tag ok"><ShieldCheck size={11} /> AQTA: Təsdiq</span>
-                    <span className="clr-tag ok"><ShieldCheck size={11} /> DDA: Təsdiq</span>
-                  </div>
-                </div>
-
-                {/* Action CTA Button */}
-                {selectedVehicle.isRegistered ? (
-                  <div style={{ marginTop: 14, padding: '10px 14px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8, color: '#166534', fontWeight: 600, fontSize: 13 }}>
+                {selectedVehicle.isRegistered && (
+                  <div className="deck-registered-note">
                     <CheckCircle2 size={16} />
                     <span>Nəqliyyat qeydiyyatdan keçib</span>
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    className="deck-open-registration-btn"
-                    style={{ marginTop: 14 }}
-                    onClick={() => {
-                      if (onConfirmRegistration) {
-                        onConfirmRegistration(selectedVehicle)
-                      } else {
-                        onSelect(selectedVehicle)
-                      }
-                    }}
-                  >
-                    <span>Qeydiyyatı Təsdiq Et ({selectedVehicle.nomre})</span>
-                    <CheckCircle2 size={15} />
-                  </button>
                 )}
               </motion.div>
             ) : (
@@ -619,15 +486,15 @@ export default function VehicleDeckSelector({
       </div>
 
       {/* Full Declaration Modal */}
-      {linkedDecl && selectedVehicle && (
+      {primaryDecl && selectedVehicle && (
         <Modal
           open={declModalOpen}
           onClose={() => setDeclModalOpen(false)}
-          title={`Gömrük Bəyannaməsi (EGB) · ${linkedDecl.kod}`}
+          title={`Gömrük Bəyannaməsi (EGB) · ${primaryDecl.kod}`}
         >
           <DeclarationDocumentView
             declaration={{
-              ...linkedDecl,
+              ...primaryDecl,
               avtomobil: selectedVehicle.nomre,
             }}
             vehiclePlate={selectedVehicle.nomre}
@@ -638,11 +505,10 @@ export default function VehicleDeckSelector({
   )
 }
 
-// Individual Deck Card Component for Lane View
+// Manifest kartı
 type CardProps = {
   vehicle: DeckVehicle & {
     bayNumber: string
-    lane: string
     isRegistered: boolean
     isInspected: boolean
     workflowStatus: VehicleWorkflowStatus

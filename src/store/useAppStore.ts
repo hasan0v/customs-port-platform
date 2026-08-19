@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { gemiler, avtomobiller, beyannameler, postQerarlar } from '../data/mockData'
+import type { ManifestDocument, ManifestHeader } from '../domain/manifestDocument'
 
 type Profile = {
   name: string
@@ -28,6 +29,27 @@ export type SavedRegistration = {
   roadTaxes: string[]
   permits: string[]
   transport: Record<string, string>
+  /** Səfər / manifest konteksti — gəmi sabitdir, səfər hər gəlişdə yenidir. */
+  voyageId?: string
+  manifestNo?: string
+  /** Sənəd zənciri: 1 CMR = 1 bəyannamə */
+  cmrCount?: number
+  declarationKods?: string[]
+  /** VAİS qeydiyyatı */
+  trailerPlate?: string
+  trailerCode?: string
+  /** Yüklənmiş manifest sənədi (fayl adı — sənədin özü sessiyada saxlanılır) */
+  manifestFile?: string
+  /** Mal mövqelərinin yekun statusu (əl ilə düzəlişlər daxil) */
+  goods?: Array<{ ad: string; hsKod: string; status: string; qeyd: string }>
+  /** İcazə blankı — qeydə alınıb sürücüyə qaytarılır */
+  permitBlank?: {
+    novu: string
+    nomre: string
+    verenOrqan: string
+    etibarliliq: string
+    qaytarildi: boolean
+  }
   status: 'Təsdiqləndi' | 'Buraxıldı' | 'Gözləmədə' | 'İmtina' | string
   operator: string
   postKod: string
@@ -42,6 +64,8 @@ type AppState = {
   declarations: typeof beyannameler
   postDecisions: typeof postQerarlar
   registrations: SavedRegistration[]
+  /** Gəmi üzrə yüklənmiş manifest sənədləri — object URL saxladığına görə persist olunmur. */
+  manifests: ManifestDocument[]
   profile: Profile
   notifications: NotificationPrefs
   toggleDark: () => void
@@ -54,6 +78,9 @@ type AppState = {
   updateDeclaration: (kod: string, patch: Partial<(typeof beyannameler)[number]>) => void
   addPostDecision: (decision: (typeof postQerarlar)[number]) => void
   addRegistration: (record: SavedRegistration) => void
+  addManifest: (manifest: ManifestDocument) => void
+  updateManifestHeader: (id: string, header: Partial<ManifestHeader>) => void
+  removeManifest: (id: string) => void
   updateProfile: (profile: Partial<Profile>) => void
   updateNotifications: (prefs: NotificationPrefs) => void
   saveSettings: (payload: { profile?: Partial<Profile>; notifications?: NotificationPrefs }) => void
@@ -129,6 +156,7 @@ export const useAppStore = create<AppState>((set) => ({
   declarations: beyannameler,
   postDecisions: postQerarlar,
   registrations: loadRegistrations(),
+  manifests: [],
   profile: loadProfile(),
   notifications: loadNotifications(),
   toggleDark: () => set((state) => {
@@ -154,6 +182,22 @@ export const useAppStore = create<AppState>((set) => ({
     const registrations = [record, ...state.registrations]
     localStorage.setItem(REG_STORAGE_KEY, JSON.stringify(registrations))
     return { registrations }
+  }),
+  addManifest: (manifest) => set((state) => {
+    // Eyni gəmi üçün köhnə sənədin object URL-i azad edilir.
+    const previous = state.manifests.filter(item => item.shipId === manifest.shipId)
+    previous.forEach(item => URL.revokeObjectURL(item.url))
+    return { manifests: [manifest, ...state.manifests.filter(item => item.shipId !== manifest.shipId)] }
+  }),
+  updateManifestHeader: (id, header) => set((state) => ({
+    manifests: state.manifests.map(item => (
+      item.id === id ? { ...item, header: { ...item.header, ...header } } : item
+    )),
+  })),
+  removeManifest: (id) => set((state) => {
+    const target = state.manifests.find(item => item.id === id)
+    if (target) URL.revokeObjectURL(target.url)
+    return { manifests: state.manifests.filter(item => item.id !== id) }
   }),
   updateProfile: (newProfile) => set((state) => {
     const profile = { ...state.profile, ...newProfile }
