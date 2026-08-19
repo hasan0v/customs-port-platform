@@ -14,7 +14,7 @@ import ShipDetailModal from '../components/ShipDetailModal'
 import { Button, Card, Modal, PageHeader, StatusBadge } from '../components/UI'
 import { agencies, portCalls, type PortCall } from '../data/operationalData'
 import type { GemiIstiqameti } from '../data/mockData'
-import { getShipDirection, getShipMovementSummary, getShipOperationLabel } from '../domain/ships'
+import { getAvailableShipStatuses, getShipDirection, getShipMovementSummary, getShipOperationLabel, normalizeShipStatus } from '../domain/ships'
 import { fetchAlatWeather, type LiveWeather } from '../services/liveData'
 import './Ships.css'
 
@@ -63,10 +63,17 @@ export default function Ships() {
   const [newShipFlag, setNewShipFlag] = useState('Azərbaycan')
   const [newShipCargo, setNewShipCargo] = useState('Avtomobillər')
   const [newShipTonnage, setNewShipTonnage] = useState('9500')
-  const [newShipStatus, setNewShipStatus] = useState<'Lövbərdə' | 'Yolda' | 'Körpüdə'>('Lövbərdə')
+  const [newShipStatus, setNewShipStatus] = useState<import('../data/mockData').GemiStatus>('Lövbərdə')
   const [newShipDirection, setNewShipDirection] = useState<GemiIstiqameti>('Gələn')
   const [newShipChannel, setNewShipChannel] = useState('Kanal 1')
   const [newShipSpeed, setNewShipSpeed] = useState('11.5')
+
+  const newShipAvailableStatuses = useMemo(() => getAvailableShipStatuses(newShipDirection), [newShipDirection])
+
+  const handleNewShipDirectionChange = (newDir: GemiIstiqameti) => {
+    setNewShipDirection(newDir)
+    setNewShipStatus(prev => normalizeShipStatus(prev, newDir))
+  }
 
   const urlShipId = searchParams.get('id')
   useEffect(() => {
@@ -98,6 +105,15 @@ export default function Ships() {
       })
       .map(name => ({ name, count: ships.filter(ship => getShipPorts(ship).includes(name)).length }))
   }, [ships])
+
+  const availableFilterStatuses = useMemo(() => getAvailableShipStatuses(direction), [direction])
+
+  const handleDirectionFilterChange = (newDir: 'Hamısı' | GemiIstiqameti) => {
+    setDirection(newDir)
+    if (newDir === 'Gedən' && status === 'Lövbərdə') {
+      setStatus('Hamısı')
+    }
+  }
 
   const rows = useMemo(
     () => ships.filter(g =>
@@ -206,7 +222,7 @@ export default function Ships() {
         <div>
           <small>AIS gəmilər</small>
           <strong>{movementSummary.total}</strong>
-          <em>{movementSummary.byStatus.Körpüdə.total} körpüdə · {movementSummary.byStatus.Lövbərdə.total} lövbərdə · {movementSummary.byStatus.Yolda.total} yolda</em>
+          <em>{movementSummary.byStatus.Körpüdə.total} körpüdə · {movementSummary.byStatus.Lövbərdə.Gələn} lövbərdə (giriş) · {movementSummary.byStatus.Yolda.total} yolda</em>
         </div>
       </article>
       <article>
@@ -248,11 +264,9 @@ export default function Ships() {
             </label>
             <select value={status} onChange={e => setStatus(e.target.value)} aria-label="Status üzrə filtr">
               <option value="Hamısı">Bütün statuslar</option>
-              <option>Lövbərdə</option>
-              <option>Yolda</option>
-              <option>Körpüdə</option>
+              {availableFilterStatuses.map(st => <option value={st} key={st}>{st}</option>)}
             </select>
-            <select value={direction} onChange={e => setDirection(e.target.value as typeof direction)} aria-label="İstiqamət üzrə filtr">
+            <select value={direction} onChange={e => handleDirectionFilterChange(e.target.value as typeof direction)} aria-label="İstiqamət üzrə filtr">
               <option value="Hamısı">Bütün istiqamətlər</option>
               <option value="Gələn">Gələn</option>
               <option value="Gedən">Gedən</option>
@@ -497,17 +511,15 @@ export default function Ships() {
         <label>Bayraq<input required value={newShipFlag} onChange={e => setNewShipFlag(e.target.value)} /></label>
         <label>Yük növü<input required value={newShipCargo} onChange={e => setNewShipCargo(e.target.value)} /></label>
         <label>Tonaj (ton)<input type="number" required value={newShipTonnage} onChange={e => setNewShipTonnage(e.target.value)} /></label>
-        <label>Status
-          <select value={newShipStatus} onChange={e => setNewShipStatus(e.target.value as typeof newShipStatus)}>
-            <option value="Lövbərdə">Lövbərdə</option>
-            <option value="Yolda">Yolda</option>
-            <option value="Körpüdə">Körpüdə</option>
-          </select>
-        </label>
         <label>İstiqamət
-          <select value={newShipDirection} onChange={e => setNewShipDirection(e.target.value as GemiIstiqameti)}>
+          <select value={newShipDirection} onChange={e => handleNewShipDirectionChange(e.target.value as GemiIstiqameti)}>
             <option value="Gələn">Gələn</option>
             <option value="Gedən">Gedən</option>
+          </select>
+        </label>
+        <label>Status
+          <select value={newShipStatus} onChange={e => setNewShipStatus(e.target.value as typeof newShipStatus)}>
+            {newShipAvailableStatuses.map(st => <option value={st} key={st}>{st}</option>)}
           </select>
         </label>
         <label>Kanal<input required value={newShipChannel} onChange={e => setNewShipChannel(e.target.value)} /></label>

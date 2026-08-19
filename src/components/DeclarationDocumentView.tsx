@@ -1,4 +1,6 @@
+import { toast } from 'sonner'
 import type { Declaration } from '../data/mockData'
+import { useAppStore } from '../store/useAppStore'
 
 const num = (value: number, digits = 2) =>
   new Intl.NumberFormat('az-AZ', { maximumFractionDigits: digits }).format(value)
@@ -30,14 +32,26 @@ function InfoTable({ rows }: { rows: Row[] }) {
 }
 
 export function DeclarationDocumentView({
-  declaration: d,
+  declaration: initialDecl,
   compact = false,
   vehiclePlate,
+  onStatusChange,
 }: {
   declaration: Declaration
   compact?: boolean
   vehiclePlate?: string
+  onStatusChange?: (status: string) => void
 }) {
+  const updateDeclaration = useAppStore(state => state.updateDeclaration)
+  const storeDecl = useAppStore(state => state.declarations.find(b => b.kod === initialDecl.kod))
+  const d = storeDecl || initialDecl
+
+  const handleStatusChange = (newStatus: string) => {
+    updateDeclaration(d.kod, { status: newStatus })
+    onStatusChange?.(newStatus)
+    toast.success(`Bəyannamə № ${d.kod} statusu yeniləndi: ${newStatus}`)
+  }
+
   const item = d.mallar[0]
   const gonderen = d.gonderen ?? d.satici
   const gonderenOlke = d.gonderenOlke ?? d.saticiOlke
@@ -91,9 +105,19 @@ export function DeclarationDocumentView({
           <strong>{d.senedNovu ?? 'GÖMRÜK BƏYANNAMƏSİ'} · {d.kod}</strong>
           <span>Sorğu qeydiyyatı: {formatDate(d)} · {d.source ?? 'Elektron Vahid Pəncərə'}</span>
         </div>
-        <em className={`decl-status-pill ${d.status === 'Təsdiqlənib' ? 'approved' : d.status === 'Risk nəzarəti' ? 'risk' : 'review'}`}>
-          {d.status}
-        </em>
+        <div className="decl-head-status-wrap">
+          <label className="decl-status-label">Bəyannamə / Yük Statusu</label>
+          <select
+            className={`decl-status-select ${d.status === 'Təsdiqlənib' ? 'approved' : d.status === 'Risk nəzarəti' ? 'risk' : 'review'}`}
+            value={d.status}
+            onChange={e => handleStatusChange(e.target.value)}
+          >
+            <option value="Təsdiqlənib">🟢 Təsdiqlənib (Yaşıl Dəhliz)</option>
+            <option value="Yoxlamada">🟡 Yoxlamada (Sarı Dəhliz)</option>
+            <option value="Gözləmədə">🟡 Gözləmədə (Əlavə baxış)</option>
+            <option value="Risk nəzarəti">🔴 Risk nəzarəti (Qırmızı Dəhliz)</option>
+          </select>
+        </div>
       </header>
 
       <section className="decl-doc-section">

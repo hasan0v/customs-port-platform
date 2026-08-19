@@ -1,14 +1,14 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Anchor, ArrowRight, Award, CheckCircle2, ChevronRight, Clock,
-  Copy, ExternalLink, FileCheck, FileText, Globe, Info,
-  Layers, MapPin, Navigation, Shield, ShieldAlert,
-  ShieldCheck, Ship, Truck, Users, Warehouse,
+  Copy, ExternalLink, FileCheck, FileText, Filter, Globe, Info,
+  Layers, MapPin, Navigation, Scale, Search, Shield, ShieldAlert,
+  ShieldCheck, Ship, Sparkles, Truck, Users, Warehouse, X,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { avtomobiller, beyannameler, type gemiler, type GemiIstiqameti, type GemiStatus } from '../data/mockData'
-import { getShipDirection, getShipOperationLabel, SHIP_DIRECTIONS, SHIP_STATUSES } from '../domain/ships'
+import { beyannameler, type gemiler, type GemiIstiqameti, type GemiStatus } from '../data/mockData'
+import { getAvailableShipStatuses, getShipDirection, getShipOperationLabel, normalizeShipStatus, SHIP_DIRECTIONS, SHIP_STATUSES } from '../domain/ships'
 import { agencies } from '../data/operationalData'
 import { useAppStore } from '../store/useAppStore'
 import { Button, Modal, StatusBadge } from './UI'
@@ -23,6 +23,16 @@ type Props = {
 
 type TabKey = 'manifest' | 'cargo' | 'vehicles' | 'clearance'
 
+const WAIT_REASONS = [
+  'Fiziki yoxlama',
+  'X-Ray / Rentgen baxışı',
+  'Kinoloji xidmət (itlə yoxlama)',
+  'Sənəd çatışmazlığı / Dəqiqləşdirmə',
+  'AQTA fitosanitar / baytarlıq rəyi',
+  'Gömrük dəyərinin dəqiqləşdirilməsi',
+  'Yol vergisinin ödənilməsi',
+] as const
+
 const agencyNameMap: Record<string, string> = {
   DGK: 'Dövlət Gömrük Komitəsi',
   DSX: 'Dövlət Sərhəd Xidməti',
@@ -34,7 +44,11 @@ const agencyNameMap: Record<string, string> = {
 export default function ShipDetailModal({ ship, open, onClose }: Props) {
   const navigate = useNavigate()
   const updateShip = useAppStore(state => state.updateShip)
+  const vehicles = useAppStore(state => state.vehicles)
+  const updateVehicle = useAppStore(state => state.updateVehicle)
   const [activeTab, setActiveTab] = useState<TabKey>('manifest')
+  const [vehicleFilter, setVehicleFilter] = useState<'Hamısı' | 'Buraxılış' | 'Gözləmədə' | 'Risk / Digər'>('Hamısı')
+  const [vehicleQuery, setVehicleQuery] = useState('')
 
   if (!ship) return null
 
@@ -50,8 +64,48 @@ export default function ShipDetailModal({ ship, open, onClose }: Props) {
   }
 
   // Gəmiyə bağlı avtomobillər
-  const shipVehicles = avtomobiller.filter(v => v.gemi === ship.id || (ship.id === 'IMO9834210' && (v.nomre.includes('1234') || v.nomre.includes('DG'))))
-  const displayedVehicles = shipVehicles.length > 0 ? shipVehicles : avtomobiller.slice(0, 4)
+  const shipVehicles = vehicles.filter(v => v.gemi === ship.id || (ship.id === 'IMO9834210' && (v.nomre.includes('1234') || v.nomre.includes('DG'))))
+  const allVehiclesForShip = shipVehicles.length > 0 ? shipVehicles : vehicles.slice(0, 4)
+
+  const displayedVehicles = allVehiclesForShip.filter(v => {
+    const q = vehicleQuery.trim().toLowerCase()
+    const matchesQ = !q || `${v.nomre} ${v.marka} ${v.surucu} ${v.yuk} ${v.billOfLading || ''} ${v.vehicleOrder || ''}`.toLowerCase().includes(q)
+    if (!matchesQ) return false
+    if (vehicleFilter === 'Buraxılış') return v.status === 'Buraxıldı' || v.status.includes('Təsdiq')
+    if (vehicleFilter === 'Gözləmədə') return v.status === 'Gözləmədə' || v.status.includes('Gözlə')
+    if (vehicleFilter === 'Risk / Digər') return v.status === 'Risk nəzarəti' || v.status === 'Qeydiyyatda' || v.status === 'Yoxlanılır'
+    return true
+  })
+
+  const vehicleStats = {
+    total: allVehiclesForShip.length,
+    approved: allVehiclesForShip.filter(v => v.status === 'Buraxıldı' || v.status.includes('Təsdiq')).length,
+    waiting: allVehiclesForShip.filter(v => v.status === 'Gözləmədə' || v.status.includes('Gözlə')).length,
+    other: allVehiclesForShip.filter(v => v.status !== 'Buraxıldı' && !v.status.includes('Təsdiq') && v.status !== 'Gözləmədə' && !v.status.includes('Gözlə')).length,
+  }
+
+  const handleVehicleStatusChange = (plate: string, nextStatus: string) => {
+    if (nextStatus === 'Gözləmədə') {
+      const current = vehicles.find(v => v.nomre === plate)
+      const reason = (current as any)?.waitReason || 'Fiziki yoxlama'
+      updateVehicle(plate, { status: 'Gözləmədə', waitReason: reason })
+      toast.warning(`${plate} statusu 'Gözləmədə' olaraq yeniləndi (${reason})`)
+    } else if (nextStatus === 'Buraxılış təsdiq olundu' || nextStatus === 'Buraxıldı') {
+      updateVehicle(plate, { status: 'Buraxıldı', waitReason: undefined })
+      toast.success(`${plate}: Buraxılış statusu təsdiqləndi ✅`)
+    } else if (nextStatus === 'Risk nəzarəti') {
+      updateVehicle(plate, { status: 'Risk nəzarəti' })
+      toast.error(`${plate}: Risk nəzarəti kanalına yönləndirildi ⚠️`)
+    } else {
+      updateVehicle(plate, { status: nextStatus })
+      toast.info(`${plate} statusu: ${nextStatus}`)
+    }
+  }
+
+  const handleVehicleReasonChange = (plate: string, nextReason: string) => {
+    updateVehicle(plate, { status: 'Gözləmədə', waitReason: nextReason })
+    toast.info(`${plate} üçün gözləmə səbəbi: ${nextReason}`)
+  }
 
   // Gəmiyə bağlı bəyannamələr
   const shipDeclarations = beyannameler.filter(b => b.gemiId === ship.id || displayedVehicles.some(v => v.nomre === b.avtomobil))
@@ -85,30 +139,45 @@ export default function ShipDetailModal({ ship, open, onClose }: Props) {
             </div>
           </div>
 
-          <div className="ship-hero-controls-cluster">
-            <div className="ship-quick-selects">
-              <label>
-                <small>Mövqe statusu</small>
-                <select value={ship.status} onChange={event => updateShip(ship.id, { status: event.target.value as GemiStatus })}>
-                  {SHIP_STATUSES.map(status => <option value={status} key={status}>{status}</option>)}
-                </select>
-              </label>
-              <label>
-                <small>İstiqamət</small>
-                <select value={getShipDirection(ship)} onChange={event => updateShip(ship.id, { istiqamet: event.target.value as GemiIstiqameti })}>
-                  {SHIP_DIRECTIONS.map(direction => <option value={direction} key={direction}>{direction}</option>)}
-                </select>
-              </label>
-            </div>
+          {(() => {
+            const currentDirection = getShipDirection(ship)
+            const availableStatuses = getAvailableShipStatuses(currentDirection)
 
-            <div className="ship-hero-status-row">
-              <StatusBadge status={ship.status} />
-              <strong className="ship-operation-label">{getShipOperationLabel(ship)}</strong>
-              <span className={`ship-risk-badge ${ship.riskDerecesi === 'Yüksək' ? 'high' : ship.riskDerecesi === 'Orta' ? 'medium' : 'low'}`}>
-                <ShieldCheck size={13} /> {ship.riskDerecesi || 'Aşağı'} risk
-              </span>
-            </div>
-          </div>
+            const handleModalDirectionChange = (newDir: GemiIstiqameti) => {
+              const nextStatus = normalizeShipStatus(ship.status, newDir)
+              updateShip(ship.id, { istiqamet: newDir, status: nextStatus })
+              if (newDir === 'Gedən' && ship.status === 'Lövbərdə') {
+                toast.info(`${ship.ad}: Çıxış istiqamətində lövbər statusu olmadığından status 'Körpüdə' olaraq yeniləndi`)
+              }
+            }
+
+            return (
+              <div className="ship-hero-controls-cluster">
+                <div className="ship-quick-selects">
+                  <label>
+                    <small>İstiqamət</small>
+                    <select value={currentDirection} onChange={event => handleModalDirectionChange(event.target.value as GemiIstiqameti)}>
+                      {SHIP_DIRECTIONS.map(direction => <option value={direction} key={direction}>{direction}</option>)}
+                    </select>
+                  </label>
+                  <label>
+                    <small>Mövqe statusu</small>
+                    <select value={ship.status} onChange={event => updateShip(ship.id, { status: event.target.value as GemiStatus })}>
+                      {availableStatuses.map(status => <option value={status} key={status}>{status}</option>)}
+                    </select>
+                  </label>
+                </div>
+
+                <div className="ship-hero-status-row">
+                  <StatusBadge status={ship.status} />
+                  <strong className="ship-operation-label">{getShipOperationLabel(ship)}</strong>
+                  <span className={`ship-risk-badge ${ship.riskDerecesi === 'Yüksək' ? 'high' : ship.riskDerecesi === 'Orta' ? 'medium' : 'low'}`}>
+                    <ShieldCheck size={13} /> {ship.riskDerecesi || 'Aşağı'} risk
+                  </span>
+                </div>
+              </div>
+            )
+          })()}
         </header>
 
         {/* Tab Navigation */}
@@ -301,70 +370,141 @@ export default function ShipDetailModal({ ship, open, onClose }: Props) {
           {/* TAB 3: GÖYƏRTƏDƏKİ TIR-LAR VƏ CMR QAİMƏLƏRİ */}
           {activeTab === 'vehicles' && (
             <section className="ship-card-section">
-              <div style={{ marginBottom: 12 }}>
-                <h3 style={{ margin: 0 }}><Truck size={15} /> Sənədlər Üzrə Rəsmi Nəqliyyat Vasitələri və CMR Qaimələri</h3>
-                <small style={{ color: 'var(--muted)' }}>Bu gəmi və reys üzrə rəsmiləşdirilən nəqliyyat vahidləri:</small>
+              <div className="tir-section-header">
+                <div className="tir-section-title">
+                  <h3><Truck size={15} /> Sənədlər Üzrə Rəsmi Nəqliyyat Vasitələri və CMR Qaimələri</h3>
+                  <small>Gəmi göyərtəsindəki TIR-ların canlı status və gözləmə səbəbi idarəetməsi:</small>
+                </div>
+                <div className="cargo-decl-summary" style={{ gap: 6 }}>
+                  <div className="cargo-decl-stat" style={{ padding: '4px 8px' }}>
+                    <span style={{ fontSize: 7.5 }}>Cəmi TIR</span>
+                    <strong style={{ fontSize: 13 }}>{vehicleStats.total}</strong>
+                  </div>
+                  <div className="cargo-decl-stat green" style={{ padding: '4px 8px' }}>
+                    <span style={{ fontSize: 7.5 }}>Buraxılış Təsdiq</span>
+                    <strong style={{ fontSize: 13 }}>{vehicleStats.approved}</strong>
+                  </div>
+                  <div className="cargo-decl-stat amber" style={{ padding: '4px 8px' }}>
+                    <span style={{ fontSize: 7.5 }}>Gözləmədə</span>
+                    <strong style={{ fontSize: 13 }}>{vehicleStats.waiting}</strong>
+                  </div>
+                </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
-                {displayedVehicles.map((v, i) => (
-                  <article key={v.kod || i} style={{
-                    padding: 12,
-                    borderRadius: 8,
-                    border: '1px solid var(--border)',
-                    background: 'var(--card-bg, rgba(255,255,255,0.04))',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 8,
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{
-                        fontWeight: 700,
-                        fontFamily: 'monospace',
-                        fontSize: 14,
-                        padding: '3px 8px',
-                        background: 'var(--bg-accent, rgba(59, 130, 246, 0.12))',
-                        border: '1px solid var(--border)',
-                        borderRadius: 4,
-                      }}>
-                        {v.nomre}
-                      </span>
-                      <small style={{ color: 'var(--muted)', fontSize: 11 }}>{v.marka}</small>
-                    </div>
-
-                    <div style={{ fontSize: 12, lineHeight: 1.5 }}>
-                      <div><strong>Yük:</strong> {v.yuk}</div>
-                      <div><strong>Sürücü:</strong> {v.surucu}</div>
-                      <div><strong>Marşrut:</strong> {v.menshe} → {v.teyinat}</div>
-                      <div><strong>Sənəd:</strong> B/L: {v.billOfLading} {v.vehicleOrder ? `· Order: ${v.vehicleOrder}` : ''}</div>
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4, borderTop: '1px dashed var(--border)', paddingTop: 6 }}>
-                      <StatusBadge status={v.status} />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onClose()
-                          navigate(`/qeydiyyat?plate=${encodeURIComponent(v.nomre)}&shipId=${ship.id}`)
-                        }}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: 'var(--primary, #3b82f6)',
-                          fontSize: 11,
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 4,
-                        }}
-                      >
-                        Qeydiyyat aç <ChevronRight size={11} />
-                      </button>
-                    </div>
-                  </article>
-                ))}
+              {/* Toolbar: Axtarış və Status filterləri */}
+              <div className="tir-filter-toolbar">
+                <div className="tir-search-box">
+                  <Search />
+                  <input
+                    placeholder="TIR nömrəsi, sürücü, yük və ya B/L axtar..."
+                    value={vehicleQuery}
+                    onChange={e => setVehicleQuery(e.target.value)}
+                  />
+                  {vehicleQuery && (
+                    <button type="button" onClick={() => setVehicleQuery('')} style={{ border: 0, background: 'transparent', cursor: 'pointer', color: 'var(--muted)', display: 'grid', placeItems: 'center', padding: 0 }}>
+                      <X size={12} />
+                    </button>
+                  )}
+                </div>
+                <div className="tir-filter-tabs" role="tablist">
+                  {(['Hamısı', 'Buraxılış', 'Gözləmədə', 'Risk / Digər'] as const).map(tab => (
+                    <button
+                      type="button"
+                      key={tab}
+                      className={vehicleFilter === tab ? 'active' : ''}
+                      onClick={() => setVehicleFilter(tab)}
+                    >
+                      {tab === 'Buraxılış' ? `Buraxılış (${vehicleStats.approved})` : tab === 'Gözləmədə' ? `Gözləmədə (${vehicleStats.waiting})` : tab === 'Hamısı' ? `Hamısı (${vehicleStats.total})` : `Risk / Digər (${vehicleStats.other})`}
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              {/* TIR Kartları */}
+              <div className="tir-cards-grid">
+                {displayedVehicles.map((v, i) => {
+                  const isApproved = v.status === 'Buraxıldı' || v.status.includes('Təsdiq')
+                  const isWaiting = v.status === 'Gözləmədə' || v.status.includes('Gözlə')
+                  const isRisk = v.status === 'Risk nəzarəti'
+                  const currentReason = (v as any).waitReason || 'Fiziki yoxlama'
+
+                  return (
+                    <article key={v.kod || v.nomre || i} className="tir-manage-card">
+                      <div className="tir-manage-header">
+                        <div className="tir-plate-group">
+                          <span className="tir-plate-badge">{v.nomre}</span>
+                          <span className="tir-model-tag">{v.marka}</span>
+                        </div>
+                        {v.ceki && <span className="tir-weight-tag"><Scale size={11} /> {v.ceki}</span>}
+                      </div>
+
+                      <div className="tir-info-grid">
+                        <div><strong>Yük:</strong> <span>{v.yuk}</span></div>
+                        <div><strong>Sürücü:</strong> <span>{v.surucu}</span></div>
+                        <div><strong>Marşrut:</strong> <span>{v.menshe} → {v.teyinat}</span></div>
+                        <div><strong>Sənəd:</strong> <span>B/L: {v.billOfLading || '—'} {v.vehicleOrder ? `· Order: ${v.vehicleOrder}` : ''}</span></div>
+                      </div>
+
+                      {/* Status & Səbəb İdarəetmə Paneli */}
+                      <div className="tir-status-manager">
+                        <div className="tir-status-row">
+                          <div className="tir-status-select-wrap">
+                            <label className="tir-field-label">Cari Status</label>
+                            <select
+                              className={`tir-status-dropdown ${isApproved ? 'approved' : isWaiting ? 'waiting' : isRisk ? 'danger' : ''}`}
+                              value={isApproved ? 'Buraxılış təsdiq olundu' : isWaiting ? 'Gözləmədə' : isRisk ? 'Risk nəzarəti' : 'Qeydiyyatda'}
+                              onChange={e => handleVehicleStatusChange(v.nomre, e.target.value)}
+                            >
+                              <option value="Buraxılış təsdiq olundu">🟢 Buraxılış təsdiq olunan</option>
+                              <option value="Gözləmədə">🟡 Gözləmə (Səbəbi ilə)</option>
+                              <option value="Risk nəzarəti">🔴 Risk nəzarəti</option>
+                              <option value="Qeydiyyatda">🔵 Qeydiyyatda</option>
+                            </select>
+                          </div>
+
+                          <button
+                            type="button"
+                            className="tir-open-reg-btn"
+                            onClick={() => {
+                              onClose()
+                              navigate(`/qeydiyyat?plate=${encodeURIComponent(v.nomre)}&shipId=${ship.id}`)
+                            }}
+                            title="Vahid Qeydiyyat pəncərəsində tam rəsmiləşdirmə"
+                          >
+                            <span>Qeydiyyat</span>
+                            <ChevronRight size={13} />
+                          </button>
+                        </div>
+
+                        {/* Gözləmədə olduqda səbəb seçimi */}
+                        {isWaiting && (
+                          <div className="tir-wait-reason-box">
+                            <div className="tir-wait-reason-head">
+                              <Clock size={12} />
+                              <span>Gözləmə səbəbi:</span>
+                            </div>
+                            <select
+                              className="tir-reason-select"
+                              value={currentReason}
+                              onChange={e => handleVehicleReasonChange(v.nomre, e.target.value)}
+                            >
+                              {WAIT_REASONS.map(reason => (
+                                <option value={reason} key={reason}>⏳ {reason}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+
+              {displayedVehicles.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--muted)', fontSize: 11 }}>
+                  Axtarışa və ya filtrə uyğun nəqliyyat vasitəsi tapılmadı.
+                </div>
+              )}
             </section>
           )}
 

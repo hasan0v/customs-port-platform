@@ -94,12 +94,15 @@ function buildTrafficEvents(
   // 2) Post qərarlardan
   postDecisions.forEach((p, i) => {
     const ship = ships.find(g => g.ad === p.gemi) || ships[i % ships.length]
+    const direction: 'Gələn' | 'Gedən' = p.novu === 'Çıxış' ? 'Gedən' : 'Gələn'
+    const rawStatus = p.status.includes('Təsdiq') ? (direction === 'Gedən' ? 'Körpüdə' : 'Lövbərdə') : ship.status
+    const shipStatus = direction === 'Gedən' && rawStatus === 'Lövbərdə' ? 'Körpüdə' : rawStatus
     events.push({
       id: `post-${p.kod}-${i}`,
-      direction: p.novu === 'Çıxış' ? 'Gedən' : 'Gələn',
+      direction,
       shipId: ship.id,
       shipName: p.gemi,
-      shipStatus: p.status.includes('Təsdiq') ? 'Lövbərdə' : ship.status,
+      shipStatus,
       port: portKey(ship.menshe),
       tonaj: Math.round(ship.tonaj * (0.7 + (i % 5) * 0.06)),
       vehicles: 12 + (i % 20),
@@ -114,12 +117,13 @@ function buildTrafficEvents(
   // 3) Qeydiyyatlardan
   registrations.forEach((r, i) => {
     const ship = ships.find(g => g.id === r.shipId) || ships[i % ships.length]
+    const direction = getShipDirection(ship)
     events.push({
       id: `reg-${r.id}`,
-      direction: getShipDirection(ship),
+      direction,
       shipId: ship.id,
       shipName: r.shipName,
-      shipStatus: 'Lövbərdə',
+      shipStatus: direction === 'Gedən' ? 'Körpüdə' : 'Lövbərdə',
       port: portKey(ship.menshe),
       tonaj: Math.round(ship.tonaj * 0.15),
       vehicles: 1,
@@ -139,12 +143,15 @@ function buildTrafficEvents(
       const direction: 'Gələn' | 'Gedən' = i % 3 === 0 ? 'Gedən' : 'Gələn'
       const day = 1 + (i % 28)
       const monthIdx = i % 7
+      const shipStatus = direction === 'Gedən'
+        ? (i % 2 === 0 ? 'Körpüdə' : 'Yolda')
+        : (['Lövbərdə', 'Yolda', 'Körpüdə'] as const)[i % 3]
       events.push({
         id: `syn-${i}`,
         direction,
         shipId: ship.id,
         shipName: ship.ad,
-        shipStatus: (['Lövbərdə', 'Yolda', 'Körpüdə'] as const)[i % 3],
+        shipStatus,
         port: portKey(ship.menshe),
         tonaj: Math.round(ship.tonaj * (0.4 + (i % 6) * 0.1)),
         vehicles: 8 + (i * 3) % 40,
@@ -326,7 +333,11 @@ export default function Analytics() {
       </div>
       <div className="analytics-filters-grid">
         <label>İstiqamət
-          <select value={direction} onChange={e => setDirection(e.target.value as DirectionFilter)}>
+          <select value={direction} onChange={e => {
+            const nextDir = e.target.value as DirectionFilter
+            setDirection(nextDir)
+            if (nextDir === 'Gedən' && status === 'Lövbərdə') setStatus('Hamısı')
+          }}>
             <option>Hamısı</option>
             <option>Gələn</option>
             <option>Gedən</option>
@@ -335,7 +346,7 @@ export default function Analytics() {
         <label>Gəmi statusu
           <select value={status} onChange={e => setStatus(e.target.value as StatusFilter)}>
             <option>Hamısı</option>
-            <option>Lövbərdə</option>
+            {direction !== 'Gedən' && <option>Lövbərdə</option>}
             <option>Yolda</option>
             <option>Körpüdə</option>
           </select>

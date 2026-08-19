@@ -12,6 +12,7 @@ import { getShipDirection, getShipMovementSummary } from '../domain/ships'
 import { useAppStore } from '../store/useAppStore'
 import { Button, Card, PageHeader, StatusBadge } from '../components/UI'
 import { DeclarationDocumentView } from '../components/DeclarationDocumentView'
+import './Declarations.css'
 
 const money = (value: number, currency = 'AZN') =>
   new Intl.NumberFormat('az-AZ', { maximumFractionDigits: 2 }).format(value) + ` ${currency}`

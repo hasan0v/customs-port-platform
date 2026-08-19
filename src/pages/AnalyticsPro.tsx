@@ -142,9 +142,11 @@ function createEvents(
   for (let index = 0; rows.length < 96; index++) {
     const ship = ships[index % ships.length]
     const score = index % 13 === 0 ? 78 : index % 6 === 0 ? 47 : 12 + index * 5 % 21
+    const dir: 'Gedən' | 'Gələn' = index % 3 === 0 ? 'Gedən' : 'Gələn'
+    const shipStatus = dir === 'Gedən' ? (index % 2 === 0 ? 'Körpüdə' : 'Yolda') : ['Lövbərdə', 'Yolda', 'Körpüdə'][index % 3]
     rows.push({
-      id: `model-${index}`, direction: index % 3 === 0 ? 'Gedən' : 'Gələn', shipId: ship.id, shipName: ship.ad,
-      status: ['Lövbərdə', 'Yolda', 'Körpüdə'][index % 3], vesselType: ship.novu, flag: ship.bayraq,
+      id: `model-${index}`, direction: dir, shipId: ship.id, shipName: ship.ad,
+      status: shipStatus, vesselType: ship.novu, flag: ship.bayraq,
       port: portName(ship.menshe), tonnage: Math.round(ship.tonaj * (.18 + index % 6 * .08)),
       vehicles: 6 + index * 3 % 42, declarations: 4 + index * 2 % 34, risk: riskFromScore(score),
       riskScore: score, processing: 58 + score * 2 + index % 4 * 11,
@@ -307,13 +309,16 @@ export default function AnalyticsPro() {
     <Card className="analytics-pro-filter-card" hover={false}>
       <div className="analytics-pro-filter-top">
         <label className="analytics-pro-search"><Search /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Gəmi, IMO, liman və ya növ axtar..." />{query && <button type="button" onClick={() => setQuery('')} aria-label="Axtarışı təmizlə"><X /></button>}</label>
-        <div className="analytics-pro-segments">{(['Hamısı', 'Gələn', 'Gedən'] as const).map(value => <button type="button" key={value} className={direction === value ? 'active' : ''} onClick={() => setDirection(value)}>{value}</button>)}</div>
+        <div className="analytics-pro-segments">{(['Hamısı', 'Gələn', 'Gedən'] as const).map(value => <button type="button" key={value} className={direction === value ? 'active' : ''} onClick={() => {
+          setDirection(value)
+          if (value === 'Gedən' && status === 'Lövbərdə') setStatus('Hamısı')
+        }}>{value}</button>)}</div>
         <Select label="Liman" value={port} onChange={setPort} options={ports} />
         <Select label="Risk kanalı" value={risk} onChange={value => setRisk(value as RiskFilter)} options={['Yaşıl', 'Amber', 'Qırmızı']} />
         <button type="button" className={`analytics-pro-advanced-trigger ${advanced ? 'active' : ''}`} onClick={() => setAdvanced(value => !value)}><Filter /> Ətraflı {activeFilters > 0 && <b>{activeFilters}</b>}</button>
       </div>
       {advanced && <div className="analytics-pro-advanced">
-        <Select label="Gəmi statusu" value={status} onChange={setStatus} options={['Lövbərdə', 'Yolda', 'Körpüdə']} advanced />
+        <Select label="Gəmi statusu" value={status} onChange={setStatus} options={direction === 'Gedən' ? ['Körpüdə', 'Yolda'] : ['Lövbərdə', 'Yolda', 'Körpüdə']} advanced />
         <label><span>Konkret gəmi</span><select value={shipId} onChange={event => setShipId(event.target.value)}><option>Hamısı</option>{ships.map(ship => <option key={ship.id} value={ship.id}>{ship.ad}</option>)}</select></label>
         <label><span>Data mənbəyi</span><select value={source} onChange={event => setSource(event.target.value as Source)}><option value="Hamısı">Hamısı</option><option value="db">Əməliyyat DB</option><option value="synthetic">Demo model</option></select></label>
         <label className="analytics-pro-range"><span>Minimum risk balı <b>{minRisk}</b></span><input type="range" min="0" max="90" step="5" value={minRisk} onChange={event => setMinRisk(Number(event.target.value))} /></label>

@@ -58,17 +58,24 @@ export default function Dashboard() {
     return ships.filter(ship => getShipDirection(ship) === shipDirection)
   }, [ships, shipDirection])
 
-  const shipStats = useMemo(() => ({
-    total: movementSummary.total,
-    details: [
-      { label: 'Körpüdə gələn gəmi', value: movementSummary.byStatus.Körpüdə.Gələn, tone: 'green', status: 'Körpüdə', direction: 'Gələn' },
-      { label: 'Körpüdə gedən gəmi', value: movementSummary.byStatus.Körpüdə.Gedən, tone: 'green', status: 'Körpüdə', direction: 'Gedən' },
-      { label: 'Lövbərdə gələn gəmi', value: movementSummary.byStatus.Lövbərdə.Gələn, tone: 'amber', status: 'Lövbərdə', direction: 'Gələn' },
-      { label: 'Lövbərdə gedən gəmi', value: movementSummary.byStatus.Lövbərdə.Gedən, tone: 'amber', status: 'Lövbərdə', direction: 'Gedən' },
-      { label: 'Yolda gələn gəmi', value: movementSummary.byStatus.Yolda.Gələn, tone: 'blue', status: 'Yolda', direction: 'Gələn' },
-      { label: 'Yolda gedən gəmi', value: movementSummary.byStatus.Yolda.Gedən, tone: 'blue', status: 'Yolda', direction: 'Gedən' },
-    ] as const,
-  }), [movementSummary])
+  const allDetails = useMemo(() => [
+    { label: 'Körpüdə gələn gəmi', value: movementSummary.byStatus.Körpüdə.Gələn, tone: 'green', status: 'Körpüdə' as const, direction: 'Gələn' as const },
+    { label: 'Körpüdə gedən gəmi', value: movementSummary.byStatus.Körpüdə.Gedən, tone: 'green', status: 'Körpüdə' as const, direction: 'Gedən' as const },
+    { label: 'Lövbərdə gələn gəmi', value: movementSummary.byStatus.Lövbərdə.Gələn, tone: 'amber', status: 'Lövbərdə' as const, direction: 'Gələn' as const },
+    { label: 'Yolda gələn gəmi', value: movementSummary.byStatus.Yolda.Gələn, tone: 'blue', status: 'Yolda' as const, direction: 'Gələn' as const },
+    { label: 'Yolda gedən gəmi', value: movementSummary.byStatus.Yolda.Gedən, tone: 'blue', status: 'Yolda' as const, direction: 'Gedən' as const },
+  ], [movementSummary])
+
+  const shipStats = useMemo(() => {
+    const details = shipDirection === 'Hamısı'
+      ? allDetails
+      : allDetails.filter(stat => stat.direction === shipDirection)
+
+    return {
+      total: shipDirection === 'Hamısı' ? movementSummary.total : directionCounts[shipDirection],
+      details,
+    }
+  }, [allDetails, shipDirection, movementSummary.total, directionCounts])
 
   const vehicleCountByShip = useMemo(() => vehicles.reduce<Record<string, number>>((counts, vehicle) => {
     counts[vehicle.gemi] = (counts[vehicle.gemi] ?? 0) + 1
@@ -141,7 +148,7 @@ export default function Dashboard() {
     <section className="port-overview dashboard-port-overview" aria-label="Beynəlxalq Dəniz Ticarət Limanı göstəriciləri">
       <Card className="port-overview-lead dashboard-port-overview-lead" hover={false}>
         <div className="overview-title"><span><Anchor /></span><div><small>BEYNƏLXALQ DƏNİZ TİCARƏT LİMANI · {dateRange.label.toLocaleUpperCase('az')}</small><h2>{shipDirection === 'Hamısı' ? 'Gəmi axını' : `${shipDirection} gəmilər`}</h2></div></div>
-        <div className="vessel-total"><strong>{shipStats.total}</strong><span>Körpü + lövbər + yolda</span></div>
+        <div className="vessel-total"><strong>{shipStats.total}</strong><span>{shipDirection === 'Gedən' ? 'Körpü + yolda' : 'Körpü + lövbər + yolda'}</span></div>
         <div className="vessel-direction-stats">
           {shipStats.details.map(stat => <Link
             className="vessel-stat-link"

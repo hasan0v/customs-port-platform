@@ -3,6 +3,23 @@ import type { GemiIstiqameti, GemiStatus } from '../data/mockData'
 export const SHIP_STATUSES: readonly GemiStatus[] = ['Körpüdə', 'Lövbərdə', 'Yolda']
 export const SHIP_DIRECTIONS: readonly GemiIstiqameti[] = ['Gələn', 'Gedən']
 
+export const INCOMING_SHIP_STATUSES: readonly GemiStatus[] = ['Körpüdə', 'Lövbərdə', 'Yolda']
+export const OUTGOING_SHIP_STATUSES: readonly GemiStatus[] = ['Körpüdə', 'Yolda']
+
+export function getAvailableShipStatuses(direction?: GemiIstiqameti | 'Hamısı'): readonly GemiStatus[] {
+  if (direction === 'Gedən') {
+    return OUTGOING_SHIP_STATUSES
+  }
+  return INCOMING_SHIP_STATUSES
+}
+
+export function normalizeShipStatus(status: GemiStatus, direction: GemiIstiqameti): GemiStatus {
+  if (direction === 'Gedən' && status === 'Lövbərdə') {
+    return 'Körpüdə'
+  }
+  return status
+}
+
 export type ShipMovement = {
   status: GemiStatus
   istiqamet?: GemiIstiqameti
@@ -48,7 +65,7 @@ export function getShipMovementSummary<T extends ShipMovement>(ships: readonly T
     {
       total: countShipsByMovement(ships, status),
       Gələn: countShipsByMovement(ships, status, 'Gələn'),
-      Gedən: countShipsByMovement(ships, status, 'Gedən'),
+      Gedən: status === 'Lövbərdə' ? 0 : countShipsByMovement(ships, status, 'Gedən'),
     },
   ])) as Record<GemiStatus, { total: number; Gələn: number; Gedən: number }>
 

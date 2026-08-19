@@ -49,7 +49,9 @@ type AppState = {
   setCommandOpen: (open: boolean) => void
   addShip: (ship: (typeof gemiler)[number]) => void
   updateShip: (id: string, patch: Partial<(typeof gemiler)[number]>) => void
+  updateVehicle: (nomre: string, patch: Partial<(typeof avtomobiller)[number] & { waitReason?: string }>) => void
   addDeclaration: (declaration: (typeof beyannameler)[number]) => void
+  updateDeclaration: (kod: string, patch: Partial<(typeof beyannameler)[number]>) => void
   addPostDecision: (decision: (typeof postQerarlar)[number]) => void
   addRegistration: (record: SavedRegistration) => void
   updateProfile: (profile: Partial<Profile>) => void
@@ -140,7 +142,13 @@ export const useAppStore = create<AppState>((set) => ({
   updateShip: (id, patch) => set((state) => ({
     ships: state.ships.map(ship => ship.id === id ? { ...ship, ...patch } : ship) as typeof gemiler,
   })),
+  updateVehicle: (nomre, patch) => set((state) => ({
+    vehicles: state.vehicles.map(v => v.nomre === nomre ? { ...v, ...patch } : v) as typeof avtomobiller,
+  })),
   addDeclaration: (declaration) => set((state) => ({ declarations: [declaration, ...state.declarations] })),
+  updateDeclaration: (kod, patch) => set((state) => ({
+    declarations: state.declarations.map(d => d.kod === kod ? { ...d, ...patch } : d) as typeof beyannameler,
+  })),
   addPostDecision: (decision) => set((state) => ({ postDecisions: [decision, ...state.postDecisions] })),
   addRegistration: (record) => set((state) => {
     const registrations = [record, ...state.registrations]

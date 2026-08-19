@@ -76,3 +76,40 @@ Fiziki yoxlama
 
 Beynəlxalq dəniz ticarət limanı olaraq dəyişdir
 
+
+
+
+
+Gəmiləırin statusu dəyişir 3 halda ola bilir
+körpü - gedən/gələn
+lövbər - gedən/gələn
+yolda - gedən/gələn
+
+
+
+Ümumi: körpü + lövbər + yolda
+
+Körpüdə dayanıb getmək üçün hazırlanan gəmiyə `Yüklənən gəmi` kimi qeydə alıb dashboard da göstərək. 
+Körpüdə dayanıb gəlib yükü boşaltmaq üçüm prosesə başlayan gəmiyə  `Boşaldılan gəmi` kimi qeydə alıb dashboard da göstərək.
+
+
+Bəyannamələr --- 
+
+Gömrük bəyannamələrində giriş çıxışa görə 2 yə bölünəcək.  Aşağıdakı kimi
+```
+
+Hamısı
+13 gəmi
+
+Gedən gəmilər
+3 gəmi
+
+Gələn gəmilər
+10 gəmi
+
+```
+
+
+Qeydiyyat bölməsində klik edəndə 02 dəki məlumatlar elə sağda görünsün. aşağıdan 02 dən silək.
+
+Buglar var Qeydiyyat bölməsində gəmilərə görə filterləmək falan olmur  
