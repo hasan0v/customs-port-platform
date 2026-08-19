@@ -10,7 +10,7 @@ import { DeclarationDocumentView } from '../components/DeclarationDocumentView'
 import VehicleDeckSelector from '../components/VehicleDeckSelector'
 import ShipDetailModal from '../components/ShipDetailModal'
 import { alatKurikManifestSeed, cargoDeclarationSeed } from '../data/documentSeeds'
-import { declarationSortKey } from '../data/mockData'
+import { declarationSortKey, type Declaration } from '../data/mockData'
 
 const emptyManualForm = {
   beyannameId: '',
@@ -179,8 +179,13 @@ export default function Registration() {
   const [searchParams] = useSearchParams()
   const { ships, vehicles, declarations, addShip, addDeclaration, addPostDecision, addRegistration, registrations, profile } = useAppStore()
 
-  const [shipId, setShipId] = useState('IMO9345678')
-  const [plate, setPlate] = useState('15 AA 859')
+  // Parse URL query parameters
+  const urlShipId = searchParams.get('shipId')
+  const urlShipName = searchParams.get('shipName')
+  const urlPlate = searchParams.get('plate')
+
+  const [shipId, setShipId] = useState(urlShipId || '')
+  const [plate, setPlate] = useState(urlPlate || '')
   const [vehicleFound, setVehicleFound] = useState(false)
   const [declaration, setDeclaration] = useState('')
   const [done, setDone] = useState(false)
@@ -198,11 +203,6 @@ export default function Registration() {
   const [lastSaved, setLastSaved] = useState<SavedRegistration | null>(null)
   const [taxConfirmed, setTaxConfirmed] = useState(false)
   const [shipModalOpen, setShipModalOpen] = useState(false)
-
-  // Parse URL query parameters
-  const urlShipId = searchParams.get('shipId')
-  const urlShipName = searchParams.get('shipName')
-  const urlPlate = searchParams.get('plate')
 
   // Handle ship query param (including dynamic addition of new ships from Operations details)
   useEffect(() => {
@@ -243,10 +243,11 @@ export default function Registration() {
     }
   }, [urlPlate, vehicles])
 
-  const ship = ships.find(g => g.id === shipId) || ships[0]
+  const ship = ships.find(g => g.id === shipId) || null
 
   // Filter vehicles belonging to the selected ship (Limandakı gəmi filtri)
   const shipVehicles = useMemo(() => {
+    if (!ship) return []
     const matched = vehicles.filter(v => v.gemi === ship.id || v.gemi === ship.ad)
     if (matched.length > 0) return matched
 
@@ -260,19 +261,21 @@ export default function Registration() {
       menshe: ship.menshe.split(',')[0],
       teyinat: ship.teyinat ? ship.teyinat.split(',')[0] : 'Ələt Limanı',
     }))
-  }, [vehicles, ship.id, ship.ad, ships])
+  }, [vehicles, ship, ships])
 
   // Sync selected plate when ship changes
   useEffect(() => {
-    if (shipVehicles.length > 0) {
-      const first = shipVehicles[0]
-      setPlate(first.nomre)
-      setVehicleFound(true)
+    if (ship && shipVehicles.length > 0) {
+      if (!urlPlate || !shipVehicles.some(v => v.nomre === urlPlate || v.kod === urlPlate)) {
+        const first = shipVehicles[0]
+        setPlate(first.nomre)
+        setVehicleFound(true)
+      }
     } else {
       setPlate('')
       setVehicleFound(false)
     }
-  }, [shipId, shipVehicles])
+  }, [ship, shipVehicles, urlPlate])
 
   const normalizedManifestQuery = normalizeManifestIdentifier(plate)
   const vehicle = shipVehicles.find(v =>
@@ -313,7 +316,7 @@ export default function Registration() {
 
   // Nəqliyyat formunu manifest / avtomobil qeydindən doldur
   useEffect(() => {
-    if (!vehicleFound || (!vehicle && !manifestEntry)) return
+    if (!vehicleFound || !ship || (!vehicle && !manifestEntry)) return
 
     const cargo = vehicle?.yuk ?? manifestEntry?.cargo ?? ''
     const destination = vehicle?.teyinat ?? 'Kurık'
@@ -326,7 +329,7 @@ export default function Registration() {
     const registrationNo = vehicle?.kod
       || (manifestEntry?.vehicleOrder ? `VO-${manifestEntry.vehicleOrder}` : '')
       || (manifestEntry ? `BL-${manifestEntry.billOfLading}` : plate)
-    const entryDate = formatShipDate(ship.girisTarixi)
+    const entryDate = (ship ? formatShipDate(ship.girisTarixi) : '')
       || formatShipDate(cargoDeclarationSeed.date)
       || initialTransportDetails.qeydiyyatTarixi
     const hasCargo = Boolean(cargo) || (manifestEntry?.grossTons ?? 0) > 0
@@ -350,7 +353,7 @@ export default function Registration() {
       xususilik: hasCargo ? 'Yüklü' : 'Boş',
       teyinatGomrukOrqani: inferCustomsOffice(vehicle?.teyinat ?? destination),
     })
-  }, [vehicleFound, vehicle, manifestEntry, matchedManifestVehicleId, plate, ship.girisTarixi, ship.id])
+  }, [vehicleFound, vehicle, manifestEntry, matchedManifestVehicleId, plate, ship])
 
   const activeDeclarations = useMemo(() => {
     if (!vehicleFound) return [] as typeof declarations
@@ -465,7 +468,7 @@ export default function Registration() {
   }
 
   const exportManifest = () => {
-    if (!vehicle && !manifestEntry) return
+    if (!ship || (!vehicle && !manifestEntry)) return
     const rows = [
       ['Sahə', 'Dəyər'],
       ['Gəmi', ship.ad],
@@ -552,6 +555,7 @@ export default function Registration() {
   }
 
   const finalConfirm = () => {
+    if (!ship) return toast.warning('Zəhmət olmasa, əvvəlcə gəmi seçin')
     if (flowPhase !== 'review') return toast.warning('Bütün mərhələləri tamamlayın')
     if (!vehicleFound || !declaration || !riskVerdict) return toast.warning('Qeydiyyat məlumatları natamamdır')
     if (riskVerdict === 'red' && !manualRoute) return toast.error('Qırmızı riskdə yönləndirmə mütləqdir')
@@ -656,58 +660,45 @@ export default function Registration() {
 
   const submitManual = (e: FormEvent) => {
     e.preventDefault()
-    const alici = manualForm.alici.trim()
-    const satici = manualForm.satici.trim()
-    const kod = manualForm.beyannameId.trim()
-    const malAdi = manualForm.malAdi.trim()
-    const teyinatGomrukOrqani = manualForm.teyinatGomrukOrqani.trim()
-    const yerSayi = Number(manualForm.yerSayi)
-    const umumiDeyer = Number(manualForm.umumiDeyer)
-    const netto = Number(manualForm.netto)
-    const brutto = Number(manualForm.brutto)
-    if (!alici || !satici || !kod || !malAdi || !teyinatGomrukOrqani || !yerSayi || !umumiDeyer || !netto || !brutto) {
-      return toast.warning('Bütün məcburi sahələri doldurun')
-    }
-    if (declarations.some(b => b.kod === kod)) {
-      return toast.error('Bu bəyannamə ID artıq mövcuddur')
-    }
-    const now = new Date()
-    const pad = (n: number) => String(n).padStart(2, '0')
-    const qeydiyyatTarixi = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`
-    const tarix = now.toISOString().slice(0, 10)
-    addDeclaration({
-      kod,
-      tarix,
-      qeydiyyatTarixi,
+    if (!ship) return
+    const newKod = manualForm.beyannameId.trim()
+    if (!newKod) return
+
+    const newDecl: Declaration = {
+      kod: newKod,
+      tarix: new Date().toISOString().slice(0, 16).replace('T', ' '),
       broker: '—',
-      avtomobil: plateKey || transportDetails.dovletNisani || '—',
-      alici,
-      satici,
-      mallar: [{
-        hsKod: '—',
-        ad: malAdi,
-        miqdar: yerSayi,
-        olcuVahidi: 'yer',
-        deyer: umumiDeyer,
-        netCeki: netto,
-        bruttoCeki: brutto,
-      }],
-      umumiDeyer,
-      valyuta: 'USD',
-      yukYerleri: yerSayi,
-      teslimYeri: vehicle?.teyinat || '—',
-      teyinatGomrukOrqani,
+      avtomobil: plateKey || '99 YM 093',
       status: 'Yoxlamada',
-      source: 'Əl ilə daxil edilib',
-    })
-    setDeclaration(kod)
-    clearRiskState()
+      alici: manualForm.alici,
+      satici: manualForm.satici,
+      mallar: [{
+        hsKod: '8504.40.90',
+        ad: manualForm.malAdi,
+        miqdar: Number(manualForm.yerSayi) || 1,
+        olcuVahidi: 'ədəd',
+        deyer: Number(manualForm.umumiDeyer),
+        netCeki: Number(manualForm.netto),
+        bruttoCeki: Number(manualForm.brutto),
+      }],
+      umumiDeyer: Number(manualForm.umumiDeyer),
+      valyuta: 'USD',
+      qeydiyyatTarixi: new Date().toISOString().slice(0, 10),
+      menseOlke: 'Qazaxıstan',
+      serhedKecmeMentegesi: 'Bakı Beynəlxalq Dəniz Ticarət Limanı',
+      teyinatGomrukOrqani: manualForm.teyinatGomrukOrqani,
+      yukYerleri: Number(manualForm.yerSayi),
+    }
+
+    addDeclaration(newDecl)
+    setDeclaration(newDecl.kod)
     setManualOpen(false)
     setManualForm(emptyManualForm)
-    toast.success('Mal və bəyannamə əl ilə əlavə edildi')
+    toast.success(`№ ${newDecl.kod} bəyannaməsi əlavə edildi və seçildi`)
   }
 
   const handleQuickConfirm = (v: typeof vehicles[number]) => {
+    if (!ship) return
     const matchedDecl = declarations.find(d =>
       d.avtomobil === v.nomre || (Boolean(v.billOfLading) && d.billOfLading === v.billOfLading)
     )
@@ -776,6 +767,7 @@ export default function Registration() {
                 clearRiskState()
               }}
             >
+              <option value="">— Gəmi seçin —</option>
               {ships.filter(g => g.status === 'Körpüdə' || g.status === 'Lövbərdə' || g.id === shipId).map(g => (
                 <option value={g.id} key={g.id}>{g.ad} ({g.id}) — {g.status}</option>
               ))}
@@ -784,9 +776,21 @@ export default function Registration() {
           <Button
             type="button"
             variant="secondary"
-            onClick={() => setShipModalOpen(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 13px', fontSize: 12, fontWeight: 700 }}
-            title="Seçilmiş gəminin bütün detallarına bax"
+            disabled={!ship}
+            onClick={() => {
+              if (ship) setShipModalOpen(true)
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '7px 13px',
+              fontSize: 12,
+              fontWeight: 700,
+              opacity: ship ? 1 : 0.45,
+              cursor: ship ? 'pointer' : 'not-allowed'
+            }}
+            title={ship ? "Seçilmiş gəminin bütün detallarına bax" : "Əvvəlcə gəmi seçin"}
           >
             <Ship size={14} /> Gəmi detalları
           </Button>
@@ -794,22 +798,55 @@ export default function Registration() {
       }
     />
 
-    <VehicleDeckSelector
-      ship={ship}
-      vehicles={shipVehicles}
-      selectedPlate={vehicleFound ? plateKey : (shipVehicles[0]?.nomre ?? '')}
-      registeredPlates={registrations.map(registration => registration.plate)}
-      onSelect={selectDeckVehicle}
-      declarations={declarations}
-      onConfirmRegistration={handleQuickConfirm}
-      onOpenShipDetails={() => setShipModalOpen(true)}
-    />
+    {!ship ? (
+      <Card className="registration-empty-state" hover={false}>
+        <div className="registration-empty-content">
+          <div className="registration-empty-badge">
+            <Ship size={36} />
+          </div>
+          <h2>Limandakı gəmini seçin</h2>
+          <p>
+            Qeydiyyat prosesinə başlamaq, avtomobillərin göyərtə planını və manifest məlumatlarını görmək üçün yuxarıdakı menyudan gəmi seçin.
+          </p>
+          <div className="registration-quick-ships">
+            <small>Mövcud aktiv gəmilər:</small>
+            <div className="registration-quick-chips">
+              {ships.filter(g => g.status === 'Körpüdə' || g.status === 'Lövbərdə').map(g => (
+                <button
+                  key={g.id}
+                  type="button"
+                  className="quick-ship-chip"
+                  onClick={() => setShipId(g.id)}
+                >
+                  <Ship size={13} />
+                  <span>{g.ad}</span>
+                  <span className={`chip-status ${g.status === 'Körpüdə' ? 'green' : 'amber'}`}>{g.status}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Card>
+    ) : (
+      <>
+        <VehicleDeckSelector
+          ship={ship}
+          vehicles={shipVehicles}
+          selectedPlate={vehicleFound ? plateKey : (shipVehicles[0]?.nomre ?? '')}
+          registeredPlates={registrations.map(registration => registration.plate)}
+          onSelect={selectDeckVehicle}
+          declarations={declarations}
+          onConfirmRegistration={handleQuickConfirm}
+          onOpenShipDetails={() => setShipModalOpen(true)}
+        />
 
-    <ShipDetailModal
-      ship={ship}
-      open={shipModalOpen}
-      onClose={() => setShipModalOpen(false)}
-    />
+        <ShipDetailModal
+          ship={ship}
+          open={shipModalOpen}
+          onClose={() => setShipModalOpen(false)}
+        />
+      </>
+    )}
 
     <Modal open={manualOpen} onClose={() => setManualOpen(false)} title="Mal və bəyannamə əlavə et">
       <form onSubmit={submitManual} className="manual-declaration-form">

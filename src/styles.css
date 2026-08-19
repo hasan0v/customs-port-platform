@@ -2623,3 +2623,103 @@ body,h1,h2,h3,.page-header h1,.brand strong{font-family:'Roboto',system-ui,-appl
   flex: none;
   transform: none;
 }
+
+/* Registration Empty State when no ship is selected */
+.registration-empty-state {
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: 20px;
+  background: var(--card);
+}
+.registration-empty-content {
+  max-width: 540px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.registration-empty-badge {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--ocean) 10%, transparent);
+  color: var(--ocean);
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+  box-shadow: 0 8px 24px rgba(10, 77, 140, 0.08);
+}
+.registration-empty-content h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text);
+}
+.registration-empty-content p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.registration-quick-ships {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.registration-quick-ships small {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+.registration-quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.quick-ship-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.quick-ship-chip:hover {
+  border-color: var(--ocean);
+  background: color-mix(in srgb, var(--ocean) 8%, transparent);
+  color: var(--ocean);
+  transform: translateY(-1px);
+}
+.quick-ship-chip .chip-status {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+.quick-ship-chip .chip-status.green {
+  background: #e3f5f1;
+  color: #217c6f;
+}
+.quick-ship-chip .chip-status.amber {
+  background: #fff0de;
+  color: #a66222;
+}
+
